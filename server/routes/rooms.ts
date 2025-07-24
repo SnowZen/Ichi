@@ -1,11 +1,97 @@
 import { RequestHandler } from "express";
-import { GameRoom, Player } from "@shared/uno";
-import { generateRoomCode, initializeGame } from "@shared/unoLogic";
+
+interface UnoCard {
+  id: string;
+  color: 'red' | 'blue' | 'green' | 'yellow' | 'wild';
+  type: 'number' | 'skip' | 'reverse' | 'draw2' | 'wild' | 'wild_draw4';
+  value?: number;
+}
+
+interface Player {
+  id: string;
+  name: string;
+  cards: UnoCard[];
+  isConnected: boolean;
+}
+
+interface GameRoom {
+  id: string;
+  name: string;
+  players: Player[];
+  maxPlayers: number;
+  isStarted: boolean;
+  currentPlayer?: string;
+  direction: 1 | -1;
+  topCard?: UnoCard;
+  deck: UnoCard[];
+  discardPile: UnoCard[];
+  winner?: string;
+}
 
 // In-memory storage for demo purposes
-// In production, this would be in a database
 const rooms = new Map<string, GameRoom>();
-const playerSessions = new Map<string, { playerId: string; roomId: string }>();
+
+function generateRoomCode(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+function createDeck(): UnoCard[] {
+  const deck: UnoCard[] = [];
+  const colors: ('red' | 'blue' | 'green' | 'yellow')[] = ['red', 'blue', 'green', 'yellow'];
+  
+  // Add number cards and action cards
+  colors.forEach(color => {
+    // Numbers 0-9
+    for (let value = 0; value <= 9; value++) {
+      deck.push({
+        id: `${color}-${value}-${Math.random().toString(36).substr(2, 9)}`,
+        color,
+        type: 'number',
+        value
+      });
+    }
+    
+    // Action cards
+    ['skip', 'reverse', 'draw2'].forEach(type => {
+      deck.push({
+        id: `${color}-${type}-${Math.random().toString(36).substr(2, 9)}`,
+        color,
+        type: type as any
+      });
+    });
+  });
+  
+  // Wild cards
+  for (let i = 0; i < 4; i++) {
+    deck.push({
+      id: `wild-${i}-${Math.random().toString(36).substr(2, 9)}`,
+      color: 'wild',
+      type: 'wild'
+    });
+    
+    deck.push({
+      id: `wild-draw4-${i}-${Math.random().toString(36).substr(2, 9)}`,
+      color: 'wild',
+      type: 'wild_draw4'
+    });
+  }
+  
+  return shuffleDeck(deck);
+}
+
+function shuffleDeck(deck: UnoCard[]): UnoCard[] {
+  const shuffled = [...deck];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
 
 export const createRoom: RequestHandler = (req, res) => {
   const { playerName, maxPlayers = 4 } = req.body;
@@ -36,7 +122,6 @@ export const createRoom: RequestHandler = (req, res) => {
   };
 
   rooms.set(roomId, room);
-  playerSessions.set(req.sessionID || req.ip, { playerId, roomId });
 
   res.json({ roomId, playerId });
 };
@@ -62,11 +147,6 @@ export const joinRoom: RequestHandler = (req, res) => {
     return res.status(400).json({ error: 'Salon complet' });
   }
 
-  // Check if player name already exists
-  if (room.players.some(p => p.name === playerName.trim())) {
-    return res.status(400).json({ error: 'Ce nom est déjà pris' });
-  }
-
   const playerId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   
   const player: Player = {
@@ -77,7 +157,6 @@ export const joinRoom: RequestHandler = (req, res) => {
   };
 
   room.players.push(player);
-  playerSessions.set(req.sessionID || req.ip, { playerId, roomId });
 
   res.json({ roomId, playerId, room });
 };
@@ -109,10 +188,37 @@ export const startGame: RequestHandler = (req, res) => {
     return res.status(400).json({ error: 'Au moins 2 joueurs requis' });
   }
 
-  const initializedRoom = initializeGame(room);
-  rooms.set(roomId, initializedRoom);
+  // Initialize game
+  const deck = createDeck();
+  
+  // Deal 7 cards to each player
+  room.players.forEach(player => {
+    player.cards = [];
+    for (let i = 0; i < 7; i++) {
+      const card = deck.pop();
+      if (card) {
+        player.cards.push(card);
+      }
+    }
+  });
 
-  res.json(initializedRoom);
+  // Find a starting card
+  let topCard: UnoCard | undefined;
+  for (let i = 0; i < deck.length; i++) {
+    if (deck[i].color !== 'wild') {
+      topCard = deck.splice(i, 1)[0];
+      break;
+    }
+  }
+
+  room.deck = deck;
+  room.discardPile = topCard ? [topCard] : [];
+  room.topCard = topCard;
+  room.currentPlayer = room.players[0].id;
+  room.isStarted = true;
+
+  rooms.set(roomId, room);
+  res.json(room);
 };
 
 export const playCard: RequestHandler = (req, res) => {
@@ -122,14 +228,6 @@ export const playCard: RequestHandler = (req, res) => {
   const room = rooms.get(roomId);
   if (!room) {
     return res.status(404).json({ error: 'Salon non trouvé' });
-  }
-
-  if (!room.isStarted) {
-    return res.status(400).json({ error: 'La partie n\'a pas commencé' });
-  }
-
-  if (room.currentPlayer !== playerId) {
-    return res.status(400).json({ error: 'Ce n\'est pas votre tour' });
   }
 
   const player = room.players.find(p => p.id === playerId);
@@ -143,9 +241,6 @@ export const playCard: RequestHandler = (req, res) => {
   }
 
   const card = player.cards[cardIndex];
-  
-  // TODO: Implement card validation logic here
-  // For now, allow any card to be played
   
   // Remove card from player's hand
   player.cards.splice(cardIndex, 1);
@@ -177,14 +272,6 @@ export const drawCard: RequestHandler = (req, res) => {
     return res.status(404).json({ error: 'Salon non trouvé' });
   }
 
-  if (!room.isStarted) {
-    return res.status(400).json({ error: 'La partie n\'a pas commencé' });
-  }
-
-  if (room.currentPlayer !== playerId) {
-    return res.status(400).json({ error: 'Ce n\'est pas votre tour' });
-  }
-
   const player = room.players.find(p => p.id === playerId);
   if (!player) {
     return res.status(404).json({ error: 'Joueur non trouvé' });
@@ -200,31 +287,10 @@ export const drawCard: RequestHandler = (req, res) => {
     player.cards.push(drawnCard);
   }
 
-  // Move to next player
-  const currentPlayerIndex = room.players.findIndex(p => p.id === playerId);
-  const nextPlayerIndex = (currentPlayerIndex + 1) % room.players.length;
-  room.currentPlayer = room.players[nextPlayerIndex].id;
-
   rooms.set(roomId, room);
   res.json(room);
 };
 
 export const callUno: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-  const { playerId } = req.body;
-  
-  const room = rooms.get(roomId);
-  if (!room) {
-    return res.status(404).json({ error: 'Salon non trouvé' });
-  }
-
-  const player = room.players.find(p => p.id === playerId);
-  if (!player) {
-    return res.status(404).json({ error: 'Joueur non trouvé' });
-  }
-
-  // TODO: Implement UNO calling logic
-  console.log(`${player.name} a crié UNO!`);
-  
-  res.json({ success: true, message: `${player.name} a crié UNO!` });
+  res.json({ success: true });
 };
