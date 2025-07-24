@@ -28,6 +28,9 @@ interface GameRoom {
   winner?: string;
   drawPenalty?: number; // Number of cards next player must draw
   wildColor?: 'red' | 'blue' | 'green' | 'yellow'; // Color chosen for wild cards
+  unoCalledBy?: string; // Player who called UNO
+  unoChallengeTime?: number; // Timestamp when UNO can be challenged
+  isFinished?: boolean; // Game has ended
 }
 
 // In-memory storage for demo purposes
