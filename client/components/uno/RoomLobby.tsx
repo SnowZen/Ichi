@@ -171,9 +171,14 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
               {Array.from({ length: room.maxPlayers - room.players.length }).map((_, index) => (
                 <div
                   key={`empty-${index}`}
-                  className="flex items-center justify-between p-3 rounded-lg border border-dashed border-muted-foreground/30"
+                  className="flex items-center justify-center p-4 rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/10"
                 >
-                  <span className="text-muted-foreground">En attente d'un joueur...</span>
+                  <div className="flex items-center gap-3 text-muted-foreground">
+                    <div className="w-8 h-8 rounded-full border-2 border-dashed border-muted-foreground/50 flex items-center justify-center">
+                      <span className="text-lg">👤</span>
+                    </div>
+                    <span className="font-medium">En attente d'un joueur...</span>
+                  </div>
                 </div>
               ))}
             </div>
