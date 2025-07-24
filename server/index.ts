@@ -37,6 +37,7 @@ export function createServer() {
   app.post("/api/rooms/:roomId/play", playCard);
   app.post("/api/rooms/:roomId/draw", drawCard);
   app.post("/api/rooms/:roomId/uno", callUno);
+  app.post("/api/rooms/:roomId/challenge", challengeUno);
 
   return app;
 }
