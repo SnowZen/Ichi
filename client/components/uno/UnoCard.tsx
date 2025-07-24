@@ -19,9 +19,9 @@ export function UnoCard({
   size = 'md'
 }: UnoCardProps) {
   const sizeClasses = {
-    sm: 'w-12 h-16 text-xs',
-    md: 'w-16 h-24 text-sm',
-    lg: 'w-20 h-28 text-base'
+    sm: 'w-8 h-12 text-xs sm:w-12 sm:h-16',
+    md: 'w-12 h-18 text-xs sm:w-16 sm:h-24 sm:text-sm',
+    lg: 'w-16 h-24 text-sm sm:w-20 sm:h-28 sm:text-base'
   };
 
   const colorClasses = {
