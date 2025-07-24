@@ -186,38 +186,40 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-center gap-4">
-          {canStartGame && (
-            <Button
-              onClick={onStartGame}
-              size="lg"
-              className="px-8 py-3 text-lg"
-            >
-              <Play className="w-5 h-5 mr-2" />
-              Commencer la partie
-            </Button>
-          )}
-          
-          <Button
-            onClick={onLeaveRoom}
-            variant="outline"
-            size="lg"
-            className="px-8 py-3"
-          >
-            Quitter le salon
-          </Button>
-        </div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex gap-4">
+            {canStartGame && (
+              <Button
+                onClick={onStartGame}
+                size="lg"
+                className="px-8 py-4 text-lg font-bold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg hover:shadow-green-500/25"
+              >
+                <Play className="w-6 h-6 mr-2" />
+                🎮 Commencer la partie
+              </Button>
+            )}
 
-        {!canStartGame && (
-          <div className="text-center mt-4">
-            <p className="text-muted-foreground">
-              {room.players.length < 2
-                ? "Au moins 2 joueurs sont nécessaires pour commencer"
-                : "Seul l'hôte peut commencer la partie"
-              }
-            </p>
+            <Button
+              onClick={onLeaveRoom}
+              variant="outline"
+              size="lg"
+              className="px-8 py-4 text-lg border-2 hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
+            >
+              🚪 Quitter le salon
+            </Button>
           </div>
-        )}
+
+          {!canStartGame && (
+            <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+              <p className="text-yellow-800 dark:text-yellow-200 font-medium">
+                ℹ️ {room.players.length < 2
+                  ? "Au moins 2 joueurs sont nécessaires pour commencer"
+                  : "Seul l'hôte peut commencer la partie"
+                }
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
