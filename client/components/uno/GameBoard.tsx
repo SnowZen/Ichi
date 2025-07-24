@@ -75,6 +75,20 @@ export function GameBoard({
           ))}
         </div>
 
+        {/* Draw Penalty Warning */}
+        {room.drawPenalty && room.drawPenalty > 0 && (
+          <div className="text-center mb-4">
+            <div className="bg-destructive/20 border border-destructive rounded-lg p-3 max-w-md mx-auto">
+              <p className="text-destructive font-semibold">
+                ⚠️ Pénalité active : {room.drawPenalty} carte{room.drawPenalty > 1 ? 's' : ''} à piocher
+              </p>
+              <p className="text-sm text-destructive/80">
+                Jouez une carte +2 ou +4 pour contrer, ou piochez les cartes
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Game Center */}
         <div className="flex justify-center items-center gap-4 sm:gap-8 mb-6 sm:mb-8">
           {/* Draw Pile */}
