@@ -112,7 +112,10 @@ export function GameBoard({
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              Piocher ({room.deck.length})
+              {room.drawPenalty && room.drawPenalty > 0
+                ? `Piocher ${room.drawPenalty} carte${room.drawPenalty > 1 ? 's' : ''}`
+                : `Piocher (${room.deck.length})`
+              }
             </p>
           </div>
 
