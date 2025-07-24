@@ -1,0 +1,43 @@
+export type UnoColor = 'red' | 'blue' | 'green' | 'yellow';
+export type UnoCardType = 'number' | 'skip' | 'reverse' | 'draw2' | 'wild' | 'wild_draw4';
+
+export interface UnoCard {
+  id: string;
+  color: UnoColor | 'wild';
+  type: UnoCardType;
+  value?: number; // For number cards 0-9
+}
+
+export interface Player {
+  id: string;
+  name: string;
+  cards: UnoCard[];
+  isConnected: boolean;
+}
+
+export interface GameRoom {
+  id: string;
+  name: string;
+  players: Player[];
+  maxPlayers: number;
+  isStarted: boolean;
+  currentPlayer?: string;
+  direction: 1 | -1;
+  topCard?: UnoCard;
+  deck: UnoCard[];
+  discardPile: UnoCard[];
+  winner?: string;
+}
+
+export interface GameAction {
+  type: 'play_card' | 'draw_card' | 'call_uno' | 'challenge_uno';
+  playerId: string;
+  card?: UnoCard;
+  targetPlayer?: string;
+}
+
+export interface RoomUpdate {
+  room: GameRoom;
+  action?: GameAction;
+  message?: string;
+}
