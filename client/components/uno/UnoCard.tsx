@@ -36,6 +36,9 @@ export function UnoCard({
     wild: 'bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 border-purple-700 shadow-purple-500/25'
   };
 
+  // Use wild color if available for wild cards
+  const effectiveColor = (card.color === 'wild' && wildColor) ? wildColor : card.color;
+
   const getCardContent = () => {
     if (card.type === 'number') {
       return (
