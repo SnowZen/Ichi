@@ -109,7 +109,7 @@ export function UnoCard({
       className={cn(
         "rounded-xl border-3 flex items-center justify-center font-bold text-white cursor-pointer transition-all duration-200 relative shadow-lg",
         sizeClasses[size],
-        colorClasses[card.color],
+        colorClasses[effectiveColor],
         {
           "opacity-40 cursor-not-allowed grayscale": !isPlayable,
           "ring-4 ring-white ring-offset-2 ring-offset-background shadow-2xl": isSelected,
