@@ -44,7 +44,7 @@ function generateRoomCode(): string {
 function createDeck(): UnoCard[] {
   const deck: UnoCard[] = [];
   const colors: ('red' | 'blue' | 'green' | 'yellow')[] = ['red', 'blue', 'green', 'yellow'];
-
+  
   // Add number cards (108 cards total)
   colors.forEach(color => {
     // One 0 card per color (4 cards)
@@ -54,7 +54,7 @@ function createDeck(): UnoCard[] {
       type: 'number',
       value: 0
     });
-
+    
     // Two of each number 1-9 per color (72 cards)
     for (let value = 1; value <= 9; value++) {
       for (let copy = 0; copy < 2; copy++) {
@@ -66,7 +66,7 @@ function createDeck(): UnoCard[] {
         });
       }
     }
-
+    
     // Two of each action card per color (24 cards)
     ['skip', 'reverse', 'draw2'].forEach(type => {
       for (let copy = 0; copy < 2; copy++) {
@@ -78,7 +78,7 @@ function createDeck(): UnoCard[] {
       }
     });
   });
-
+  
   // Wild cards (8 cards)
   for (let i = 0; i < 4; i++) {
     deck.push({
@@ -86,14 +86,14 @@ function createDeck(): UnoCard[] {
       color: 'wild',
       type: 'wild'
     });
-
+    
     deck.push({
       id: `wild-draw4-${i}-${Math.random().toString(36).substr(2, 9)}`,
       color: 'wild',
       type: 'wild_draw4'
     });
   }
-
+  
   return shuffleDeck(deck);
 }
 
@@ -108,14 +108,14 @@ function shuffleDeck(deck: UnoCard[]): UnoCard[] {
 
 export const createRoom: RequestHandler = (req, res) => {
   const { playerName, maxPlayers = 4 } = req.body;
-
+  
   if (!playerName || typeof playerName !== 'string') {
     return res.status(400).json({ error: 'Nom de joueur requis' });
   }
 
   const roomId = generateRoomCode();
   const playerId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
+  
   const player: Player = {
     id: playerId,
     name: playerName.trim(),
@@ -136,11 +136,11 @@ export const createRoom: RequestHandler = (req, res) => {
 
   rooms.set(roomId, room);
 
-  res.json({
-    roomId,
-    playerId,
+  res.json({ 
+    roomId, 
+    playerId, 
     playerName: playerName.trim(),
-    room
+    room 
   });
 };
 
@@ -176,11 +176,11 @@ export const joinRoom: RequestHandler = (req, res) => {
 
   room.players.push(player);
 
-  res.json({
-    roomId,
-    playerId,
+  res.json({ 
+    roomId, 
+    playerId, 
     playerName: playerName.trim(),
-    room
+    room 
   });
 };
 
@@ -239,6 +239,7 @@ export const startGame: RequestHandler = (req, res) => {
   room.topCard = topCard;
   room.currentPlayer = room.players[0].id;
   room.isStarted = true;
+  room.drawPenalty = 0;
 
   rooms.set(roomId, room);
   res.json(room);
@@ -253,6 +254,14 @@ export const playCard: RequestHandler = (req, res) => {
     return res.status(404).json({ error: 'Salon non trouvé' });
   }
 
+  if (!room.isStarted) {
+    return res.status(400).json({ error: 'La partie n\'a pas commencé' });
+  }
+
+  if (room.currentPlayer !== playerId) {
+    return res.status(400).json({ error: 'Ce n\'est pas votre tour' });
+  }
+
   const player = room.players.find(p => p.id === playerId);
   if (!player) {
     return res.status(404).json({ error: 'Joueur non trouvé' });
@@ -265,6 +274,14 @@ export const playCard: RequestHandler = (req, res) => {
 
   const card = player.cards[cardIndex];
   
+  // Check if player can play this card when there's a draw penalty
+  if (room.drawPenalty && room.drawPenalty > 0) {
+    // Player can only play +2 or +4 cards to counter
+    if (card.type !== 'draw2' && card.type !== 'wild_draw4') {
+      return res.status(400).json({ error: 'Vous devez jouer une carte +2 ou +4 pour contrer, ou piocher les cartes' });
+    }
+  }
+  
   // Remove card from player's hand
   player.cards.splice(cardIndex, 1);
   
@@ -272,9 +289,51 @@ export const playCard: RequestHandler = (req, res) => {
   room.discardPile.push(card);
   room.topCard = card;
   
+  // Handle special cards
+  let skipNextPlayer = false;
+  let reverseDirection = false;
+  
+  if (card.type === 'skip') {
+    skipNextPlayer = true;
+    room.drawPenalty = 0; // Clear penalty
+  } else if (card.type === 'reverse') {
+    reverseDirection = true;
+    room.drawPenalty = 0; // Clear penalty
+  } else if (card.type === 'draw2') {
+    // Add to existing penalty or start new one
+    room.drawPenalty = (room.drawPenalty || 0) + 2;
+  } else if (card.type === 'wild_draw4') {
+    // Add to existing penalty or start new one
+    room.drawPenalty = (room.drawPenalty || 0) + 4;
+  } else {
+    // Regular card played, clear any existing penalty
+    room.drawPenalty = 0;
+  }
+  
+  // Reverse direction if needed
+  if (reverseDirection) {
+    room.direction = room.direction === 1 ? -1 : 1;
+  }
+  
   // Move to next player
   const currentPlayerIndex = room.players.findIndex(p => p.id === playerId);
-  const nextPlayerIndex = (currentPlayerIndex + 1) % room.players.length;
+  let nextPlayerIndex;
+  
+  if (room.direction === 1) {
+    nextPlayerIndex = (currentPlayerIndex + 1) % room.players.length;
+  } else {
+    nextPlayerIndex = currentPlayerIndex === 0 ? room.players.length - 1 : currentPlayerIndex - 1;
+  }
+  
+  // Skip next player if needed
+  if (skipNextPlayer) {
+    if (room.direction === 1) {
+      nextPlayerIndex = (nextPlayerIndex + 1) % room.players.length;
+    } else {
+      nextPlayerIndex = nextPlayerIndex === 0 ? room.players.length - 1 : nextPlayerIndex - 1;
+    }
+  }
+  
   room.currentPlayer = room.players[nextPlayerIndex].id;
   
   // Check for winner
@@ -289,7 +348,7 @@ export const playCard: RequestHandler = (req, res) => {
 export const drawCard: RequestHandler = (req, res) => {
   const { roomId } = req.params;
   const { playerId } = req.body;
-
+  
   const room = rooms.get(roomId);
   if (!room) {
     return res.status(404).json({ error: 'Salon non trouvé' });
@@ -312,15 +371,34 @@ export const drawCard: RequestHandler = (req, res) => {
     return res.status(400).json({ error: 'Plus de cartes à piocher' });
   }
 
-  // Draw a card
-  const drawnCard = room.deck.pop();
-  if (drawnCard) {
-    player.cards.push(drawnCard);
+  // Check if there's a draw penalty to apply
+  if (room.drawPenalty && room.drawPenalty > 0) {
+    // Player must draw the penalty cards
+    for (let i = 0; i < room.drawPenalty; i++) {
+      const drawnCard = room.deck.pop();
+      if (drawnCard) {
+        player.cards.push(drawnCard);
+      }
+    }
+    room.drawPenalty = 0; // Clear penalty after drawing
+  } else {
+    // Normal draw - just one card
+    const drawnCard = room.deck.pop();
+    if (drawnCard) {
+      player.cards.push(drawnCard);
+    }
   }
 
   // Move to next player after drawing
   const currentPlayerIndex = room.players.findIndex(p => p.id === playerId);
-  const nextPlayerIndex = (currentPlayerIndex + 1) % room.players.length;
+  let nextPlayerIndex;
+  
+  if (room.direction === 1) {
+    nextPlayerIndex = (currentPlayerIndex + 1) % room.players.length;
+  } else {
+    nextPlayerIndex = currentPlayerIndex === 0 ? room.players.length - 1 : currentPlayerIndex - 1;
+  }
+  
   room.currentPlayer = room.players[nextPlayerIndex].id;
 
   rooms.set(roomId, room);
