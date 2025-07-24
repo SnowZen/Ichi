@@ -177,7 +177,7 @@ export function GameBoard({
             </div>
             
             <div className="flex gap-2">
-              {currentPlayer.cards.length === 2 && (
+              {currentPlayer.cards.length === 1 && room.unoCalledBy !== currentPlayer.id && (
                 <Button
                   onClick={onCallUno}
                   variant="destructive"
@@ -186,6 +186,11 @@ export function GameBoard({
                 >
                   UNO!
                 </Button>
+              )}
+              {currentPlayer.cards.length === 1 && room.unoCalledBy === currentPlayer.id && (
+                <span className="text-xs bg-green-500 text-white px-2 py-1 rounded self-center">
+                  UNO appelé ✓
+                </span>
               )}
               <span className="text-sm text-muted-foreground self-center">
                 {currentPlayer.cards.length} carte{currentPlayer.cards.length > 1 ? 's' : ''}
