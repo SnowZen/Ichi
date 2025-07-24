@@ -162,7 +162,7 @@ export default function GameRoom() {
 
   const handleCallUno = async () => {
     if (!room || !currentPlayer) return;
-    
+
     try {
       const response = await fetch(`/api/rooms/${roomId}/uno`, {
         method: 'POST',
@@ -171,12 +171,56 @@ export default function GameRoom() {
           playerId: currentPlayer.id
         })
       });
-      
+
       if (response.ok) {
-        console.log('UNO appelé!');
+        const result = await response.json();
+        if (result.room) {
+          updateRoom(result.room);
+        }
       }
     } catch (error) {
       console.error('Erreur lors de l\'appel UNO:', error);
+    }
+  };
+
+  const handleChallengeUno = async (challengedPlayerId: string) => {
+    if (!room || !currentPlayer) return;
+
+    try {
+      const response = await fetch(`/api/rooms/${roomId}/challenge`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          challengerId: currentPlayer.id,
+          challengedPlayerId
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.room) {
+          updateRoom(result.room);
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors du défi UNO:', error);
+    }
+  };
+
+  const handleReturnToLobby = async () => {
+    if (!roomId) return;
+
+    try {
+      const response = await fetch(`/api/rooms/${roomId}/restart`, {
+        method: 'POST'
+      });
+
+      if (response.ok) {
+        const updatedRoom = await response.json();
+        updateRoom(updatedRoom);
+      }
+    } catch (error) {
+      console.error('Erreur lors du retour au lobby:', error);
     }
   };
 
