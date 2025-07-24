@@ -10,7 +10,8 @@ import {
   playCard,
   drawCard,
   callUno,
-  challengeUno
+  challengeUno,
+  restartGame
 } from "./routes/rooms";
 
 export function createServer() {
