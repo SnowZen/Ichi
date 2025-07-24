@@ -32,14 +32,14 @@ export function PlayerHand({
   };
 
   return (
-    <div className={cn("flex gap-2 flex-wrap justify-center", className)}>
+    <div className={cn("flex gap-1 sm:gap-2 flex-wrap justify-center", className)}>
       {cards.map((card, index) => (
         <div
           key={card.id}
           className="relative"
-          style={{ 
-            marginLeft: index > 0 ? '-12px' : '0',
-            zIndex: cards.length - index 
+          style={{
+            marginLeft: index > 0 ? (window.innerWidth < 640 ? '-8px' : '-12px') : '0',
+            zIndex: cards.length - index
           }}
         >
           <UnoCard
