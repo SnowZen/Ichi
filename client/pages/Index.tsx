@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Users, Plus, LogIn, Trophy, Zap } from "lucide-react";
+import { usePlayerSession } from "@/hooks/usePlayerSession";
 
 export default function Index() {
   const [playerName, setPlayerName] = useState("");
@@ -14,6 +15,7 @@ export default function Index() {
   const [isCreating, setIsCreating] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
   const navigate = useNavigate();
+  const { saveSession } = usePlayerSession();
 
   const createRoom = async () => {
     if (!playerName.trim()) return;
@@ -30,7 +32,8 @@ export default function Index() {
       });
       
       if (response.ok) {
-        const { roomId } = await response.json();
+        const { roomId, playerId, playerName: name } = await response.json();
+        saveSession(playerId, roomId, name);
         navigate(`/room/${roomId}`);
       }
     } catch (error) {
@@ -52,6 +55,8 @@ export default function Index() {
       });
       
       if (response.ok) {
+        const { roomId, playerId, playerName: name } = await response.json();
+        saveSession(playerId, roomId, name);
         navigate(`/room/${roomCode}`);
       }
     } catch (error) {
