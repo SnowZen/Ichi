@@ -29,6 +29,9 @@ export interface GameRoom {
   winner?: string;
   drawPenalty?: number;
   wildColor?: UnoColor; // Color chosen for wild cards
+  unoCalledBy?: string; // Player who called UNO
+  unoChallengeTime?: number; // Timestamp when UNO can be challenged
+  isFinished?: boolean; // Game has ended
 }
 
 export interface GameAction {
