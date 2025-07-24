@@ -358,6 +358,14 @@ export const playCard: RequestHandler = (req, res) => {
   // Check for winner
   if (player.cards.length === 0) {
     room.winner = playerId;
+    room.isFinished = true;
+    room.currentPlayer = undefined; // No more turns
+  }
+
+  // Clear UNO status if player no longer has exactly 1 card
+  if (player.cards.length !== 1 && room.unoCalledBy === playerId) {
+    room.unoCalledBy = undefined;
+    room.unoChallengeTime = undefined;
   }
 
   rooms.set(roomId, room);
