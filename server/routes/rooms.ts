@@ -500,3 +500,33 @@ export const challengeUno: RequestHandler = (req, res) => {
     res.status(400).json({ error: 'Défi invalide' });
   }
 };
+
+export const restartGame: RequestHandler = (req, res) => {
+  const { roomId } = req.params;
+
+  const room = rooms.get(roomId);
+  if (!room) {
+    return res.status(404).json({ error: 'Salon non trouvé' });
+  }
+
+  // Reset room to lobby state
+  room.isStarted = false;
+  room.isFinished = false;
+  room.winner = undefined;
+  room.currentPlayer = undefined;
+  room.topCard = undefined;
+  room.deck = [];
+  room.discardPile = [];
+  room.drawPenalty = 0;
+  room.wildColor = undefined;
+  room.unoCalledBy = undefined;
+  room.unoChallengeTime = undefined;
+
+  // Clear all player cards
+  room.players.forEach(player => {
+    player.cards = [];
+  });
+
+  rooms.set(roomId, room);
+  res.json(room);
+};
