@@ -248,7 +248,7 @@ export const startGame: RequestHandler = (req, res) => {
 
 export const playCard: RequestHandler = (req, res) => {
   const { roomId } = req.params;
-  const { playerId, cardId } = req.body;
+  const { playerId, cardId, wildColor } = req.body;
   
   const room = rooms.get(roomId);
   if (!room) {
