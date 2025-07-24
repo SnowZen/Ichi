@@ -1,9 +1,15 @@
-export type UnoColor = 'red' | 'blue' | 'green' | 'yellow';
-export type UnoCardType = 'number' | 'skip' | 'reverse' | 'draw2' | 'wild' | 'wild_draw4';
+export type UnoColor = "red" | "blue" | "green" | "yellow";
+export type UnoCardType =
+  | "number"
+  | "skip"
+  | "reverse"
+  | "draw2"
+  | "wild"
+  | "wild_draw4";
 
 export interface UnoCard {
   id: string;
-  color: UnoColor | 'wild';
+  color: UnoColor | "wild";
   type: UnoCardType;
   value?: number; // For number cards 0-9
 }
@@ -35,7 +41,7 @@ export interface GameRoom {
 }
 
 export interface GameAction {
-  type: 'play_card' | 'draw_card' | 'call_uno' | 'challenge_uno';
+  type: "play_card" | "draw_card" | "call_uno" | "challenge_uno";
   playerId: string;
   card?: UnoCard;
   targetPlayer?: string;

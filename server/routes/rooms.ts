@@ -2,8 +2,8 @@ import { RequestHandler } from "express";
 
 interface UnoCard {
   id: string;
-  color: 'red' | 'blue' | 'green' | 'yellow' | 'wild';
-  type: 'number' | 'skip' | 'reverse' | 'draw2' | 'wild' | 'wild_draw4';
+  color: "red" | "blue" | "green" | "yellow" | "wild";
+  type: "number" | "skip" | "reverse" | "draw2" | "wild" | "wild_draw4";
   value?: number;
 }
 
@@ -27,7 +27,7 @@ interface GameRoom {
   discardPile: UnoCard[];
   winner?: string;
   drawPenalty?: number; // Number of cards next player must draw
-  wildColor?: 'red' | 'blue' | 'green' | 'yellow'; // Color chosen for wild cards
+  wildColor?: "red" | "blue" | "green" | "yellow"; // Color chosen for wild cards
   unoCalledBy?: string; // Player who called UNO
   unoChallengeTime?: number; // Timestamp when UNO can be challenged
   isFinished?: boolean; // Game has ended
@@ -37,8 +37,8 @@ interface GameRoom {
 const rooms = new Map<string, GameRoom>();
 
 function generateRoomCode(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let result = "";
   for (let i = 0; i < 6; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -47,57 +47,62 @@ function generateRoomCode(): string {
 
 function createDeck(): UnoCard[] {
   const deck: UnoCard[] = [];
-  const colors: ('red' | 'blue' | 'green' | 'yellow')[] = ['red', 'blue', 'green', 'yellow'];
-  
+  const colors: ("red" | "blue" | "green" | "yellow")[] = [
+    "red",
+    "blue",
+    "green",
+    "yellow",
+  ];
+
   // Add number cards (108 cards total)
-  colors.forEach(color => {
+  colors.forEach((color) => {
     // One 0 card per color (4 cards)
     deck.push({
       id: `${color}-0-${Math.random().toString(36).substr(2, 9)}`,
       color,
-      type: 'number',
-      value: 0
+      type: "number",
+      value: 0,
     });
-    
+
     // Two of each number 1-9 per color (72 cards)
     for (let value = 1; value <= 9; value++) {
       for (let copy = 0; copy < 2; copy++) {
         deck.push({
           id: `${color}-${value}-${copy}-${Math.random().toString(36).substr(2, 9)}`,
           color,
-          type: 'number',
-          value
+          type: "number",
+          value,
         });
       }
     }
-    
+
     // Two of each action card per color (24 cards)
-    ['skip', 'reverse', 'draw2'].forEach(type => {
+    ["skip", "reverse", "draw2"].forEach((type) => {
       for (let copy = 0; copy < 2; copy++) {
         deck.push({
           id: `${color}-${type}-${copy}-${Math.random().toString(36).substr(2, 9)}`,
           color,
-          type: type as any
+          type: type as any,
         });
       }
     });
   });
-  
+
   // Wild cards (8 cards)
   for (let i = 0; i < 4; i++) {
     deck.push({
       id: `wild-${i}-${Math.random().toString(36).substr(2, 9)}`,
-      color: 'wild',
-      type: 'wild'
+      color: "wild",
+      type: "wild",
     });
-    
+
     deck.push({
       id: `wild-draw4-${i}-${Math.random().toString(36).substr(2, 9)}`,
-      color: 'wild',
-      type: 'wild_draw4'
+      color: "wild",
+      type: "wild_draw4",
     });
   }
-  
+
   return shuffleDeck(deck);
 }
 
@@ -112,19 +117,19 @@ function shuffleDeck(deck: UnoCard[]): UnoCard[] {
 
 export const createRoom: RequestHandler = (req, res) => {
   const { playerName, maxPlayers = 4 } = req.body;
-  
-  if (!playerName || typeof playerName !== 'string') {
-    return res.status(400).json({ error: 'Nom de joueur requis' });
+
+  if (!playerName || typeof playerName !== "string") {
+    return res.status(400).json({ error: "Nom de joueur requis" });
   }
 
   const roomId = generateRoomCode();
   const playerId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  
+
   const player: Player = {
     id: playerId,
     name: playerName.trim(),
     cards: [],
-    isConnected: true
+    isConnected: true,
   };
 
   const room: GameRoom = {
@@ -135,65 +140,65 @@ export const createRoom: RequestHandler = (req, res) => {
     isStarted: false,
     direction: 1,
     deck: [],
-    discardPile: []
+    discardPile: [],
   };
 
   rooms.set(roomId, room);
 
-  res.json({ 
-    roomId, 
-    playerId, 
+  res.json({
+    roomId,
+    playerId,
     playerName: playerName.trim(),
-    room 
+    room,
   });
 };
 
 export const joinRoom: RequestHandler = (req, res) => {
   const { roomId } = req.params;
   const { playerName } = req.body;
-  
-  if (!playerName || typeof playerName !== 'string') {
-    return res.status(400).json({ error: 'Nom de joueur requis' });
+
+  if (!playerName || typeof playerName !== "string") {
+    return res.status(400).json({ error: "Nom de joueur requis" });
   }
 
   const room = rooms.get(roomId);
   if (!room) {
-    return res.status(404).json({ error: 'Salon non trouvé' });
+    return res.status(404).json({ error: "Salon non trouvé" });
   }
 
   if (room.isStarted) {
-    return res.status(400).json({ error: 'La partie a déjà commencé' });
+    return res.status(400).json({ error: "La partie a déjà commencé" });
   }
 
   if (room.players.length >= room.maxPlayers) {
-    return res.status(400).json({ error: 'Salon complet' });
+    return res.status(400).json({ error: "Salon complet" });
   }
 
   const playerId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  
+
   const player: Player = {
     id: playerId,
     name: playerName.trim(),
     cards: [],
-    isConnected: true
+    isConnected: true,
   };
 
   room.players.push(player);
 
-  res.json({ 
-    roomId, 
-    playerId, 
+  res.json({
+    roomId,
+    playerId,
     playerName: playerName.trim(),
-    room 
+    room,
   });
 };
 
 export const getRoom: RequestHandler = (req, res) => {
   const { roomId } = req.params;
   const room = rooms.get(roomId);
-  
+
   if (!room) {
-    return res.status(404).json({ error: 'Salon non trouvé' });
+    return res.status(404).json({ error: "Salon non trouvé" });
   }
 
   res.json(room);
@@ -202,24 +207,24 @@ export const getRoom: RequestHandler = (req, res) => {
 export const startGame: RequestHandler = (req, res) => {
   const { roomId } = req.params;
   const room = rooms.get(roomId);
-  
+
   if (!room) {
-    return res.status(404).json({ error: 'Salon non trouvé' });
+    return res.status(404).json({ error: "Salon non trouvé" });
   }
 
   if (room.isStarted) {
-    return res.status(400).json({ error: 'La partie a déjà commencé' });
+    return res.status(400).json({ error: "La partie a déjà commencé" });
   }
 
   if (room.players.length < 2) {
-    return res.status(400).json({ error: 'Au moins 2 joueurs requis' });
+    return res.status(400).json({ error: "Au moins 2 joueurs requis" });
   }
 
   // Initialize game
   const deck = createDeck();
-  
+
   // Deal 7 cards to each player
-  room.players.forEach(player => {
+  room.players.forEach((player) => {
     player.cards = [];
     for (let i = 0; i < 7; i++) {
       const card = deck.pop();
@@ -232,7 +237,7 @@ export const startGame: RequestHandler = (req, res) => {
   // Find a starting card
   let topCard: UnoCard | undefined;
   for (let i = 0; i < deck.length; i++) {
-    if (deck[i].color !== 'wild') {
+    if (deck[i].color !== "wild") {
       topCard = deck.splice(i, 1)[0];
       break;
     }
@@ -252,75 +257,82 @@ export const startGame: RequestHandler = (req, res) => {
 export const playCard: RequestHandler = (req, res) => {
   const { roomId } = req.params;
   const { playerId, cardId, wildColor } = req.body;
-  
+
   const room = rooms.get(roomId);
   if (!room) {
-    return res.status(404).json({ error: 'Salon non trouvé' });
+    return res.status(404).json({ error: "Salon non trouvé" });
   }
 
   if (!room.isStarted) {
-    return res.status(400).json({ error: 'La partie n\'a pas commencé' });
+    return res.status(400).json({ error: "La partie n'a pas commencé" });
   }
 
   if (room.currentPlayer !== playerId) {
-    return res.status(400).json({ error: 'Ce n\'est pas votre tour' });
+    return res.status(400).json({ error: "Ce n'est pas votre tour" });
   }
 
-  const player = room.players.find(p => p.id === playerId);
+  const player = room.players.find((p) => p.id === playerId);
   if (!player) {
-    return res.status(404).json({ error: 'Joueur non trouvé' });
+    return res.status(404).json({ error: "Joueur non trouvé" });
   }
 
-  const cardIndex = player.cards.findIndex(c => c.id === cardId);
+  const cardIndex = player.cards.findIndex((c) => c.id === cardId);
   if (cardIndex === -1) {
-    return res.status(400).json({ error: 'Carte non trouvée' });
+    return res.status(400).json({ error: "Carte non trouvée" });
   }
 
   const card = player.cards[cardIndex];
 
   // Check if wild card requires color selection
-  if ((card.type === 'wild' || card.type === 'wild_draw4') && !wildColor) {
-    return res.status(400).json({ error: 'Vous devez choisir une couleur pour cette carte' });
+  if ((card.type === "wild" || card.type === "wild_draw4") && !wildColor) {
+    return res
+      .status(400)
+      .json({ error: "Vous devez choisir une couleur pour cette carte" });
   }
 
   // Validate wild color if provided
-  if (wildColor && !['red', 'blue', 'green', 'yellow'].includes(wildColor)) {
-    return res.status(400).json({ error: 'Couleur invalide' });
+  if (wildColor && !["red", "blue", "green", "yellow"].includes(wildColor)) {
+    return res.status(400).json({ error: "Couleur invalide" });
   }
 
   // Check if player can play this card when there's a draw penalty
   if (room.drawPenalty && room.drawPenalty > 0) {
     // Player can only play +2 or +4 cards to counter
-    if (card.type !== 'draw2' && card.type !== 'wild_draw4') {
-      return res.status(400).json({ error: 'Vous devez jouer une carte +2 ou +4 pour contrer, ou piocher les cartes' });
+    if (card.type !== "draw2" && card.type !== "wild_draw4") {
+      return res
+        .status(400)
+        .json({
+          error:
+            "Vous devez jouer une carte +2 ou +4 pour contrer, ou piocher les cartes",
+        });
     }
   }
-  
+
   // Remove card from player's hand
   player.cards.splice(cardIndex, 1);
-  
+
   // Add card to discard pile
   room.discardPile.push(card);
   room.topCard = card;
-  
+
   // Handle special cards
   let skipNextPlayer = false;
   let reverseDirection = false;
-  
-  if (card.type === 'skip') {
+
+  if (card.type === "skip") {
     skipNextPlayer = true;
     room.drawPenalty = 0; // Clear penalty
-  } else if (card.type === 'reverse') {
+  } else if (card.type === "reverse") {
     reverseDirection = true;
     room.drawPenalty = 0; // Clear penalty
-  } else if (card.type === 'draw2') {
+  } else if (card.type === "draw2") {
     // Add to existing penalty or start new one
     room.drawPenalty = (room.drawPenalty || 0) + 2;
-  } else if (card.type === 'wild_draw4') {
+  } else if (card.type === "wild_draw4") {
     // Add to existing penalty or start new one
     room.drawPenalty = (room.drawPenalty || 0) + 4;
     room.wildColor = wildColor as any; // Set the chosen color
-  } else if (card.type === 'wild') {
+  } else if (card.type === "wild") {
     room.drawPenalty = 0; // Clear penalty
     room.wildColor = wildColor as any; // Set the chosen color
   } else {
@@ -328,33 +340,37 @@ export const playCard: RequestHandler = (req, res) => {
     room.drawPenalty = 0;
     room.wildColor = undefined;
   }
-  
+
   // Reverse direction if needed
   if (reverseDirection) {
     room.direction = room.direction === 1 ? -1 : 1;
   }
-  
+
   // Move to next player
-  const currentPlayerIndex = room.players.findIndex(p => p.id === playerId);
+  const currentPlayerIndex = room.players.findIndex((p) => p.id === playerId);
   let nextPlayerIndex;
-  
+
   if (room.direction === 1) {
     nextPlayerIndex = (currentPlayerIndex + 1) % room.players.length;
   } else {
-    nextPlayerIndex = currentPlayerIndex === 0 ? room.players.length - 1 : currentPlayerIndex - 1;
+    nextPlayerIndex =
+      currentPlayerIndex === 0
+        ? room.players.length - 1
+        : currentPlayerIndex - 1;
   }
-  
+
   // Skip next player if needed
   if (skipNextPlayer) {
     if (room.direction === 1) {
       nextPlayerIndex = (nextPlayerIndex + 1) % room.players.length;
     } else {
-      nextPlayerIndex = nextPlayerIndex === 0 ? room.players.length - 1 : nextPlayerIndex - 1;
+      nextPlayerIndex =
+        nextPlayerIndex === 0 ? room.players.length - 1 : nextPlayerIndex - 1;
     }
   }
-  
+
   room.currentPlayer = room.players[nextPlayerIndex].id;
-  
+
   // Check for winner
   if (player.cards.length === 0) {
     room.winner = playerId;
@@ -375,27 +391,27 @@ export const playCard: RequestHandler = (req, res) => {
 export const drawCard: RequestHandler = (req, res) => {
   const { roomId } = req.params;
   const { playerId } = req.body;
-  
+
   const room = rooms.get(roomId);
   if (!room) {
-    return res.status(404).json({ error: 'Salon non trouvé' });
+    return res.status(404).json({ error: "Salon non trouvé" });
   }
 
   if (!room.isStarted) {
-    return res.status(400).json({ error: 'La partie n\'a pas commencé' });
+    return res.status(400).json({ error: "La partie n'a pas commencé" });
   }
 
   if (room.currentPlayer !== playerId) {
-    return res.status(400).json({ error: 'Ce n\'est pas votre tour' });
+    return res.status(400).json({ error: "Ce n'est pas votre tour" });
   }
 
-  const player = room.players.find(p => p.id === playerId);
+  const player = room.players.find((p) => p.id === playerId);
   if (!player) {
-    return res.status(404).json({ error: 'Joueur non trouvé' });
+    return res.status(404).json({ error: "Joueur non trouvé" });
   }
 
   if (room.deck.length === 0) {
-    return res.status(400).json({ error: 'Plus de cartes à piocher' });
+    return res.status(400).json({ error: "Plus de cartes à piocher" });
   }
 
   // Check if there's a draw penalty to apply
@@ -417,15 +433,18 @@ export const drawCard: RequestHandler = (req, res) => {
   }
 
   // Move to next player after drawing
-  const currentPlayerIndex = room.players.findIndex(p => p.id === playerId);
+  const currentPlayerIndex = room.players.findIndex((p) => p.id === playerId);
   let nextPlayerIndex;
-  
+
   if (room.direction === 1) {
     nextPlayerIndex = (currentPlayerIndex + 1) % room.players.length;
   } else {
-    nextPlayerIndex = currentPlayerIndex === 0 ? room.players.length - 1 : currentPlayerIndex - 1;
+    nextPlayerIndex =
+      currentPlayerIndex === 0
+        ? room.players.length - 1
+        : currentPlayerIndex - 1;
   }
-  
+
   room.currentPlayer = room.players[nextPlayerIndex].id;
 
   rooms.set(roomId, room);
@@ -438,17 +457,19 @@ export const callUno: RequestHandler = (req, res) => {
 
   const room = rooms.get(roomId);
   if (!room) {
-    return res.status(404).json({ error: 'Salon non trouvé' });
+    return res.status(404).json({ error: "Salon non trouvé" });
   }
 
-  const player = room.players.find(p => p.id === playerId);
+  const player = room.players.find((p) => p.id === playerId);
   if (!player) {
-    return res.status(404).json({ error: 'Joueur non trouvé' });
+    return res.status(404).json({ error: "Joueur non trouvé" });
   }
 
   // Player must have exactly 1 card to call UNO
   if (player.cards.length !== 1) {
-    return res.status(400).json({ error: 'Vous devez avoir exactement 1 carte pour appeler UNO' });
+    return res
+      .status(400)
+      .json({ error: "Vous devez avoir exactement 1 carte pour appeler UNO" });
   }
 
   // Set UNO status
@@ -465,20 +486,23 @@ export const challengeUno: RequestHandler = (req, res) => {
 
   const room = rooms.get(roomId);
   if (!room) {
-    return res.status(404).json({ error: 'Salon non trouvé' });
+    return res.status(404).json({ error: "Salon non trouvé" });
   }
 
-  const challenger = room.players.find(p => p.id === challengerId);
-  const challenged = room.players.find(p => p.id === challengedPlayerId);
+  const challenger = room.players.find((p) => p.id === challengerId);
+  const challenged = room.players.find((p) => p.id === challengedPlayerId);
 
   if (!challenger || !challenged) {
-    return res.status(404).json({ error: 'Joueur non trouvé' });
+    return res.status(404).json({ error: "Joueur non trouvé" });
   }
 
   // Check if challenge is valid (within time limit and player has 1 card without UNO call)
-  if (challenged.cards.length === 1 && room.unoCalledBy !== challengedPlayerId &&
-      room.unoChallengeTime && Date.now() <= room.unoChallengeTime) {
-
+  if (
+    challenged.cards.length === 1 &&
+    room.unoCalledBy !== challengedPlayerId &&
+    room.unoChallengeTime &&
+    Date.now() <= room.unoChallengeTime
+  ) {
     // Challenge successful - challenged player draws 2 cards
     for (let i = 0; i < 2; i++) {
       const card = room.deck.pop();
@@ -494,10 +518,10 @@ export const challengeUno: RequestHandler = (req, res) => {
     res.json({
       success: true,
       message: `${challenger.name} a défié ${challenged.name} avec succès! ${challenged.name} pioche 2 cartes.`,
-      room
+      room,
     });
   } else {
-    res.status(400).json({ error: 'Défi invalide' });
+    res.status(400).json({ error: "Défi invalide" });
   }
 };
 
@@ -506,7 +530,7 @@ export const restartGame: RequestHandler = (req, res) => {
 
   const room = rooms.get(roomId);
   if (!room) {
-    return res.status(404).json({ error: 'Salon non trouvé' });
+    return res.status(404).json({ error: "Salon non trouvé" });
   }
 
   // Reset room to lobby state
@@ -523,7 +547,7 @@ export const restartGame: RequestHandler = (req, res) => {
   room.unoChallengeTime = undefined;
 
   // Clear all player cards
-  room.players.forEach(player => {
+  room.players.forEach((player) => {
     player.cards = [];
   });
 

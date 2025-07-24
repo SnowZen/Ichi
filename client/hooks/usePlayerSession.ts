@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface PlayerSession {
   playerId: string;
@@ -11,30 +11,34 @@ export function usePlayerSession() {
 
   useEffect(() => {
     // Load session from localStorage
-    const savedSession = localStorage.getItem('unoPlayerSession');
+    const savedSession = localStorage.getItem("unoPlayerSession");
     if (savedSession) {
       try {
         setSession(JSON.parse(savedSession));
       } catch (err) {
-        localStorage.removeItem('unoPlayerSession');
+        localStorage.removeItem("unoPlayerSession");
       }
     }
   }, []);
 
-  const saveSession = (playerId: string, roomId: string, playerName: string) => {
+  const saveSession = (
+    playerId: string,
+    roomId: string,
+    playerName: string,
+  ) => {
     const newSession = { playerId, roomId, playerName };
     setSession(newSession);
-    localStorage.setItem('unoPlayerSession', JSON.stringify(newSession));
+    localStorage.setItem("unoPlayerSession", JSON.stringify(newSession));
   };
 
   const clearSession = () => {
     setSession(null);
-    localStorage.removeItem('unoPlayerSession');
+    localStorage.removeItem("unoPlayerSession");
   };
 
   return {
     session,
     saveSession,
-    clearSession
+    clearSession,
   };
 }

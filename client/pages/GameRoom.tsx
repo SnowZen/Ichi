@@ -19,8 +19,11 @@ export default function GameRoom() {
   const [pendingWildCard, setPendingWildCard] = useState<UnoCard | null>(null);
 
   // Find current player based on session
-  const currentPlayer = room?.players.find(p => p.id === session?.playerId) || null;
-  const isHost = room?.players.length ? room.players[0].id === session?.playerId : false;
+  const currentPlayer =
+    room?.players.find((p) => p.id === session?.playerId) || null;
+  const isHost = room?.players.length
+    ? room.players[0].id === session?.playerId
+    : false;
 
   // Calculate playable cards when room updates
   useEffect(() => {
@@ -31,34 +34,44 @@ export default function GameRoom() {
 
     // If there's a draw penalty, player can only play +2 or +4 cards
     if (room.drawPenalty && room.drawPenalty > 0) {
-      const playable = currentPlayer.cards.filter(card => {
-        return card.type === 'draw2' || card.type === 'wild_draw4';
-      }).map(card => card.id);
+      const playable = currentPlayer.cards
+        .filter((card) => {
+          return card.type === "draw2" || card.type === "wild_draw4";
+        })
+        .map((card) => card.id);
       setPlayableCards(playable);
       return;
     }
 
     // Normal playable card logic
-    const playable = currentPlayer.cards.filter(card => {
-      // Wild cards can always be played
-      if (card.color === 'wild') return true;
+    const playable = currentPlayer.cards
+      .filter((card) => {
+        // Wild cards can always be played
+        if (card.color === "wild") return true;
 
-      // If top card is wild, use the chosen wild color
-      const effectiveColor = room.topCard!.color === 'wild' ? room.wildColor : room.topCard!.color;
+        // If top card is wild, use the chosen wild color
+        const effectiveColor =
+          room.topCard!.color === "wild" ? room.wildColor : room.topCard!.color;
 
-      // Match color (including wild color)
-      if (card.color === effectiveColor) return true;
+        // Match color (including wild color)
+        if (card.color === effectiveColor) return true;
 
-      // Match number/type
-      if (card.type === 'number' && room.topCard!.type === 'number') {
-        return card.value === room.topCard!.value;
-      }
+        // Match number/type
+        if (card.type === "number" && room.topCard!.type === "number") {
+          return card.value === room.topCard!.value;
+        }
 
-      // Match action type (but not for wild cards)
-      if (card.type === room.topCard!.type && card.type !== 'number' && room.topCard!.color !== 'wild') return true;
+        // Match action type (but not for wild cards)
+        if (
+          card.type === room.topCard!.type &&
+          card.type !== "number" &&
+          room.topCard!.color !== "wild"
+        )
+          return true;
 
-      return false;
-    }).map(card => card.id);
+        return false;
+      })
+      .map((card) => card.id);
 
     setPlayableCards(playable);
   }, [room, currentPlayer]);
@@ -66,39 +79,44 @@ export default function GameRoom() {
   // Redirect if no session
   useEffect(() => {
     if (!isLoading && !session) {
-      navigate('/');
+      navigate("/");
     }
   }, [session, isLoading, navigate]);
 
   const handleStartGame = async () => {
     if (!roomId) return;
-    
+
     try {
       const response = await fetch(`/api/rooms/${roomId}/start`, {
-        method: 'POST'
+        method: "POST",
       });
-      
+
       if (response.ok) {
         const updatedRoom = await response.json();
         updateRoom(updatedRoom);
       }
     } catch (error) {
-      console.error('Erreur lors du démarrage de la partie:', error);
+      console.error("Erreur lors du démarrage de la partie:", error);
     }
   };
 
   const handleLeaveRoom = () => {
     clearSession();
-    navigate('/');
+    navigate("/");
   };
 
   const handleCardPlay = async (card: UnoCard, wildColor?: UnoColor) => {
-    if (!room || !currentPlayer || room.currentPlayer !== currentPlayer.id || !playableCards.includes(card.id)) {
+    if (
+      !room ||
+      !currentPlayer ||
+      room.currentPlayer !== currentPlayer.id ||
+      !playableCards.includes(card.id)
+    ) {
       return;
     }
 
     // If it's a wild card and no color is provided, show color picker
-    if ((card.type === 'wild' || card.type === 'wild_draw4') && !wildColor) {
+    if ((card.type === "wild" || card.type === "wild_draw4") && !wildColor) {
       setPendingWildCard(card);
       setShowColorPicker(true);
       return;
@@ -106,13 +124,13 @@ export default function GameRoom() {
 
     try {
       const response = await fetch(`/api/rooms/${roomId}/play`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           playerId: currentPlayer.id,
           cardId: card.id,
-          wildColor: wildColor
-        })
+          wildColor: wildColor,
+        }),
       });
 
       if (response.ok) {
@@ -123,7 +141,7 @@ export default function GameRoom() {
         setShowColorPicker(false);
       }
     } catch (error) {
-      console.error('Erreur lors du jeu de carte:', error);
+      console.error("Erreur lors du jeu de carte:", error);
     }
   };
 
@@ -140,23 +158,24 @@ export default function GameRoom() {
   };
 
   const handleDrawCard = async () => {
-    if (!room || !currentPlayer || room.currentPlayer !== currentPlayer.id) return;
-    
+    if (!room || !currentPlayer || room.currentPlayer !== currentPlayer.id)
+      return;
+
     try {
       const response = await fetch(`/api/rooms/${roomId}/draw`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          playerId: currentPlayer.id
-        })
+          playerId: currentPlayer.id,
+        }),
       });
-      
+
       if (response.ok) {
         const updatedRoom = await response.json();
         updateRoom(updatedRoom);
       }
     } catch (error) {
-      console.error('Erreur lors du piochage:', error);
+      console.error("Erreur lors du piochage:", error);
     }
   };
 
@@ -165,11 +184,11 @@ export default function GameRoom() {
 
     try {
       const response = await fetch(`/api/rooms/${roomId}/uno`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          playerId: currentPlayer.id
-        })
+          playerId: currentPlayer.id,
+        }),
       });
 
       if (response.ok) {
@@ -179,7 +198,7 @@ export default function GameRoom() {
         }
       }
     } catch (error) {
-      console.error('Erreur lors de l\'appel UNO:', error);
+      console.error("Erreur lors de l'appel UNO:", error);
     }
   };
 
@@ -188,12 +207,12 @@ export default function GameRoom() {
 
     try {
       const response = await fetch(`/api/rooms/${roomId}/challenge`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           challengerId: currentPlayer.id,
-          challengedPlayerId
-        })
+          challengedPlayerId,
+        }),
       });
 
       if (response.ok) {
@@ -203,7 +222,7 @@ export default function GameRoom() {
         }
       }
     } catch (error) {
-      console.error('Erreur lors du défi UNO:', error);
+      console.error("Erreur lors du défi UNO:", error);
     }
   };
 
@@ -212,7 +231,7 @@ export default function GameRoom() {
 
     try {
       const response = await fetch(`/api/rooms/${roomId}/restart`, {
-        method: 'POST'
+        method: "POST",
       });
 
       if (response.ok) {
@@ -220,7 +239,7 @@ export default function GameRoom() {
         updateRoom(updatedRoom);
       }
     } catch (error) {
-      console.error('Erreur lors du retour au lobby:', error);
+      console.error("Erreur lors du retour au lobby:", error);
     }
   };
 
@@ -242,7 +261,7 @@ export default function GameRoom() {
           <h2 className="text-2xl font-bold text-destructive mb-2">Erreur</h2>
           <p className="text-muted-foreground mb-4">{error}</p>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate("/")}
             className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
           >
             Retour à l'accueil
@@ -256,9 +275,11 @@ export default function GameRoom() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-card to-background flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-destructive mb-2">Salon introuvable</h2>
+          <h2 className="text-2xl font-bold text-destructive mb-2">
+            Salon introuvable
+          </h2>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate("/")}
             className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
           >
             Retour à l'accueil

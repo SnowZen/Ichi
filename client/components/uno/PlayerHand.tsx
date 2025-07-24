@@ -21,7 +21,7 @@ export function PlayerHand({
   isCurrentPlayer = false,
   playableCards = [],
   className,
-  showBacks = false
+  showBacks = false,
 }: PlayerHandProps) {
   const handleCardClick = (card: UnoCardType) => {
     if (!isCurrentPlayer) return;
@@ -40,16 +40,16 @@ export function PlayerHand({
   };
 
   return (
-    <div className={cn("flex gap-1 sm:gap-2 flex-wrap justify-center", className)}>
+    <div
+      className={cn("flex gap-1 sm:gap-2 flex-wrap justify-center", className)}
+    >
       {cards.map((card, index) => (
         <div
           key={card.id}
           className="relative"
-          className={cn(
-            index > 0 && "-ml-2 sm:-ml-3"
-          )}
+          className={cn(index > 0 && "-ml-2 sm:-ml-3")}
           style={{
-            zIndex: cards.length - index
+            zIndex: cards.length - index,
           }}
         >
           <UnoCard
@@ -61,7 +61,10 @@ export function PlayerHand({
             showBack={showBacks}
             className={cn({
               "hover:z-50": isCurrentPlayer,
-              "ring-2 ring-green-400": isCurrentPlayer && playableCards.includes(card.id) && selectedCard !== card.id
+              "ring-2 ring-green-400":
+                isCurrentPlayer &&
+                playableCards.includes(card.id) &&
+                selectedCard !== card.id,
             })}
           />
         </div>

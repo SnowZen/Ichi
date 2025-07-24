@@ -11,7 +11,7 @@ import {
   drawCard,
   callUno,
   challengeUno,
-  restartGame
+  restartGame,
 } from "./routes/rooms";
 
 export function createServer() {

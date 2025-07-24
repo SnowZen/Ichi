@@ -15,7 +15,13 @@ interface RoomLobbyProps {
   isHost: boolean;
 }
 
-export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isHost }: RoomLobbyProps) {
+export function RoomLobby({
+  room,
+  currentPlayerId,
+  onStartGame,
+  onLeaveRoom,
+  isHost,
+}: RoomLobbyProps) {
   const [copied, setCopied] = useState(false);
   const roomUrl = `${window.location.origin}/room/${room.id}`;
 
@@ -26,11 +32,11 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       // Fallback for older browsers
-      const textArea = document.createElement('textarea');
+      const textArea = document.createElement("textarea");
       textArea.value = room.id;
       document.body.appendChild(textArea);
       textArea.select();
-      document.execCommand('copy');
+      document.execCommand("copy");
       document.body.removeChild(textArea);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -46,9 +52,7 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
           <h1 className="text-4xl font-bold text-primary mb-2">
             Salon: {room.name}
           </h1>
-          <p className="text-muted-foreground">
-            En attente des joueurs...
-          </p>
+          <p className="text-muted-foreground">En attente des joueurs...</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 mb-8">
@@ -58,7 +62,7 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
               <Users className="w-6 h-6" />
               Informations du salon
             </h3>
-            
+
             <div className="space-y-3">
               <div className="flex flex-col gap-2">
                 <span className="font-medium">Code du salon:</span>
@@ -72,19 +76,26 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
                     variant="outline"
                     className="px-4 py-3 border-primary/30 hover:bg-primary hover:text-primary-foreground"
                   >
-                    {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                    {copied ? (
+                      <Check className="w-5 h-5" />
+                    ) : (
+                      <Copy className="w-5 h-5" />
+                    )}
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground text-center">
-                  Partagez ce code avec vos amis pour qu'ils rejoignent la partie
+                  Partagez ce code avec vos amis pour qu'ils rejoignent la
+                  partie
                 </p>
               </div>
-              
+
               <div className="flex justify-between items-center">
                 <span>Joueurs:</span>
-                <span>{room.players.length}/{room.maxPlayers}</span>
+                <span>
+                  {room.players.length}/{room.maxPlayers}
+                </span>
               </div>
-              
+
               <div className="flex justify-between items-center">
                 <span>Statut:</span>
                 <Badge variant={room.isStarted ? "destructive" : "secondary"}>
@@ -124,7 +135,7 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
             <h3 className="text-xl font-bold mb-6 text-accent">
               👥 Joueurs connectés ({room.players.length}/{room.maxPlayers})
             </h3>
-            
+
             <div className="space-y-3">
               {room.players.map((player, index) => (
                 <div
@@ -133,14 +144,16 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
                     "flex items-center justify-between p-4 rounded-lg border-2 transition-all duration-200",
                     player.id === currentPlayerId
                       ? "bg-primary/15 border-primary shadow-lg shadow-primary/20"
-                      : "bg-card/60 border-muted hover:border-accent/50"
+                      : "bg-card/60 border-muted hover:border-accent/50",
                   )}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={cn(
-                      "w-4 h-4 rounded-full border-2 border-white shadow-sm",
-                      player.isConnected ? "bg-green-500" : "bg-red-500"
-                    )} />
+                    <div
+                      className={cn(
+                        "w-4 h-4 rounded-full border-2 border-white shadow-sm",
+                        player.isConnected ? "bg-green-500" : "bg-red-500",
+                      )}
+                    />
                     <span className="font-semibold text-lg">{player.name}</span>
                     {player.id === currentPlayerId && (
                       <Badge variant="default" className="text-xs font-bold">
@@ -148,27 +161,34 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
                       </Badge>
                     )}
                     {index === 0 && (
-                      <Badge variant="secondary" className="text-xs font-bold border border-yellow-400 bg-yellow-50 text-yellow-800">
+                      <Badge
+                        variant="secondary"
+                        className="text-xs font-bold border border-yellow-400 bg-yellow-50 text-yellow-800"
+                      >
                         👑 Hôte
                       </Badge>
                     )}
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className={cn(
-                      "text-sm font-medium px-2 py-1 rounded",
-                      player.isConnected
-                        ? "text-green-700 bg-green-100"
-                        : "text-red-700 bg-red-100"
-                    )}>
+                    <span
+                      className={cn(
+                        "text-sm font-medium px-2 py-1 rounded",
+                        player.isConnected
+                          ? "text-green-700 bg-green-100"
+                          : "text-red-700 bg-red-100",
+                      )}
+                    >
                       {player.isConnected ? "🟢 En ligne" : "🔴 Hors ligne"}
                     </span>
                   </div>
                 </div>
               ))}
-              
+
               {/* Empty slots */}
-              {Array.from({ length: room.maxPlayers - room.players.length }).map((_, index) => (
+              {Array.from({
+                length: room.maxPlayers - room.players.length,
+              }).map((_, index) => (
                 <div
                   key={`empty-${index}`}
                   className="flex items-center justify-center p-4 rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/10"
@@ -177,7 +197,9 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
                     <div className="w-8 h-8 rounded-full border-2 border-dashed border-muted-foreground/50 flex items-center justify-center">
                       <span className="text-lg">👤</span>
                     </div>
-                    <span className="font-medium">En attente d'un joueur...</span>
+                    <span className="font-medium">
+                      En attente d'un joueur...
+                    </span>
                   </div>
                 </div>
               ))}
@@ -212,10 +234,10 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
           {!canStartGame && (
             <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
               <p className="text-yellow-800 dark:text-yellow-200 font-medium">
-                ℹ️ {room.players.length < 2
+                ℹ️{" "}
+                {room.players.length < 2
                   ? "Au moins 2 joueurs sont nécessaires pour commencer"
-                  : "Seul l'hôte peut commencer la partie"
-                }
+                  : "Seul l'hôte peut commencer la partie"}
               </p>
             </div>
           )}

@@ -19,25 +19,25 @@ export default function Index() {
 
   const createRoom = async () => {
     if (!playerName.trim()) return;
-    
+
     setIsCreating(true);
     try {
-      const response = await fetch('/api/rooms', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+      const response = await fetch("/api/rooms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           playerName: playerName.trim(),
-          maxPlayers: 4 
-        })
+          maxPlayers: 4,
+        }),
       });
-      
+
       if (response.ok) {
         const { roomId, playerId, playerName: name } = await response.json();
         saveSession(playerId, roomId, name);
         navigate(`/room/${roomId}`);
       }
     } catch (error) {
-      console.error('Erreur lors de la création du salon:', error);
+      console.error("Erreur lors de la création du salon:", error);
     } finally {
       setIsCreating(false);
     }
@@ -45,22 +45,22 @@ export default function Index() {
 
   const joinRoom = async () => {
     if (!playerName.trim() || !roomCode.trim()) return;
-    
+
     setIsJoining(true);
     try {
       const response = await fetch(`/api/rooms/${roomCode}/join`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ playerName: playerName.trim() })
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ playerName: playerName.trim() }),
       });
-      
+
       if (response.ok) {
         const { roomId, playerId, playerName: name } = await response.json();
         saveSession(playerId, roomId, name);
         navigate(`/room/${roomCode}`);
       }
     } catch (error) {
-      console.error('Erreur lors de la connexion au salon:', error);
+      console.error("Erreur lors de la connexion au salon:", error);
     } finally {
       setIsJoining(false);
     }
@@ -141,7 +141,9 @@ export default function Index() {
               <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <LogIn className="w-8 h-8 text-accent" />
               </div>
-              <h2 className="text-2xl font-semibold mb-2">Rejoindre un salon</h2>
+              <h2 className="text-2xl font-semibold mb-2">
+                Rejoindre un salon
+              </h2>
               <p className="text-muted-foreground">
                 Rejoignez une partie existante avec le code
               </p>
@@ -187,7 +189,9 @@ export default function Index() {
 
         {/* How to Play */}
         <Card className="p-8 bg-card/50 backdrop-blur-sm">
-          <h3 className="text-2xl font-semibold mb-6 text-center">Comment jouer</h3>
+          <h3 className="text-2xl font-semibold mb-6 text-center">
+            Comment jouer
+          </h3>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="w-12 h-12 bg-uno-red rounded-full flex items-center justify-center mx-auto mb-3 text-white font-bold">
@@ -198,17 +202,18 @@ export default function Index() {
                 Créez un nouveau salon ou rejoignez-en un avec un code
               </p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-12 h-12 bg-uno-blue rounded-full flex items-center justify-center mx-auto mb-3 text-white font-bold">
                 2
               </div>
               <h4 className="font-semibold mb-2">Jouez vos cartes</h4>
               <p className="text-sm text-muted-foreground">
-                Associez les couleurs ou les numéros pour vous débarrasser de vos cartes
+                Associez les couleurs ou les numéros pour vous débarrasser de
+                vos cartes
               </p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-12 h-12 bg-uno-green rounded-full flex items-center justify-center mx-auto mb-3 text-white font-bold">
                 3

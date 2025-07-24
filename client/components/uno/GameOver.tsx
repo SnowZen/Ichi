@@ -9,33 +9,42 @@ interface GameOverProps {
   onReturnToLobby: () => void;
 }
 
-export function GameOver({ room, currentPlayer, onReturnToLobby }: GameOverProps) {
-  const winner = room.players.find(p => p.id === room.winner);
+export function GameOver({
+  room,
+  currentPlayer,
+  onReturnToLobby,
+}: GameOverProps) {
+  const winner = room.players.find((p) => p.id === room.winner);
   const isWinner = room.winner === currentPlayer.id;
 
   // Sort players by number of cards (ascending)
-  const sortedPlayers = [...room.players].sort((a, b) => a.cards.length - b.cards.length);
+  const sortedPlayers = [...room.players].sort(
+    (a, b) => a.cards.length - b.cards.length,
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-card to-background flex items-center justify-center p-4">
       <Card className="p-8 bg-card/90 backdrop-blur-sm border-2 border-primary/20 shadow-2xl max-w-md w-full text-center">
         {/* Winner celebration */}
         <div className="mb-6">
-          <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 ${
-            isWinner ? 'bg-yellow-500' : 'bg-muted'
-          }`}>
-            <Trophy className={`w-10 h-10 ${isWinner ? 'text-yellow-900' : 'text-muted-foreground'}`} />
+          <div
+            className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 ${
+              isWinner ? "bg-yellow-500" : "bg-muted"
+            }`}
+          >
+            <Trophy
+              className={`w-10 h-10 ${isWinner ? "text-yellow-900" : "text-muted-foreground"}`}
+            />
           </div>
-          
+
           <h1 className="text-3xl font-bold mb-2">
-            {isWinner ? 'Félicitations !' : 'Partie terminée'}
+            {isWinner ? "Félicitations !" : "Partie terminée"}
           </h1>
-          
+
           <p className="text-xl text-muted-foreground mb-4">
-            {isWinner 
-              ? 'Vous avez gagné la partie !' 
-              : `${winner?.name || 'Joueur'} a gagné !`
-            }
+            {isWinner
+              ? "Vous avez gagné la partie !"
+              : `${winner?.name || "Joueur"} a gagné !`}
           </p>
         </div>
 
@@ -45,21 +54,25 @@ export function GameOver({ room, currentPlayer, onReturnToLobby }: GameOverProps
             <Users className="w-5 h-5" />
             Classement final
           </h3>
-          
+
           <div className="space-y-2">
             {sortedPlayers.map((player, index) => (
               <div
                 key={player.id}
                 className={`flex items-center justify-between p-3 rounded-lg ${
-                  index === 0 
-                    ? 'bg-yellow-500/20 border border-yellow-500/50' 
-                    : 'bg-muted/50'
+                  index === 0
+                    ? "bg-yellow-500/20 border border-yellow-500/50"
+                    : "bg-muted/50"
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold ${
-                    index === 0 ? 'bg-yellow-500 text-yellow-900' : 'bg-muted text-muted-foreground'
-                  }`}>
+                  <span
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold ${
+                      index === 0
+                        ? "bg-yellow-500 text-yellow-900"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
                     {index + 1}
                   </span>
                   <span className="font-medium">{player.name}</span>
@@ -70,7 +83,8 @@ export function GameOver({ room, currentPlayer, onReturnToLobby }: GameOverProps
                   )}
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  {player.cards.length} carte{player.cards.length > 1 ? 's' : ''}
+                  {player.cards.length} carte
+                  {player.cards.length > 1 ? "s" : ""}
                 </span>
               </div>
             ))}
@@ -87,7 +101,7 @@ export function GameOver({ room, currentPlayer, onReturnToLobby }: GameOverProps
             <RotateCcw className="w-5 h-5 mr-2" />
             Retourner au lobby
           </Button>
-          
+
           <p className="text-xs text-muted-foreground">
             Vous pouvez démarrer une nouvelle partie dans le lobby
           </p>

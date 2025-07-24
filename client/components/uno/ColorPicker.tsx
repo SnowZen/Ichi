@@ -10,10 +10,18 @@ interface ColorPickerProps {
 
 export function ColorPicker({ onColorSelect, onCancel }: ColorPickerProps) {
   const colors: { name: UnoColor; label: string; bgClass: string }[] = [
-    { name: 'red', label: 'Rouge', bgClass: 'bg-red-500 hover:bg-red-600' },
-    { name: 'blue', label: 'Bleu', bgClass: 'bg-blue-500 hover:bg-blue-600' },
-    { name: 'green', label: 'Vert', bgClass: 'bg-green-500 hover:bg-green-600' },
-    { name: 'yellow', label: 'Jaune', bgClass: 'bg-yellow-500 hover:bg-yellow-600' }
+    { name: "red", label: "Rouge", bgClass: "bg-red-500 hover:bg-red-600" },
+    { name: "blue", label: "Bleu", bgClass: "bg-blue-500 hover:bg-blue-600" },
+    {
+      name: "green",
+      label: "Vert",
+      bgClass: "bg-green-500 hover:bg-green-600",
+    },
+    {
+      name: "yellow",
+      label: "Jaune",
+      bgClass: "bg-yellow-500 hover:bg-yellow-600",
+    },
   ];
 
   return (
@@ -25,7 +33,7 @@ export function ColorPicker({ onColorSelect, onCancel }: ColorPickerProps) {
             Sélectionnez la couleur pour votre carte Wild
           </p>
         </div>
-        
+
         <div className="grid grid-cols-2 gap-3 mb-4">
           {colors.map((color) => (
             <Button
@@ -33,20 +41,16 @@ export function ColorPicker({ onColorSelect, onCancel }: ColorPickerProps) {
               onClick={() => onColorSelect(color.name)}
               className={cn(
                 "h-16 text-white font-bold text-lg shadow-lg transition-all duration-200 hover:scale-105",
-                color.bgClass
+                color.bgClass,
               )}
             >
               {color.label}
             </Button>
           ))}
         </div>
-        
+
         {onCancel && (
-          <Button
-            onClick={onCancel}
-            variant="outline"
-            className="w-full"
-          >
+          <Button onClick={onCancel} variant="outline" className="w-full">
             Annuler
           </Button>
         )}

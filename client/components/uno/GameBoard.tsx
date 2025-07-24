@@ -26,9 +26,9 @@ export function GameBoard({
   onChallengeUno,
   selectedCard,
   onCardSelect,
-  playableCards = []
+  playableCards = [],
 }: GameBoardProps) {
-  const otherPlayers = room.players.filter(p => p.id !== currentPlayer.id);
+  const otherPlayers = room.players.filter((p) => p.id !== currentPlayer.id);
   const isMyTurn = room.currentPlayer === currentPlayer.id;
 
   return (
@@ -40,43 +40,52 @@ export function GameBoard({
             <Card key={player.id} className="p-4 bg-card/50 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-              <div className={cn(
-                "w-3 h-3 rounded-full",
-                player.isConnected ? "bg-green-500" : "bg-red-500"
-              )} />
-              <span className="font-medium">{player.name}</span>
-              {room.currentPlayer === player.id && (
-                <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
-                  Tour
-                </span>
-              )}
-              {player.cards.length === 1 && room.unoCalledBy !== player.id && room.unoChallengeTime && (
-                <Button
-                  onClick={() => onChallengeUno?.(player.id)}
-                  size="sm"
-                  variant="destructive"
-                  className="text-xs px-2 py-1 h-auto animate-pulse"
-                >
-                  Contre UNO!
-                </Button>
-              )}
-            </div>
+                  <div
+                    className={cn(
+                      "w-3 h-3 rounded-full",
+                      player.isConnected ? "bg-green-500" : "bg-red-500",
+                    )}
+                  />
+                  <span className="font-medium">{player.name}</span>
+                  {room.currentPlayer === player.id && (
+                    <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
+                      Tour
+                    </span>
+                  )}
+                  {player.cards.length === 1 &&
+                    room.unoCalledBy !== player.id &&
+                    room.unoChallengeTime && (
+                      <Button
+                        onClick={() => onChallengeUno?.(player.id)}
+                        size="sm"
+                        variant="destructive"
+                        className="text-xs px-2 py-1 h-auto animate-pulse"
+                      >
+                        Contre UNO!
+                      </Button>
+                    )}
+                </div>
                 <span className="text-sm text-muted-foreground">
-                  {player.cards.length} carte{player.cards.length > 1 ? 's' : ''}
+                  {player.cards.length} carte
+                  {player.cards.length > 1 ? "s" : ""}
                 </span>
               </div>
-              
+
               {/* Player's card backs */}
               <div className="flex gap-2 flex-wrap">
-                {player.cards.slice(0, Math.min(7, player.cards.length)).map((_, index) => (
-                  <div
-                    key={index}
-                    className="w-10 h-14 bg-gradient-to-br from-slate-600 via-slate-700 to-slate-900 rounded-lg border-2 border-slate-500 relative flex items-center justify-center shadow-lg"
-                  >
-                    <div className="absolute inset-1 border border-slate-400/30 rounded-md" />
-                    <span className="text-slate-300 text-xs font-bold">UNO</span>
-                  </div>
-                ))}
+                {player.cards
+                  .slice(0, Math.min(7, player.cards.length))
+                  .map((_, index) => (
+                    <div
+                      key={index}
+                      className="w-10 h-14 bg-gradient-to-br from-slate-600 via-slate-700 to-slate-900 rounded-lg border-2 border-slate-500 relative flex items-center justify-center shadow-lg"
+                    >
+                      <div className="absolute inset-1 border border-slate-400/30 rounded-md" />
+                      <span className="text-slate-300 text-xs font-bold">
+                        UNO
+                      </span>
+                    </div>
+                  ))}
                 {player.cards.length > 7 && (
                   <span className="self-center text-xs text-muted-foreground ml-2">
                     +{player.cards.length - 7}
@@ -92,7 +101,8 @@ export function GameBoard({
           <div className="text-center mb-4">
             <div className="bg-destructive/20 border border-destructive rounded-lg p-3 max-w-md mx-auto">
               <p className="text-destructive font-semibold">
-                ⚠️ Pénalité active : {room.drawPenalty} carte{room.drawPenalty > 1 ? 's' : ''} à piocher
+                ⚠️ Pénalité active : {room.drawPenalty} carte
+                {room.drawPenalty > 1 ? "s" : ""} à piocher
               </p>
               <p className="text-sm text-destructive/80">
                 Jouez une carte +2 ou +4 pour contrer, ou piochez les cartes
@@ -113,8 +123,8 @@ export function GameBoard({
                   "w-16 h-24 sm:w-20 sm:h-28 bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl border-2 border-slate-400 relative flex items-center justify-center cursor-pointer transition-transform shadow-lg",
                   {
                     "hover:scale-105": isMyTurn,
-                    "opacity-50 cursor-not-allowed": !isMyTurn
-                  }
+                    "opacity-50 cursor-not-allowed": !isMyTurn,
+                  },
                 )}
                 onClick={isMyTurn ? onDrawCard : undefined}
               >
@@ -125,9 +135,8 @@ export function GameBoard({
             </div>
             <p className="text-xs text-muted-foreground">
               {room.drawPenalty && room.drawPenalty > 0
-                ? `Piocher ${room.drawPenalty} carte${room.drawPenalty > 1 ? 's' : ''}`
-                : `Piocher (${room.deck.length})`
-              }
+                ? `Piocher ${room.drawPenalty} carte${room.drawPenalty > 1 ? "s" : ""}`
+                : `Piocher (${room.deck.length})`}
             </p>
           </div>
 
@@ -143,11 +152,16 @@ export function GameBoard({
             )}
             <p className="text-sm text-muted-foreground mt-2">
               Pile de défausse
-              {room.wildColor && room.topCard?.color === 'wild' && (
+              {room.wildColor && room.topCard?.color === "wild" && (
                 <span className="block text-xs">
-                  Couleur: {room.wildColor === 'red' ? 'Rouge' :
-                            room.wildColor === 'blue' ? 'Bleu' :
-                            room.wildColor === 'green' ? 'Vert' : 'Jaune'}
+                  Couleur:{" "}
+                  {room.wildColor === "red"
+                    ? "Rouge"
+                    : room.wildColor === "blue"
+                      ? "Bleu"
+                      : room.wildColor === "green"
+                        ? "Vert"
+                        : "Jaune"}
                 </span>
               )}
             </p>
@@ -156,11 +170,9 @@ export function GameBoard({
           {/* Game Info */}
           <div className="text-center">
             <div className="text-2xl font-bold text-primary mb-2">
-              {room.direction === 1 ? '→' : '←'}
+              {room.direction === 1 ? "→" : "←"}
             </div>
-            <p className="text-sm text-muted-foreground">
-              Direction
-            </p>
+            <p className="text-sm text-muted-foreground">Direction</p>
           </div>
         </div>
 
@@ -175,25 +187,28 @@ export function GameBoard({
                 </span>
               )}
             </div>
-            
+
             <div className="flex gap-2">
-              {currentPlayer.cards.length === 1 && room.unoCalledBy !== currentPlayer.id && (
-                <Button
-                  onClick={onCallUno}
-                  variant="destructive"
-                  size="sm"
-                  className="animate-pulse"
-                >
-                  UNO!
-                </Button>
-              )}
-              {currentPlayer.cards.length === 1 && room.unoCalledBy === currentPlayer.id && (
-                <span className="text-xs bg-green-500 text-white px-2 py-1 rounded self-center">
-                  UNO appelé ✓
-                </span>
-              )}
+              {currentPlayer.cards.length === 1 &&
+                room.unoCalledBy !== currentPlayer.id && (
+                  <Button
+                    onClick={onCallUno}
+                    variant="destructive"
+                    size="sm"
+                    className="animate-pulse"
+                  >
+                    UNO!
+                  </Button>
+                )}
+              {currentPlayer.cards.length === 1 &&
+                room.unoCalledBy === currentPlayer.id && (
+                  <span className="text-xs bg-green-500 text-white px-2 py-1 rounded self-center">
+                    UNO appelé ✓
+                  </span>
+                )}
               <span className="text-sm text-muted-foreground self-center">
-                {currentPlayer.cards.length} carte{currentPlayer.cards.length > 1 ? 's' : ''}
+                {currentPlayer.cards.length} carte
+                {currentPlayer.cards.length > 1 ? "s" : ""}
               </span>
             </div>
           </div>
