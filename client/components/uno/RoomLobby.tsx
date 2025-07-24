@@ -120,9 +120,9 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
           </Card>
 
           {/* Players List */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">
-              Joueurs ({room.players.length})
+          <Card className="p-6 bg-card/80 backdrop-blur-sm border-accent/20">
+            <h3 className="text-xl font-bold mb-6 text-accent">
+              👥 Joueurs connectés ({room.players.length}/{room.maxPlayers})
             </h3>
             
             <div className="space-y-3">
