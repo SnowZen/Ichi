@@ -27,6 +27,7 @@ interface GameRoom {
   discardPile: UnoCard[];
   winner?: string;
   drawPenalty?: number; // Number of cards next player must draw
+  wildColor?: 'red' | 'blue' | 'green' | 'yellow'; // Color chosen for wild cards
 }
 
 // In-memory storage for demo purposes
