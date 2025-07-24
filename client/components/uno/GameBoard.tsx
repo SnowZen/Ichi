@@ -17,12 +17,13 @@ interface GameBoardProps {
   playableCards?: string[];
 }
 
-export function GameBoard({ 
-  room, 
-  currentPlayer, 
-  onCardPlay, 
-  onDrawCard, 
+export function GameBoard({
+  room,
+  currentPlayer,
+  onCardPlay,
+  onDrawCard,
   onCallUno,
+  onChallengeUno,
   selectedCard,
   onCardSelect,
   playableCards = []
