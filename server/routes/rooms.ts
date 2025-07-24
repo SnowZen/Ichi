@@ -163,7 +163,12 @@ export const joinRoom: RequestHandler = (req, res) => {
 
   room.players.push(player);
 
-  res.json({ roomId, playerId, room });
+  res.json({
+    roomId,
+    playerId,
+    playerName: playerName.trim(),
+    room
+  });
 };
 
 export const getRoom: RequestHandler = (req, res) => {
