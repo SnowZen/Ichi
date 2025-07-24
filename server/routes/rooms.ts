@@ -433,5 +433,70 @@ export const drawCard: RequestHandler = (req, res) => {
 };
 
 export const callUno: RequestHandler = (req, res) => {
-  res.json({ success: true });
+  const { roomId } = req.params;
+  const { playerId } = req.body;
+
+  const room = rooms.get(roomId);
+  if (!room) {
+    return res.status(404).json({ error: 'Salon non trouvé' });
+  }
+
+  const player = room.players.find(p => p.id === playerId);
+  if (!player) {
+    return res.status(404).json({ error: 'Joueur non trouvé' });
+  }
+
+  // Player must have exactly 1 card to call UNO
+  if (player.cards.length !== 1) {
+    return res.status(400).json({ error: 'Vous devez avoir exactement 1 carte pour appeler UNO' });
+  }
+
+  // Set UNO status
+  room.unoCalledBy = playerId;
+  room.unoChallengeTime = Date.now() + 10000; // 10 seconds to challenge
+
+  rooms.set(roomId, room);
+  res.json({ success: true, message: `${player.name} a appelé UNO!`, room });
+};
+
+export const challengeUno: RequestHandler = (req, res) => {
+  const { roomId } = req.params;
+  const { challengerId, challengedPlayerId } = req.body;
+
+  const room = rooms.get(roomId);
+  if (!room) {
+    return res.status(404).json({ error: 'Salon non trouvé' });
+  }
+
+  const challenger = room.players.find(p => p.id === challengerId);
+  const challenged = room.players.find(p => p.id === challengedPlayerId);
+
+  if (!challenger || !challenged) {
+    return res.status(404).json({ error: 'Joueur non trouvé' });
+  }
+
+  // Check if challenge is valid (within time limit and player has 1 card without UNO call)
+  if (challenged.cards.length === 1 && room.unoCalledBy !== challengedPlayerId &&
+      room.unoChallengeTime && Date.now() <= room.unoChallengeTime) {
+
+    // Challenge successful - challenged player draws 2 cards
+    for (let i = 0; i < 2; i++) {
+      const card = room.deck.pop();
+      if (card) {
+        challenged.cards.push(card);
+      }
+    }
+
+    room.unoCalledBy = undefined;
+    room.unoChallengeTime = undefined;
+
+    rooms.set(roomId, room);
+    res.json({
+      success: true,
+      message: `${challenger.name} a défié ${challenged.name} avec succès! ${challenged.name} pioche 2 cartes.`,
+      room
+    });
+  } else {
+    res.status(400).json({ error: 'Défi invalide' });
+  }
 };
