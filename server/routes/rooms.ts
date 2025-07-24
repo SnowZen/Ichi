@@ -316,9 +316,14 @@ export const playCard: RequestHandler = (req, res) => {
   } else if (card.type === 'wild_draw4') {
     // Add to existing penalty or start new one
     room.drawPenalty = (room.drawPenalty || 0) + 4;
+    room.wildColor = wildColor as any; // Set the chosen color
+  } else if (card.type === 'wild') {
+    room.drawPenalty = 0; // Clear penalty
+    room.wildColor = wildColor as any; // Set the chosen color
   } else {
-    // Regular card played, clear any existing penalty
+    // Regular card played, clear any existing penalty and wild color
     room.drawPenalty = 0;
+    room.wildColor = undefined;
   }
   
   // Reverse direction if needed
