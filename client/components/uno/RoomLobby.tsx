@@ -93,24 +93,29 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
               </div>
             </div>
 
-            <div className="mt-4 p-3 bg-muted rounded-lg">
-              <p className="text-sm text-muted-foreground mb-2">
-                Partagez ce lien avec vos amis:
+            <div className="mt-6 p-4 bg-secondary/20 border border-secondary/30 rounded-lg">
+              <p className="text-sm font-medium mb-3 text-center">
+                🔗 Lien direct de la partie
               </p>
               <div className="flex gap-2">
                 <Input
                   value={roomUrl}
                   readOnly
-                  className="text-xs"
+                  className="text-sm font-mono bg-white dark:bg-slate-800 border-secondary/30"
                 />
                 <Button
                   onClick={() => navigator.clipboard.writeText(roomUrl)}
                   size="sm"
-                  variant="outline"
+                  variant="secondary"
+                  className="px-4 whitespace-nowrap"
                 >
+                  <Copy className="w-4 h-4 mr-1" />
                   Copier
                 </Button>
               </div>
+              <p className="text-xs text-muted-foreground text-center mt-2">
+                Vos amis peuvent cliquer directement sur ce lien
+              </p>
             </div>
           </Card>
 
