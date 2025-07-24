@@ -42,16 +42,19 @@ export default function GameRoom() {
       // Wild cards can always be played
       if (card.color === 'wild') return true;
 
-      // Match color
-      if (card.color === room.topCard!.color) return true;
+      // If top card is wild, use the chosen wild color
+      const effectiveColor = room.topCard!.color === 'wild' ? room.wildColor : room.topCard!.color;
+
+      // Match color (including wild color)
+      if (card.color === effectiveColor) return true;
 
       // Match number/type
       if (card.type === 'number' && room.topCard!.type === 'number') {
         return card.value === room.topCard!.value;
       }
 
-      // Match action type
-      if (card.type === room.topCard!.type && card.type !== 'number') return true;
+      // Match action type (but not for wild cards)
+      if (card.type === room.topCard!.type && card.type !== 'number' && room.topCard!.color !== 'wild') return true;
 
       return false;
     }).map(card => card.id);
