@@ -280,6 +280,16 @@ export default function GameRoom() {
     );
   }
 
+  if (room.isFinished) {
+    return (
+      <GameOver
+        room={room}
+        currentPlayer={currentPlayer}
+        onReturnToLobby={handleReturnToLobby}
+      />
+    );
+  }
+
   return (
     <>
       <GameBoard
