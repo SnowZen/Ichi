@@ -288,10 +288,18 @@ export const playCard: RequestHandler = (req, res) => {
 export const drawCard: RequestHandler = (req, res) => {
   const { roomId } = req.params;
   const { playerId } = req.body;
-  
+
   const room = rooms.get(roomId);
   if (!room) {
     return res.status(404).json({ error: 'Salon non trouvé' });
+  }
+
+  if (!room.isStarted) {
+    return res.status(400).json({ error: 'La partie n\'a pas commencé' });
+  }
+
+  if (room.currentPlayer !== playerId) {
+    return res.status(400).json({ error: 'Ce n\'est pas votre tour' });
   }
 
   const player = room.players.find(p => p.id === playerId);
@@ -308,6 +316,11 @@ export const drawCard: RequestHandler = (req, res) => {
   if (drawnCard) {
     player.cards.push(drawnCard);
   }
+
+  // Move to next player after drawing
+  const currentPlayerIndex = room.players.findIndex(p => p.id === playerId);
+  const nextPlayerIndex = (currentPlayerIndex + 1) % room.players.length;
+  room.currentPlayer = room.players[nextPlayerIndex].id;
 
   rooms.set(roomId, room);
   res.json(room);
