@@ -12,14 +12,15 @@ interface UnoCardProps {
   wildColor?: 'red' | 'blue' | 'green' | 'yellow';
 }
 
-export function UnoCard({ 
-  card, 
-  className, 
-  onClick, 
-  isPlayable = true, 
+export function UnoCard({
+  card,
+  className,
+  onClick,
+  isPlayable = true,
   isSelected = false,
   size = 'md',
-  showBack = false
+  showBack = false,
+  wildColor
 }: UnoCardProps) {
   const sizeClasses = {
     sm: 'w-10 h-14 text-xs sm:w-12 sm:h-16',
