@@ -274,7 +274,17 @@ export const playCard: RequestHandler = (req, res) => {
   }
 
   const card = player.cards[cardIndex];
-  
+
+  // Check if wild card requires color selection
+  if ((card.type === 'wild' || card.type === 'wild_draw4') && !wildColor) {
+    return res.status(400).json({ error: 'Vous devez choisir une couleur pour cette carte' });
+  }
+
+  // Validate wild color if provided
+  if (wildColor && !['red', 'blue', 'green', 'yellow'].includes(wildColor)) {
+    return res.status(400).json({ error: 'Couleur invalide' });
+  }
+
   // Check if player can play this card when there's a draw penalty
   if (room.drawPenalty && room.drawPenalty > 0) {
     // Player can only play +2 or +4 cards to counter
