@@ -43,44 +43,56 @@ function generateRoomCode(): string {
 function createDeck(): UnoCard[] {
   const deck: UnoCard[] = [];
   const colors: ('red' | 'blue' | 'green' | 'yellow')[] = ['red', 'blue', 'green', 'yellow'];
-  
-  // Add number cards and action cards
+
+  // Add number cards (108 cards total)
   colors.forEach(color => {
-    // Numbers 0-9
-    for (let value = 0; value <= 9; value++) {
-      deck.push({
-        id: `${color}-${value}-${Math.random().toString(36).substr(2, 9)}`,
-        color,
-        type: 'number',
-        value
-      });
+    // One 0 card per color (4 cards)
+    deck.push({
+      id: `${color}-0-${Math.random().toString(36).substr(2, 9)}`,
+      color,
+      type: 'number',
+      value: 0
+    });
+
+    // Two of each number 1-9 per color (72 cards)
+    for (let value = 1; value <= 9; value++) {
+      for (let copy = 0; copy < 2; copy++) {
+        deck.push({
+          id: `${color}-${value}-${copy}-${Math.random().toString(36).substr(2, 9)}`,
+          color,
+          type: 'number',
+          value
+        });
+      }
     }
-    
-    // Action cards
+
+    // Two of each action card per color (24 cards)
     ['skip', 'reverse', 'draw2'].forEach(type => {
-      deck.push({
-        id: `${color}-${type}-${Math.random().toString(36).substr(2, 9)}`,
-        color,
-        type: type as any
-      });
+      for (let copy = 0; copy < 2; copy++) {
+        deck.push({
+          id: `${color}-${type}-${copy}-${Math.random().toString(36).substr(2, 9)}`,
+          color,
+          type: type as any
+        });
+      }
     });
   });
-  
-  // Wild cards
+
+  // Wild cards (8 cards)
   for (let i = 0; i < 4; i++) {
     deck.push({
       id: `wild-${i}-${Math.random().toString(36).substr(2, 9)}`,
       color: 'wild',
       type: 'wild'
     });
-    
+
     deck.push({
       id: `wild-draw4-${i}-${Math.random().toString(36).substr(2, 9)}`,
       color: 'wild',
       type: 'wild_draw4'
     });
   }
-  
+
   return shuffleDeck(deck);
 }
 
