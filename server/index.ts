@@ -2,6 +2,15 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import { 
+  createRoom, 
+  joinRoom, 
+  getRoom, 
+  startGame, 
+  playCard, 
+  drawCard, 
+  callUno 
+} from "./routes/rooms";
 
 export function createServer() {
   const app = express();
@@ -18,6 +27,15 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // Uno game routes
+  app.post("/api/rooms", createRoom);
+  app.post("/api/rooms/:roomId/join", joinRoom);
+  app.get("/api/rooms/:roomId", getRoom);
+  app.post("/api/rooms/:roomId/start", startGame);
+  app.post("/api/rooms/:roomId/play", playCard);
+  app.post("/api/rooms/:roomId/draw", drawCard);
+  app.post("/api/rooms/:roomId/uno", callUno);
 
   return app;
 }
