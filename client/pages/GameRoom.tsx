@@ -236,15 +236,24 @@ export default function GameRoom() {
   }
 
   return (
-    <GameBoard
-      room={room}
-      currentPlayer={currentPlayer}
-      onCardPlay={handleCardPlay}
-      onDrawCard={handleDrawCard}
-      onCallUno={handleCallUno}
-      selectedCard={selectedCard}
-      onCardSelect={setSelectedCard}
-      playableCards={playableCards}
-    />
+    <>
+      <GameBoard
+        room={room}
+        currentPlayer={currentPlayer}
+        onCardPlay={handleCardPlay}
+        onDrawCard={handleDrawCard}
+        onCallUno={handleCallUno}
+        selectedCard={selectedCard}
+        onCardSelect={setSelectedCard}
+        playableCards={playableCards}
+      />
+
+      {showColorPicker && (
+        <ColorPicker
+          onColorSelect={handleColorSelect}
+          onCancel={handleColorCancel}
+        />
+      )}
+    </>
   );
 }
