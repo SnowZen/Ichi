@@ -53,9 +53,9 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
 
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           {/* Room Info */}
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Users className="w-5 h-5" />
+          <Card className="p-6 bg-card/80 backdrop-blur-sm border-primary/20">
+            <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-primary">
+              <Users className="w-6 h-6" />
               Informations du salon
             </h3>
             
