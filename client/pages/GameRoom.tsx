@@ -14,6 +14,8 @@ export default function GameRoom() {
   const { room, isLoading, error, updateRoom } = useRoomSync(roomId);
   const [selectedCard, setSelectedCard] = useState<string | undefined>();
   const [playableCards, setPlayableCards] = useState<string[]>([]);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [pendingWildCard, setPendingWildCard] = useState<UnoCard | null>(null);
 
   // Find current player based on session
   const currentPlayer = room?.players.find(p => p.id === session?.playerId) || null;
