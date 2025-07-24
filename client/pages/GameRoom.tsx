@@ -25,21 +25,31 @@ export default function GameRoom() {
       return;
     }
 
+    // If there's a draw penalty, player can only play +2 or +4 cards
+    if (room.drawPenalty && room.drawPenalty > 0) {
+      const playable = currentPlayer.cards.filter(card => {
+        return card.type === 'draw2' || card.type === 'wild_draw4';
+      }).map(card => card.id);
+      setPlayableCards(playable);
+      return;
+    }
+
+    // Normal playable card logic
     const playable = currentPlayer.cards.filter(card => {
       // Wild cards can always be played
       if (card.color === 'wild') return true;
-      
+
       // Match color
       if (card.color === room.topCard!.color) return true;
-      
+
       // Match number/type
       if (card.type === 'number' && room.topCard!.type === 'number') {
         return card.value === room.topCard!.value;
       }
-      
+
       // Match action type
       if (card.type === room.topCard!.type && card.type !== 'number') return true;
-      
+
       return false;
     }).map(card => card.id);
 
