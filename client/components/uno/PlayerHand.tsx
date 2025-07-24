@@ -10,6 +10,7 @@ interface PlayerHandProps {
   isCurrentPlayer?: boolean;
   playableCards?: string[];
   className?: string;
+  showBacks?: boolean;
 }
 
 export function PlayerHand({ 
