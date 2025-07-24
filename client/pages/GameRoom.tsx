@@ -298,6 +298,7 @@ export default function GameRoom() {
         onCardPlay={handleCardPlay}
         onDrawCard={handleDrawCard}
         onCallUno={handleCallUno}
+        onChallengeUno={handleChallengeUno}
         selectedCard={selectedCard}
         onCardSelect={setSelectedCard}
         playableCards={playableCards}
