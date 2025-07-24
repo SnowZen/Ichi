@@ -28,6 +28,7 @@ export interface GameRoom {
   discardPile: UnoCard[];
   winner?: string;
   drawPenalty?: number;
+  wildColor?: UnoColor; // Color chosen for wild cards
 }
 
 export interface GameAction {
