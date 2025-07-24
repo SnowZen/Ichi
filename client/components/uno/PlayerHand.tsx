@@ -13,14 +13,15 @@ interface PlayerHandProps {
   showBacks?: boolean;
 }
 
-export function PlayerHand({ 
-  cards, 
-  onCardPlay, 
-  selectedCard, 
-  onCardSelect, 
+export function PlayerHand({
+  cards,
+  onCardPlay,
+  selectedCard,
+  onCardSelect,
   isCurrentPlayer = false,
   playableCards = [],
-  className 
+  className,
+  showBacks = false
 }: PlayerHandProps) {
   const handleCardClick = (card: UnoCardType) => {
     if (!isCurrentPlayer) return;
