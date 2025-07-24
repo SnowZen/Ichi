@@ -40,17 +40,27 @@ export function GameBoard({
             <Card key={player.id} className="p-4 bg-card/50 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <div className={cn(
-                    "w-3 h-3 rounded-full",
-                    player.isConnected ? "bg-green-500" : "bg-red-500"
-                  )} />
-                  <span className="font-medium">{player.name}</span>
-                  {room.currentPlayer === player.id && (
-                    <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
-                      Tour
-                    </span>
-                  )}
-                </div>
+              <div className={cn(
+                "w-3 h-3 rounded-full",
+                player.isConnected ? "bg-green-500" : "bg-red-500"
+              )} />
+              <span className="font-medium">{player.name}</span>
+              {room.currentPlayer === player.id && (
+                <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
+                  Tour
+                </span>
+              )}
+              {player.cards.length === 1 && room.unoCalledBy !== player.id && room.unoChallengeTime && (
+                <Button
+                  onClick={() => onChallengeUno?.(player.id)}
+                  size="sm"
+                  variant="destructive"
+                  className="text-xs px-2 py-1 h-auto animate-pulse"
+                >
+                  Contre UNO!
+                </Button>
+              )}
+            </div>
                 <span className="text-sm text-muted-foreground">
                   {player.cards.length} carte{player.cards.length > 1 ? 's' : ''}
                 </span>
