@@ -30,7 +30,7 @@ export function GameBoard({
   const isMyTurn = room.currentPlayer === currentPlayer.id;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-card to-background p-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-card to-background p-2 sm:p-4">
       <div className="max-w-7xl mx-auto">
         {/* Other Players */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
