@@ -60,21 +60,24 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
             </h3>
             
             <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span>Code du salon:</span>
-                <div className="flex items-center gap-2">
-                  <code className="bg-muted px-2 py-1 rounded text-sm font-mono">
+              <div className="flex flex-col gap-2">
+                <span className="font-medium">Code du salon:</span>
+                <div className="flex items-center gap-3 p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                  <code className="bg-white dark:bg-slate-800 px-4 py-3 rounded-lg text-2xl font-bold font-mono tracking-wider text-primary border-2 border-primary/30 flex-1 text-center">
                     {room.id}
                   </code>
                   <Button
                     onClick={copyRoomCode}
-                    size="sm"
+                    size="lg"
                     variant="outline"
-                    className="p-2"
+                    className="px-4 py-3 border-primary/30 hover:bg-primary hover:text-primary-foreground"
                   >
-                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                   </Button>
                 </div>
+                <p className="text-xs text-muted-foreground text-center">
+                  Partagez ce code avec vos amis pour qu'ils rejoignent la partie
+                </p>
               </div>
               
               <div className="flex justify-between items-center">
