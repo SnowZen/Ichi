@@ -65,11 +65,11 @@ export default function Index() {
     <div className="min-h-screen bg-gradient-to-br from-background via-card to-background">
       {/* Header */}
       <div className="text-center py-8 sm:py-12">
-        <div className="flex justify-center items-center gap-4 mb-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-uno-red via-uno-blue to-uno-green rounded-xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+        <div className="flex justify-center items-center gap-3 sm:gap-4 mb-4">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-uno-red via-uno-blue to-uno-green rounded-xl flex items-center justify-center text-white text-xl sm:text-2xl font-bold shadow-lg">
             U
           </div>
-          <h1 className="text-6xl font-bold bg-gradient-to-r from-uno-red via-uno-blue to-uno-green bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-6xl font-bold bg-gradient-to-r from-uno-red via-uno-blue to-uno-green bg-clip-text text-transparent">
             UNO
           </h1>
         </div>
