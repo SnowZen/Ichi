@@ -76,7 +76,7 @@ export function GameBoard({
         </div>
 
         {/* Game Center */}
-        <div className="flex justify-center items-center gap-8 mb-8">
+        <div className="flex justify-center items-center gap-4 sm:gap-8 mb-6 sm:mb-8">
           {/* Draw Pile */}
           <div className="text-center">
             <div className="relative">
