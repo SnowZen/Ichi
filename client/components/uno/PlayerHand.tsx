@@ -37,8 +37,10 @@ export function PlayerHand({
         <div
           key={card.id}
           className="relative"
+          className={cn(
+            index > 0 && "-ml-2 sm:-ml-3"
+          )}
           style={{
-            marginLeft: index > 0 ? (window.innerWidth < 640 ? '-8px' : '-12px') : '0',
             zIndex: cards.length - index
           }}
         >
