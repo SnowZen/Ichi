@@ -1,0 +1,167 @@
+import { UnoCard } from "./UnoCard";
+import { PlayerHand } from "./PlayerHand";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Player, UnoCard as UnoCardType, GameRoom } from "@shared/uno";
+import { cn } from "@/lib/utils";
+
+interface GameBoardProps {
+  room: GameRoom;
+  currentPlayer: Player;
+  onCardPlay: (card: UnoCardType) => void;
+  onDrawCard: () => void;
+  onCallUno: () => void;
+  selectedCard?: string;
+  onCardSelect?: (cardId: string) => void;
+  playableCards?: string[];
+}
+
+export function GameBoard({ 
+  room, 
+  currentPlayer, 
+  onCardPlay, 
+  onDrawCard, 
+  onCallUno,
+  selectedCard,
+  onCardSelect,
+  playableCards = []
+}: GameBoardProps) {
+  const otherPlayers = room.players.filter(p => p.id !== currentPlayer.id);
+  const isMyTurn = room.currentPlayer === currentPlayer.id;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-card to-background p-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Other Players */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          {otherPlayers.map((player) => (
+            <Card key={player.id} className="p-4 bg-card/50 backdrop-blur-sm">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <div className={cn(
+                    "w-3 h-3 rounded-full",
+                    player.isConnected ? "bg-green-500" : "bg-red-500"
+                  )} />
+                  <span className="font-medium">{player.name}</span>
+                  {room.currentPlayer === player.id && (
+                    <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
+                      Tour
+                    </span>
+                  )}
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  {player.cards.length} carte{player.cards.length > 1 ? 's' : ''}
+                </span>
+              </div>
+              
+              {/* Player's card backs */}
+              <div className="flex gap-1 flex-wrap">
+                {player.cards.slice(0, Math.min(10, player.cards.length)).map((_, index) => (
+                  <div
+                    key={index}
+                    className="w-8 h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded border border-slate-500 relative"
+                    style={{ marginLeft: index > 0 ? '-6px' : '0' }}
+                  >
+                    <div className="absolute inset-1 border border-slate-400 rounded-sm opacity-50" />
+                  </div>
+                ))}
+                {player.cards.length > 10 && (
+                  <span className="self-center text-xs text-muted-foreground ml-2">
+                    +{player.cards.length - 10}
+                  </span>
+                )}
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* Game Center */}
+        <div className="flex justify-center items-center gap-8 mb-8">
+          {/* Draw Pile */}
+          <div className="text-center">
+            <div className="relative">
+              {/* Stack effect */}
+              <div className="w-20 h-28 bg-gradient-to-br from-slate-600 to-slate-800 rounded-xl border-2 border-slate-500 absolute top-1 left-1" />
+              <div className="w-20 h-28 bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl border-2 border-slate-400 relative cursor-pointer hover:scale-105 transition-transform">
+                <div className="absolute inset-2 border border-slate-300 rounded-lg opacity-30" />
+                <div className="absolute inset-4 border border-slate-300 rounded opacity-20" />
+              </div>
+            </div>
+            <Button
+              onClick={onDrawCard}
+              disabled={!isMyTurn}
+              className="mt-2 text-xs"
+              size="sm"
+            >
+              Piocher
+            </Button>
+          </div>
+
+          {/* Discard Pile */}
+          <div className="text-center">
+            {room.topCard && (
+              <UnoCard
+                card={room.topCard}
+                size="lg"
+                className="mx-auto"
+              />
+            )}
+            <p className="text-sm text-muted-foreground mt-2">
+              Pile de défausse
+            </p>
+          </div>
+
+          {/* Game Info */}
+          <div className="text-center">
+            <div className="text-2xl font-bold text-primary mb-2">
+              {room.direction === 1 ? '→' : '←'}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Direction
+            </p>
+          </div>
+        </div>
+
+        {/* Current Player's Hand */}
+        <Card className="p-6 bg-card/70 backdrop-blur-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-semibold">{currentPlayer.name}</h3>
+              {isMyTurn && (
+                <span className="text-sm bg-primary text-primary-foreground px-3 py-1 rounded">
+                  Votre tour
+                </span>
+              )}
+            </div>
+            
+            <div className="flex gap-2">
+              {currentPlayer.cards.length === 2 && (
+                <Button
+                  onClick={onCallUno}
+                  variant="destructive"
+                  size="sm"
+                  className="animate-pulse"
+                >
+                  UNO!
+                </Button>
+              )}
+              <span className="text-sm text-muted-foreground self-center">
+                {currentPlayer.cards.length} carte{currentPlayer.cards.length > 1 ? 's' : ''}
+              </span>
+            </div>
+          </div>
+
+          <PlayerHand
+            cards={currentPlayer.cards}
+            onCardPlay={onCardPlay}
+            selectedCard={selectedCard}
+            onCardSelect={onCardSelect}
+            isCurrentPlayer={isMyTurn}
+            playableCards={playableCards}
+            className="justify-center"
+          />
+        </Card>
+      </div>
+    </div>
+  );
+}
