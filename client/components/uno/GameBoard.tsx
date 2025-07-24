@@ -126,10 +126,18 @@ export function GameBoard({
                 card={room.topCard}
                 size="lg"
                 className="mx-auto"
+                wildColor={room.wildColor}
               />
             )}
             <p className="text-sm text-muted-foreground mt-2">
               Pile de défausse
+              {room.wildColor && room.topCard?.color === 'wild' && (
+                <span className="block text-xs">
+                  Couleur: {room.wildColor === 'red' ? 'Rouge' :
+                            room.wildColor === 'blue' ? 'Bleu' :
+                            room.wildColor === 'green' ? 'Vert' : 'Jaune'}
+                </span>
+              )}
             </p>
           </div>
 
