@@ -110,7 +110,7 @@ export function UnoCard({
           "ring-4 ring-white ring-offset-2 ring-offset-background shadow-2xl": isSelected,
           "hover:scale-105 hover:shadow-2xl hover:shadow-current/50": isPlayable && onClick,
           "transform translate-y-[-6px] shadow-2xl": isSelected,
-          "animate-pulse ring-2 ring-green-400": isPlayable && !isSelected && onClick,
+          "ring-2 ring-green-400": isPlayable && !isSelected && onClick,
         },
         className
       )}
