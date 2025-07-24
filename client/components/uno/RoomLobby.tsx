@@ -130,31 +130,40 @@ export function RoomLobby({ room, currentPlayerId, onStartGame, onLeaveRoom, isH
                 <div
                   key={player.id}
                   className={cn(
-                    "flex items-center justify-between p-3 rounded-lg border",
-                    player.id === currentPlayerId ? "bg-primary/10 border-primary" : "bg-muted/50"
+                    "flex items-center justify-between p-4 rounded-lg border-2 transition-all duration-200",
+                    player.id === currentPlayerId
+                      ? "bg-primary/15 border-primary shadow-lg shadow-primary/20"
+                      : "bg-card/60 border-muted hover:border-accent/50"
                   )}
                 >
                   <div className="flex items-center gap-3">
                     <div className={cn(
-                      "w-3 h-3 rounded-full",
+                      "w-4 h-4 rounded-full border-2 border-white shadow-sm",
                       player.isConnected ? "bg-green-500" : "bg-red-500"
                     )} />
-                    <span className="font-medium">{player.name}</span>
+                    <span className="font-semibold text-lg">{player.name}</span>
                     {player.id === currentPlayerId && (
-                      <Badge variant="secondary" className="text-xs">
-                        Vous
+                      <Badge variant="default" className="text-xs font-bold">
+                        👤 Vous
                       </Badge>
                     )}
                     {index === 0 && (
-                      <Badge variant="outline" className="text-xs">
-                        Hôte
+                      <Badge variant="secondary" className="text-xs font-bold border border-yellow-400 bg-yellow-50 text-yellow-800">
+                        👑 Hôte
                       </Badge>
                     )}
                   </div>
-                  
-                  <span className="text-sm text-muted-foreground">
-                    {player.isConnected ? "Connecté" : "Déconnecté"}
-                  </span>
+
+                  <div className="flex items-center gap-2">
+                    <span className={cn(
+                      "text-sm font-medium px-2 py-1 rounded",
+                      player.isConnected
+                        ? "text-green-700 bg-green-100"
+                        : "text-red-700 bg-red-100"
+                    )}>
+                      {player.isConnected ? "🟢 En ligne" : "🔴 Hors ligne"}
+                    </span>
+                  </div>
                 </div>
               ))}
               
