@@ -52,6 +52,7 @@ export function PlayerHand({
             isPlayable={isCurrentPlayer && (playableCards.length === 0 || playableCards.includes(card.id))}
             isSelected={selectedCard === card.id}
             size="md"
+            showBack={showBacks}
             className={cn({
               "hover:z-50": isCurrentPlayer
             })}
