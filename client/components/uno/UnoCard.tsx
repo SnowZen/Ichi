@@ -9,6 +9,7 @@ interface UnoCardProps {
   isSelected?: boolean;
   size?: 'sm' | 'md' | 'lg';
   showBack?: boolean;
+  wildColor?: 'red' | 'blue' | 'green' | 'yellow';
 }
 
 export function UnoCard({ 
