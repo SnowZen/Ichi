@@ -73,22 +73,20 @@ export function GameBoard({
         <div className="flex justify-center items-center gap-4 sm:gap-8 mb-6 sm:mb-8">
           {/* Draw Pile */}
           <div className="text-center">
-            <div className="relative">
+            <div className="relative mb-3">
               {/* Stack effect */}
-              <div className="w-20 h-28 bg-gradient-to-br from-slate-600 to-slate-800 rounded-xl border-2 border-slate-500 absolute top-1 left-1" />
-              <div className="w-20 h-28 bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl border-2 border-slate-400 relative cursor-pointer hover:scale-105 transition-transform">
-                <div className="absolute inset-2 border border-slate-300 rounded-lg opacity-30" />
-                <div className="absolute inset-4 border border-slate-300 rounded opacity-20" />
-              </div>
+              <div className="w-16 h-24 sm:w-20 sm:h-28 bg-gradient-to-br from-slate-600 to-slate-800 rounded-xl border-2 border-slate-500 absolute top-1 left-1" />
+              <UnoCard
+                card={{ id: 'deck', color: 'wild', type: 'wild' }}
+                showBack={true}
+                size="lg"
+                onClick={isMyTurn ? onDrawCard : undefined}
+                isPlayable={isMyTurn}
+              />
             </div>
-            <Button
-              onClick={onDrawCard}
-              disabled={!isMyTurn}
-              className="mt-2 text-xs"
-              size="sm"
-            >
-              Piocher
-            </Button>
+            <p className="text-xs text-muted-foreground">
+              Piocher ({room.deck.length})
+            </p>
           </div>
 
           {/* Discard Pile */}
