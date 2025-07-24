@@ -55,16 +55,22 @@ export function GameBoard({
               </div>
               
               {/* Player's card backs */}
-              <PlayerHand
-                cards={player.cards.slice(0, Math.min(8, player.cards.length))}
-                showBacks={true}
-                className="justify-start"
-              />
-              {player.cards.length > 8 && (
-                <span className="text-xs text-muted-foreground mt-2">
-                  +{player.cards.length - 8} cartes
-                </span>
-              )}
+              <div className="flex gap-2 flex-wrap">
+                {player.cards.slice(0, Math.min(7, player.cards.length)).map((_, index) => (
+                  <div
+                    key={index}
+                    className="w-10 h-14 bg-gradient-to-br from-slate-600 via-slate-700 to-slate-900 rounded-lg border-2 border-slate-500 relative flex items-center justify-center shadow-lg"
+                  >
+                    <div className="absolute inset-1 border border-slate-400/30 rounded-md" />
+                    <span className="text-slate-300 text-xs font-bold">UNO</span>
+                  </div>
+                ))}
+                {player.cards.length > 7 && (
+                  <span className="self-center text-xs text-muted-foreground ml-2">
+                    +{player.cards.length - 7}
+                  </span>
+                )}
+              </div>
             </Card>
           ))}
         </div>
