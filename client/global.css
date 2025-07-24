@@ -39,6 +39,12 @@
 
     --radius: 0.5rem;
 
+    --uno-red: 0 86% 58%;
+    --uno-blue: 210 86% 58%;
+    --uno-green: 120 86% 58%;
+    --uno-yellow: 51 86% 58%;
+    --uno-wild: 270 50% 30%;
+
     --sidebar-background: 0 0% 98%;
 
     --sidebar-foreground: 240 5.3% 26.1%;
