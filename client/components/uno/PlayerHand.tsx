@@ -55,12 +55,13 @@ export function PlayerHand({
           <UnoCard
             card={card}
             onClick={() => handleCardClick(card)}
-            isPlayable={isCurrentPlayer && (playableCards.length === 0 || playableCards.includes(card.id))}
+            isPlayable={isCurrentPlayer && playableCards.includes(card.id)}
             isSelected={selectedCard === card.id}
             size="md"
             showBack={showBacks}
             className={cn({
-              "hover:z-50": isCurrentPlayer
+              "hover:z-50": isCurrentPlayer,
+              "ring-2 ring-green-400": isCurrentPlayer && playableCards.includes(card.id) && selectedCard !== card.id
             })}
           />
         </div>
