@@ -95,14 +95,14 @@ function shuffleDeck(deck: UnoCard[]): UnoCard[] {
 
 export const createRoom: RequestHandler = (req, res) => {
   const { playerName, maxPlayers = 4 } = req.body;
-  
+
   if (!playerName || typeof playerName !== 'string') {
     return res.status(400).json({ error: 'Nom de joueur requis' });
   }
 
   const roomId = generateRoomCode();
   const playerId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  
+
   const player: Player = {
     id: playerId,
     name: playerName.trim(),
@@ -123,7 +123,12 @@ export const createRoom: RequestHandler = (req, res) => {
 
   rooms.set(roomId, room);
 
-  res.json({ roomId, playerId });
+  res.json({
+    roomId,
+    playerId,
+    playerName: playerName.trim(),
+    room
+  });
 };
 
 export const joinRoom: RequestHandler = (req, res) => {
