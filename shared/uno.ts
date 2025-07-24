@@ -27,6 +27,7 @@ export interface GameRoom {
   deck: UnoCard[];
   discardPile: UnoCard[];
   winner?: string;
+  drawPenalty?: number;
 }
 
 export interface GameAction {
