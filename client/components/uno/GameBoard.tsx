@@ -82,13 +82,20 @@ export function GameBoard({
             <div className="relative mb-3">
               {/* Stack effect */}
               <div className="w-16 h-24 sm:w-20 sm:h-28 bg-gradient-to-br from-slate-600 to-slate-800 rounded-xl border-2 border-slate-500 absolute top-1 left-1" />
-              <UnoCard
-                card={{ id: 'deck', color: 'wild', type: 'wild' }}
-                showBack={true}
-                size="lg"
+              <div
+                className={cn(
+                  "w-16 h-24 sm:w-20 sm:h-28 bg-gradient-to-br from-slate-700 to-slate-900 rounded-xl border-2 border-slate-400 relative flex items-center justify-center cursor-pointer transition-transform shadow-lg",
+                  {
+                    "hover:scale-105": isMyTurn,
+                    "opacity-50 cursor-not-allowed": !isMyTurn
+                  }
+                )}
                 onClick={isMyTurn ? onDrawCard : undefined}
-                isPlayable={isMyTurn}
-              />
+              >
+                <div className="absolute inset-2 border border-slate-300 rounded-lg opacity-30" />
+                <div className="absolute inset-4 border border-slate-300 rounded opacity-20" />
+                <span className="text-slate-300 font-bold text-sm">UNO</span>
+              </div>
             </div>
             <p className="text-xs text-muted-foreground">
               Piocher ({room.deck.length})
