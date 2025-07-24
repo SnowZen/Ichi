@@ -25,9 +25,15 @@ export function PlayerHand({
 }: PlayerHandProps) {
   const handleCardClick = (card: UnoCardType) => {
     if (!isCurrentPlayer) return;
-    
-    if (onCardSelect) {
-      onCardSelect(card.id);
+
+    if (onCardSelect && onCardPlay) {
+      // If card is already selected, play it
+      if (selectedCard === card.id && playableCards.includes(card.id)) {
+        onCardPlay(card);
+      } else if (playableCards.includes(card.id)) {
+        // Otherwise, select it if it's playable
+        onCardSelect(card.id);
+      }
     } else if (onCardPlay && playableCards.includes(card.id)) {
       onCardPlay(card);
     }
