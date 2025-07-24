@@ -26,6 +26,7 @@ interface GameRoom {
   deck: UnoCard[];
   discardPile: UnoCard[];
   winner?: string;
+  drawPenalty?: number; // Number of cards next player must draw
 }
 
 // In-memory storage for demo purposes
