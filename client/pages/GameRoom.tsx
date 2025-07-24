@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { GameBoard } from "@/components/uno/GameBoard";
 import { RoomLobby } from "@/components/uno/RoomLobby";
 import { ColorPicker } from "@/components/uno/ColorPicker";
+import { GameOver } from "@/components/uno/GameOver";
 import { Player, UnoCard, UnoColor } from "@shared/uno";
 import { useRoomSync } from "@/hooks/useRoomSync";
 import { usePlayerSession } from "@/hooks/usePlayerSession";
