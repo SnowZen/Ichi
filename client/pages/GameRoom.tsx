@@ -2,51 +2,56 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { GameBoard } from "@/components/uno/GameBoard";
 import { RoomLobby } from "@/components/uno/RoomLobby";
-import { GameRoom as GameRoomType, Player, UnoCard } from "@shared/uno";
+import { Player, UnoCard } from "@shared/uno";
+import { useRoomSync } from "@/hooks/useRoomSync";
+import { usePlayerSession } from "@/hooks/usePlayerSession";
 
 export default function GameRoom() {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
-  const [room, setRoom] = useState<GameRoomType | null>(null);
-  const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
+  const { session, clearSession } = usePlayerSession();
+  const { room, isLoading, error, updateRoom } = useRoomSync(roomId);
   const [selectedCard, setSelectedCard] = useState<string | undefined>();
   const [playableCards, setPlayableCards] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
+  // Find current player based on session
+  const currentPlayer = room?.players.find(p => p.id === session?.playerId) || null;
+  const isHost = room?.players.length ? room.players[0].id === session?.playerId : false;
+
+  // Calculate playable cards when room updates
   useEffect(() => {
-    if (!roomId) {
-      navigate('/');
+    if (!room || !currentPlayer || !room.isStarted || !room.topCard) {
+      setPlayableCards([]);
       return;
     }
 
-    // Simulate fetching room data (replace with actual API call)
-    const fetchRoom = async () => {
-      try {
-        const response = await fetch(`/api/rooms/${roomId}`);
-        if (!response.ok) {
-          throw new Error('Salon non trouvé');
-        }
-        const roomData = await response.json();
-        setRoom(roomData);
-        
-        // For demo purposes, set current player as first player
-        if (roomData.players.length > 0) {
-          setCurrentPlayer(roomData.players[0]);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erreur de connexion');
-      } finally {
-        setIsLoading(false);
+    const playable = currentPlayer.cards.filter(card => {
+      // Wild cards can always be played
+      if (card.color === 'wild') return true;
+      
+      // Match color
+      if (card.color === room.topCard!.color) return true;
+      
+      // Match number/type
+      if (card.type === 'number' && room.topCard!.type === 'number') {
+        return card.value === room.topCard!.value;
       }
-    };
+      
+      // Match action type
+      if (card.type === room.topCard!.type && card.type !== 'number') return true;
+      
+      return false;
+    }).map(card => card.id);
 
-    fetchRoom();
+    setPlayableCards(playable);
+  }, [room, currentPlayer]);
 
-    // Set up WebSocket connection for real-time updates
-    // This would be implemented with actual WebSocket in production
-    
-  }, [roomId, navigate]);
+  // Redirect if no session
+  useEffect(() => {
+    if (!isLoading && !session) {
+      navigate('/');
+    }
+  }, [session, isLoading, navigate]);
 
   const handleStartGame = async () => {
     if (!roomId) return;
@@ -58,7 +63,7 @@ export default function GameRoom() {
       
       if (response.ok) {
         const updatedRoom = await response.json();
-        setRoom(updatedRoom);
+        updateRoom(updatedRoom);
       }
     } catch (error) {
       console.error('Erreur lors du démarrage de la partie:', error);
@@ -66,11 +71,14 @@ export default function GameRoom() {
   };
 
   const handleLeaveRoom = () => {
+    clearSession();
     navigate('/');
   };
 
   const handleCardPlay = async (card: UnoCard) => {
-    if (!room || !currentPlayer || room.currentPlayer !== currentPlayer.id) return;
+    if (!room || !currentPlayer || room.currentPlayer !== currentPlayer.id || !playableCards.includes(card.id)) {
+      return;
+    }
     
     try {
       const response = await fetch(`/api/rooms/${roomId}/play`, {
@@ -84,7 +92,7 @@ export default function GameRoom() {
       
       if (response.ok) {
         const updatedRoom = await response.json();
-        setRoom(updatedRoom);
+        updateRoom(updatedRoom);
         setSelectedCard(undefined);
       }
     } catch (error) {
@@ -106,7 +114,7 @@ export default function GameRoom() {
       
       if (response.ok) {
         const updatedRoom = await response.json();
-        setRoom(updatedRoom);
+        updateRoom(updatedRoom);
       }
     } catch (error) {
       console.error('Erreur lors du piochage:', error);
@@ -176,8 +184,6 @@ export default function GameRoom() {
       </div>
     );
   }
-
-  const isHost = room.players.length > 0 && room.players[0].id === currentPlayer.id;
 
   if (!room.isStarted) {
     return (
