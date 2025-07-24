@@ -91,29 +91,51 @@ export default function GameRoom() {
     navigate('/');
   };
 
-  const handleCardPlay = async (card: UnoCard) => {
+  const handleCardPlay = async (card: UnoCard, wildColor?: UnoColor) => {
     if (!room || !currentPlayer || room.currentPlayer !== currentPlayer.id || !playableCards.includes(card.id)) {
       return;
     }
-    
+
+    // If it's a wild card and no color is provided, show color picker
+    if ((card.type === 'wild' || card.type === 'wild_draw4') && !wildColor) {
+      setPendingWildCard(card);
+      setShowColorPicker(true);
+      return;
+    }
+
     try {
       const response = await fetch(`/api/rooms/${roomId}/play`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           playerId: currentPlayer.id,
-          cardId: card.id
+          cardId: card.id,
+          wildColor: wildColor
         })
       });
-      
+
       if (response.ok) {
         const updatedRoom = await response.json();
         updateRoom(updatedRoom);
         setSelectedCard(undefined);
+        setPendingWildCard(null);
+        setShowColorPicker(false);
       }
     } catch (error) {
       console.error('Erreur lors du jeu de carte:', error);
     }
+  };
+
+  const handleColorSelect = (color: UnoColor) => {
+    if (pendingWildCard) {
+      handleCardPlay(pendingWildCard, color);
+    }
+  };
+
+  const handleColorCancel = () => {
+    setShowColorPicker(false);
+    setPendingWildCard(null);
+    setSelectedCard(undefined);
   };
 
   const handleDrawCard = async () => {
