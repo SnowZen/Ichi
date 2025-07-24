@@ -11,6 +11,7 @@ interface GameBoardProps {
   onCardPlay: (card: UnoCardType) => void;
   onDrawCard: () => void;
   onCallUno: () => void;
+  onChallengeUno?: (playerId: string) => void;
   selectedCard?: string;
   onCardSelect?: (cardId: string) => void;
   playableCards?: string[];
