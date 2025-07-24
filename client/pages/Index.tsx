@@ -93,8 +93,8 @@ export default function Index() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 pb-12">
-        <div className="grid md:grid-cols-2 gap-8">
+      <div className="max-w-4xl mx-auto px-4 pb-8 sm:pb-12">
+        <div className="grid sm:grid-cols-2 gap-6 sm:gap-8">
           {/* Create Room */}
           <Card className="p-8 bg-card/70 backdrop-blur-sm border-primary/20">
             <div className="text-center mb-6">
