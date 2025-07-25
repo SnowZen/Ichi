@@ -435,6 +435,12 @@ export const drawCard: RequestHandler = (req, res) => {
     }
   }
 
+  // Reset UNO status if player no longer has exactly 1 card after drawing
+  if (player.cards.length !== 1 && room.unoCalledBy === playerId) {
+    room.unoCalledBy = undefined;
+    room.unoChallengeTime = undefined;
+  }
+
   // Move to next player after drawing
   const currentPlayerIndex = room.players.findIndex((p) => p.id === playerId);
   let nextPlayerIndex;
