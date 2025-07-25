@@ -53,15 +53,14 @@ export function GameBoard({
                     </span>
                   )}
                   {player.cards.length === 1 &&
-                    room.unoCalledBy !== player.id &&
-                    room.unoChallengeTime && (
+                    room.unoCalledBy !== player.id && (
                       <Button
                         onClick={() => onChallengeUno?.(player.id)}
                         size="sm"
                         variant="destructive"
-                        className="text-xs px-2 py-1 h-auto animate-pulse"
+                        className="text-sm px-3 py-2 font-bold bg-red-600 hover:bg-red-700 border-2 border-red-400 shadow-lg animate-bounce"
                       >
-                        Contre UNO!
+                        ⚠️ CONTRE UNO!
                       </Button>
                     )}
                 </div>
