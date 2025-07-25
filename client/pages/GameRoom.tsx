@@ -32,11 +32,19 @@ export default function GameRoom() {
       return;
     }
 
-    // If there's a draw penalty, player can only play +2 or +4 cards
+    // If there's a draw penalty, player can only play specific counter cards
     if (room.drawPenalty && room.drawPenalty > 0) {
       const playable = currentPlayer.cards
         .filter((card) => {
-          return card.type === "draw2" || card.type === "wild_draw4";
+          // If last card was +2, only +2 and +4 can counter
+          if (room.topCard?.type === "draw2") {
+            return card.type === "draw2" || card.type === "wild_draw4";
+          }
+          // If last card was +4, only +4 can counter
+          if (room.topCard?.type === "wild_draw4") {
+            return card.type === "wild_draw4";
+          }
+          return false;
         })
         .map((card) => card.id);
       setPlayableCards(playable);
