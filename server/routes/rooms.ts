@@ -297,14 +297,19 @@ export const playCard: RequestHandler = (req, res) => {
 
   // Check if player can play this card when there's a draw penalty
   if (room.drawPenalty && room.drawPenalty > 0) {
-    // Player can only play +2 or +4 cards to counter
-    if (card.type !== "draw2" && card.type !== "wild_draw4") {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Vous devez jouer une carte +2 ou +4 pour contrer, ou piocher les cartes",
-        });
+    // Strict rules: +2 only on +2, +4 only on +2 and +4
+    if (room.topCard?.type === "draw2") {
+      if (card.type !== "draw2" && card.type !== "wild_draw4") {
+        return res
+          .status(400)
+          .json({ error: "Vous devez jouer une carte +2 ou +4 pour contrer un +2" });
+      }
+    } else if (room.topCard?.type === "wild_draw4") {
+      if (card.type !== "wild_draw4") {
+        return res
+          .status(400)
+          .json({ error: "Vous devez jouer une carte +4 pour contrer un +4" });
+      }
     }
   }
 
