@@ -499,14 +499,9 @@ export const challengeUno: RequestHandler = (req, res) => {
     return res.status(404).json({ error: "Joueur non trouvé" });
   }
 
-  // Check if challenge is valid (within time limit and player has 1 card without UNO call)
-  if (
-    challenged.cards.length === 1 &&
-    room.unoCalledBy !== challengedPlayerId &&
-    room.unoChallengeTime &&
-    Date.now() <= room.unoChallengeTime
-  ) {
-    // Challenge successful - challenged player draws 2 cards
+  // Challenge is valid if player has exactly 1 card and hasn't called UNO
+  if (challenged.cards.length === 1 && room.unoCalledBy !== challengedPlayerId) {
+    // Challenge successful - challenged player draws 2 cards automatically
     for (let i = 0; i < 2; i++) {
       const card = room.deck.pop();
       if (card) {
@@ -514,17 +509,18 @@ export const challengeUno: RequestHandler = (req, res) => {
       }
     }
 
+    // Clear UNO challenge state
     room.unoCalledBy = undefined;
     room.unoChallengeTime = undefined;
 
     rooms.set(roomId, room);
     res.json({
       success: true,
-      message: `${challenger.name} a défié ${challenged.name} avec succès! ${challenged.name} pioche 2 cartes.`,
+      message: `${challenger.name} a défié ${challenged.name} avec succès! ${challenged.name} pioche 2 cartes automatiquement.`,
       room,
     });
   } else {
-    res.status(400).json({ error: "Défi invalide" });
+    res.status(400).json({ error: "Défi invalide - le joueur a déjà appelé UNO ou n'a pas 1 carte" });
   }
 };
 
