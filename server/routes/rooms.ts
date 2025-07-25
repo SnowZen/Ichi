@@ -302,7 +302,9 @@ export const playCard: RequestHandler = (req, res) => {
       if (card.type !== "draw2" && card.type !== "wild_draw4") {
         return res
           .status(400)
-          .json({ error: "Vous devez jouer une carte +2 ou +4 pour contrer un +2" });
+          .json({
+            error: "Vous devez jouer une carte +2 ou +4 pour contrer un +2",
+          });
       }
     } else if (room.topCard?.type === "wild_draw4") {
       if (card.type !== "wild_draw4") {
@@ -508,7 +510,10 @@ export const challengeUno: RequestHandler = (req, res) => {
   }
 
   // Challenge is valid if player has exactly 1 card and hasn't called UNO
-  if (challenged.cards.length === 1 && room.unoCalledBy !== challengedPlayerId) {
+  if (
+    challenged.cards.length === 1 &&
+    room.unoCalledBy !== challengedPlayerId
+  ) {
     // Challenge successful - challenged player draws 2 cards automatically
     for (let i = 0; i < 2; i++) {
       const card = room.deck.pop();
@@ -528,7 +533,11 @@ export const challengeUno: RequestHandler = (req, res) => {
       room,
     });
   } else {
-    res.status(400).json({ error: "Défi invalide - le joueur a déjà appelé UNO ou n'a pas 1 carte" });
+    res
+      .status(400)
+      .json({
+        error: "Défi invalide - le joueur a déjà appelé UNO ou n'a pas 1 carte",
+      });
   }
 };
 

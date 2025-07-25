@@ -31,10 +31,11 @@ export function GameBoard({
   const otherPlayers = room.players.filter((p) => p.id !== currentPlayer.id);
   const isMyTurn = room.currentPlayer === currentPlayer.id;
 
-  const playersWithOneCard = room.players.filter(p =>
-    p.cards.length === 1 &&
-    room.unoCalledBy !== p.id &&
-    p.id !== currentPlayer.id
+  const playersWithOneCard = room.players.filter(
+    (p) =>
+      p.cards.length === 1 &&
+      room.unoCalledBy !== p.id &&
+      p.id !== currentPlayer.id,
   );
 
   return (
@@ -42,9 +43,14 @@ export function GameBoard({
       {/* Floating UNO Challenge Notification */}
       {playersWithOneCard.length > 0 && (
         <div className="fixed top-4 right-4 z-50 space-y-2">
-          {playersWithOneCard.map(player => (
-            <div key={player.id} className="bg-red-600 text-white p-4 rounded-lg shadow-2xl border-2 border-red-400 animate-bounce">
-              <p className="font-bold text-center">⚠️ {player.name} n'a pas appelé UNO!</p>
+          {playersWithOneCard.map((player) => (
+            <div
+              key={player.id}
+              className="bg-red-600 text-white p-4 rounded-lg shadow-2xl border-2 border-red-400 animate-bounce"
+            >
+              <p className="font-bold text-center">
+                ⚠️ {player.name} n'a pas appelé UNO!
+              </p>
               <Button
                 onClick={() => onChallengeUno?.(player.id)}
                 className="w-full mt-2 bg-red-800 hover:bg-red-900 font-bold text-sm"
