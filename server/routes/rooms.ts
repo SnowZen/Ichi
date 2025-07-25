@@ -383,9 +383,11 @@ export const playCard: RequestHandler = (req, res) => {
     room.currentPlayer = undefined; // No more turns
   }
 
-  // Always reset UNO status when a card is played
-  room.unoCalledBy = undefined;
-  room.unoChallengeTime = undefined;
+  // Reset UNO status only if player no longer has exactly 1 card after playing
+  if (player.cards.length !== 1 && room.unoCalledBy === playerId) {
+    room.unoCalledBy = undefined;
+    room.unoChallengeTime = undefined;
+  }
 
   rooms.set(roomId, room);
   res.json(room);
