@@ -187,25 +187,25 @@ export function GameBoard({
               )}
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-3 items-center">
               {currentPlayer.cards.length === 1 &&
                 room.unoCalledBy !== currentPlayer.id && (
                   <Button
                     onClick={onCallUno}
                     variant="destructive"
-                    size="sm"
-                    className="animate-pulse"
+                    size="lg"
+                    className="px-6 py-3 text-xl font-black bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 border-3 border-yellow-400 shadow-2xl animate-pulse transform hover:scale-105"
                   >
-                    UNO!
+                    🚨 UNO! 🚨
                   </Button>
                 )}
               {currentPlayer.cards.length === 1 &&
                 room.unoCalledBy === currentPlayer.id && (
-                  <span className="text-xs bg-green-500 text-white px-2 py-1 rounded self-center">
-                    UNO appelé ✓
-                  </span>
+                  <div className="px-4 py-2 bg-green-500 text-white rounded-lg font-bold text-lg border-2 border-green-300 shadow-lg">
+                    ✅ UNO appelé!
+                  </div>
                 )}
-              <span className="text-sm text-muted-foreground self-center">
+              <span className="text-lg font-semibold text-foreground">
                 {currentPlayer.cards.length} carte
                 {currentPlayer.cards.length > 1 ? "s" : ""}
               </span>
