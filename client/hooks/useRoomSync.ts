@@ -65,7 +65,7 @@ export function useRoomSync(roomId: string | undefined) {
     room,
     isLoading,
     error,
-    refetch: fetchRoom,
+    refetch: () => fetchRoom(true),
     updateRoom,
   };
 }
