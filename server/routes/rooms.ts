@@ -411,6 +411,7 @@ export const startGame: RequestHandler = (req, res) => {
       player.cards = skyjoPlayer.cards;
       player.score = 0;
       player.totalScore = 0;
+      (player as any).cardsRevealed = 0; // Track how many initial cards have been revealed
     });
 
     room.deck = deck;
@@ -418,6 +419,7 @@ export const startGame: RequestHandler = (req, res) => {
     room.topCard = undefined;
     room.drawPenalty = 0;
     room.round = 1;
+    (room as any).isInitialization = true; // Start in initialization phase
 
     // Start the discard pile with one card from deck
     if (deck.length > 0) {
