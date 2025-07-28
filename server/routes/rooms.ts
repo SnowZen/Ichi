@@ -588,6 +588,45 @@ export const changeGame: RequestHandler = (req, res) => {
   res.json(room);
 };
 
+export const leaveGame: RequestHandler = (req, res) => {
+  const { roomId } = req.params;
+  const { playerId } = req.body;
+
+  const room = rooms.get(roomId);
+  if (!room) {
+    return res.status(404).json({ error: "Salon non trouvé" });
+  }
+
+  const playerIndex = room.players.findIndex((p) => p.id === playerId);
+  if (playerIndex === -1) {
+    return res.status(404).json({ error: "Joueur non trouvé" });
+  }
+
+  // Remove player from room
+  room.players.splice(playerIndex, 1);
+
+  // If no players left, delete the room
+  if (room.players.length === 0) {
+    rooms.delete(roomId);
+    return res.json({ message: "Salon fermé - aucun joueur restant" });
+  }
+
+  // If the game was started and the leaving player was the current player, advance to next
+  if (room.isStarted && room.currentPlayer === playerId) {
+    const nextPlayerIndex = playerIndex % room.players.length;
+    room.currentPlayer = room.players[nextPlayerIndex].id;
+  }
+
+  // If only one player left in a started game, end the game
+  if (room.isStarted && room.players.length === 1) {
+    room.isFinished = true;
+    room.winner = room.players[0].id;
+  }
+
+  rooms.set(roomId, room);
+  res.json(room);
+};
+
 export const restartGame: RequestHandler = (req, res) => {
   const { roomId } = req.params;
 
