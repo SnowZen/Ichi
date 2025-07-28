@@ -86,10 +86,11 @@ export function useRoomSync(roomId: string | undefined) {
 
     const interval = setInterval(() => {
       fetchRoom(false);
+      sendHeartbeat(); // Send heartbeat with each poll
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [fetchRoom, roomId]);
+  }, [fetchRoom, roomId, sendHeartbeat]);
 
   const updateRoom = useCallback((updatedRoom: GameRoom) => {
     setRoom(updatedRoom);
