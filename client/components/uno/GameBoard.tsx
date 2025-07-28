@@ -25,6 +25,7 @@ export function GameBoard({
   onDrawCard,
   onCallUno,
   onChallengeUno,
+  onLeaveRoom,
   selectedCard,
   onCardSelect,
   playableCards = [],
