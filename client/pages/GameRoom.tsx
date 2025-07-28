@@ -251,6 +251,25 @@ export default function GameRoom() {
     }
   };
 
+  const handleGameSelect = async (gameType: any) => {
+    if (!roomId) return;
+
+    try {
+      const response = await fetch(`/api/rooms/${roomId}/change-game`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gameType }),
+      });
+
+      if (response.ok) {
+        const updatedRoom = await response.json();
+        updateRoom(updatedRoom);
+      }
+    } catch (error) {
+      console.error("Erreur lors du changement de jeu:", error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-card to-background flex items-center justify-center">
