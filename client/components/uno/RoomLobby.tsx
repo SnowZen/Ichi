@@ -56,6 +56,11 @@ export function RoomLobby({
           <h1 className="text-4xl font-bold text-primary mb-2">
             Salon: {room.name}
           </h1>
+          <div className="flex justify-center gap-2 mb-2">
+            <Badge variant="outline" className="text-lg px-4 py-2">
+              {AVAILABLE_GAMES.find(g => g.id === room.gameType)?.icon} {AVAILABLE_GAMES.find(g => g.id === room.gameType)?.name}
+            </Badge>
+          </div>
           <p className="text-muted-foreground">En attente des joueurs...</p>
         </div>
 
