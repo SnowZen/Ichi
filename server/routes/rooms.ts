@@ -554,13 +554,7 @@ export const changeGame: RequestHandler = (req, res) => {
       .json({ error: "Impossible de changer de jeu pendant une partie" });
   }
 
-  if (room.players.length > 1) {
-    return res
-      .status(400)
-      .json({
-        error: "Impossible de changer de jeu avec des joueurs connectés",
-      });
-  }
+  // Allow game change even with players connected (host decision)
 
   if (!["uno", "skyjo"].includes(gameType)) {
     return res.status(400).json({ error: "Type de jeu invalide" });
