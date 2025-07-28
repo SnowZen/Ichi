@@ -17,11 +17,11 @@ interface GameRouterProps {
 export function GameRouter(props: GameRouterProps) {
   const { room } = props;
 
-  if (room.gameType === 'uno') {
+  if (room.gameType === "uno") {
     return <GameBoard {...props} />;
   }
 
-  if (room.gameType === 'skyjo') {
+  if (room.gameType === "skyjo") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-card to-background flex items-center justify-center p-4">
         <Card className="p-8 bg-card/90 backdrop-blur-sm border-2 border-primary/20 shadow-2xl max-w-md w-full text-center">
@@ -29,10 +29,11 @@ export function GameRouter(props: GameRouterProps) {
             <div className="text-6xl mb-4">⭐</div>
             <h1 className="text-3xl font-bold mb-4">Skyjo</h1>
             <p className="text-muted-foreground mb-6">
-              Le jeu Skyjo est en cours de développement ! 
+              Le jeu Skyjo est en cours de développement !
             </p>
             <p className="text-sm text-muted-foreground">
-              🚧 Cette fonctionnalité sera bientôt disponible. En attendant, profitez d'UNO !
+              🚧 Cette fonctionnalité sera bientôt disponible. En attendant,
+              profitez d'UNO !
             </p>
           </div>
         </Card>
