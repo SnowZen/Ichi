@@ -543,6 +543,40 @@ export const challengeUno: RequestHandler = (req, res) => {
   }
 };
 
+export const changeGame: RequestHandler = (req, res) => {
+  const { roomId } = req.params;
+  const { gameType } = req.body;
+
+  const room = rooms.get(roomId);
+  if (!room) {
+    return res.status(404).json({ error: 'Salon non trouvé' });
+  }
+
+  if (room.isStarted) {
+    return res.status(400).json({ error: 'Impossible de changer de jeu pendant une partie' });
+  }
+
+  if (room.players.length > 1) {
+    return res.status(400).json({ error: 'Impossible de changer de jeu avec des joueurs connectés' });
+  }
+
+  if (!['uno', 'skyjo'].includes(gameType)) {
+    return res.status(400).json({ error: 'Type de jeu invalide' });
+  }
+
+  room.gameType = gameType;
+
+  // Adjust max players based on game
+  if (gameType === 'skyjo') {
+    room.maxPlayers = Math.min(room.maxPlayers, 8);
+  } else {
+    room.maxPlayers = Math.min(room.maxPlayers, 4);
+  }
+
+  rooms.set(roomId, room);
+  res.json(room);
+};
+
 export const restartGame: RequestHandler = (req, res) => {
   const { roomId } = req.params;
 
