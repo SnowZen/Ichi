@@ -99,11 +99,19 @@ export default function GameRoom() {
   // Track connection failures (only count real connection errors, not local restoration messages)
   useEffect(() => {
     if (error && !error.includes("restauré") && !error.includes("sauvegarde")) {
-      setConnectionFailures((prev) => prev + 1);
+      setConnectionFailures((prev) => {
+        const newCount = prev + 1;
+        // Activate manual mode after 5 failures
+        if (newCount >= 5 && !manualMode) {
+          setManualMode(true);
+          console.log("Mode manuel activé automatiquement après échecs répétés");
+        }
+        return newCount;
+      });
     } else if (room && !error) {
       setConnectionFailures(0);
     }
-  }, [error, room]);
+  }, [error, room, manualMode]);
 
   const handleStartGame = async () => {
     if (!roomId) return;
