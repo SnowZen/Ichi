@@ -11,6 +11,7 @@ import {
   drawCard,
   callUno,
   challengeUno,
+  changeGame,
   restartGame,
 } from "./routes/rooms";
 
