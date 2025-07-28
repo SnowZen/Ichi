@@ -100,7 +100,7 @@ export default function Index() {
             🎯 UNO
           </Badge>
           <Badge variant="secondary" className="gap-1">
-            ⭐ Skyjo
+            ��� Skyjo
           </Badge>
           <Badge variant="secondary" className="gap-1">
             <Users className="w-3 h-3" />
@@ -132,7 +132,7 @@ export default function Index() {
               </div>
               <h2 className="text-2xl font-semibold mb-2">Créer un salon</h2>
               <p className="text-muted-foreground">
-                Créez une nouvelle partie UNO et invitez vos amis
+                Créez une nouvelle partie et choisissez votre jeu favori
               </p>
             </div>
 
