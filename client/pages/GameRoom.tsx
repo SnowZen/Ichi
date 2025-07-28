@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { GameBoard } from "@/components/uno/GameBoard";
+import { GameRouter } from "@/components/games/GameRouter";
 import { RoomLobby } from "@/components/uno/RoomLobby";
 import { ColorPicker } from "@/components/uno/ColorPicker";
 import { GameOver } from "@/components/uno/GameOver";
