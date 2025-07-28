@@ -257,16 +257,28 @@ export const startGame: RequestHandler = (req, res) => {
     room.topCard = topCard;
     room.drawPenalty = 0;
   } else if (room.gameType === "skyjo") {
-    // Initialize Skyjo game (placeholder for now)
-    room.deck = [];
+    // Initialize Skyjo game
+    const deck = createSkyjoDeck();
+
+    // Initialize players with Skyjo cards
+    room.players.forEach((player) => {
+      const skyjoPlayer = initializeSkyjoPlayer(player.id, player.name, deck);
+      player.cards = skyjoPlayer.cards;
+      player.score = 0;
+      player.totalScore = 0;
+    });
+
+    room.deck = deck;
     room.discardPile = [];
     room.topCard = undefined;
     room.drawPenalty = 0;
+    room.round = 1;
 
-    // Clear player cards for Skyjo
-    room.players.forEach((player) => {
-      player.cards = [];
-    });
+    // Start the discard pile with one card from deck
+    if (deck.length > 0) {
+      const firstCard = deck.pop()!;
+      room.discardPile = [firstCard];
+    }
   }
 
   room.currentPlayer = room.players[0].id;
