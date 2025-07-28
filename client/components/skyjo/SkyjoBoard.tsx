@@ -125,6 +125,34 @@ export function SkyjoBoard({
           </Card>
         )}
 
+        {/* Status and instructions */}
+        {isWaitingForDiscardExchange && (
+          <Card className="p-4 bg-yellow-50 border-yellow-200">
+            <div className="text-center">
+              <p className="text-yellow-800 font-medium">
+                🔄 Mode échange avec la défausse
+              </p>
+              <p className="text-sm text-yellow-700 mt-1">
+                Cliquez sur une de vos cartes pour l'échanger avec la carte de la défausse
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-2"
+                onClick={() => {
+                  // This would need to be passed as a prop
+                  if (onLeaveRoom) {
+                    // Temporary - we need a proper cancel function
+                    window.location.reload();
+                  }
+                }}
+              >
+                Annuler
+              </Button>
+            </div>
+          </Card>
+        )}
+
         {/* Game Center - Draw pile and discard pile */}
         <div className="flex justify-center items-center gap-8">
           {/* Draw Pile */}
