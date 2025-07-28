@@ -197,28 +197,16 @@ export function SkyjoGame({
               Échanger avec une de mes cartes
             </Button>
             <Button
-              onClick={async () => {
-                // Discard the drawn card and allow revealing a hidden card
-                try {
-                  const response = await fetch(`/api/rooms/${room.id}/skyjo/discard-drawn`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      playerId: currentPlayer.id,
-                      drawnCard,
-                    }),
-                  });
+              onClick={() => {
+                // First discard the drawn card to discard pile
+                const updatedRoom = { ...room };
+                (updatedRoom.discardPile as number[]).push(drawnCard);
+                updateRoom(updatedRoom);
 
-                  if (response.ok) {
-                    const updatedRoom = await response.json();
-                    updateRoom(updatedRoom);
-                    setDrawnCard(null);
-                    alert("Carte défaussée ! Cliquez maintenant sur une carte cachée pour la révéler");
-                    setIsWaitingForAction(true);
-                  }
-                } catch (error) {
-                  console.error("Erreur lors de la défausse:", error);
-                }
+                setDrawnCard(null);
+                setIsWaitingForRevealAfterDiscard(true);
+                setIsWaitingForAction(true);
+                alert("Carte défaussée ! Cliquez maintenant sur une carte cachée pour la révéler");
               }}
               variant="outline"
               className="w-full"
