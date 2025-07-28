@@ -11,6 +11,7 @@ export interface SkyjoPlayer {
   score: number;
   totalScore: number;
   isConnected: boolean;
+  cardsRevealed?: number; // Number of cards revealed during initialization
 }
 
 export interface SkyjoGameRoom {
