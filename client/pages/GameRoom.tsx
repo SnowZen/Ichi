@@ -382,6 +382,7 @@ export default function GameRoom() {
         selectedCard={selectedCard}
         onCardSelect={setSelectedCard}
         playableCards={playableCards}
+        hasConnectionIssues={connectionFailures >= 3}
       />
 
       {showColorPicker && (
