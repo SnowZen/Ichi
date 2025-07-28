@@ -11,17 +11,30 @@ export function useRoomSync(roomId: string | undefined) {
       if (!roomId) return;
 
       try {
+        // Add timeout for serverless functions
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
         const response = await fetch(`/api/rooms/${roomId}`, {
           headers: {
             "Cache-Control": "no-cache",
+            "Content-Type": "application/json",
           },
+          signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
+
         if (!response.ok) {
           if (response.status === 404) {
             throw new Error("Salon non trouvé");
           }
+          if (response.status >= 500) {
+            throw new Error("Erreur serveur temporaire");
+          }
           throw new Error(`Erreur ${response.status}: ${response.statusText}`);
         }
+
         const roomData = await response.json();
         setRoom(roomData);
         setError(null);
