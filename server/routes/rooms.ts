@@ -1167,3 +1167,120 @@ export const heartbeat: RequestHandler = (req, res) => {
   rooms.set(roomId, room);
   res.json({ status: "ok" });
 };
+
+// Backup room data
+const backups = new Map<string, any>();
+
+export const backupRoom: RequestHandler = (req, res) => {
+  const { roomId } = req.params;
+  const { gameData, timestamp } = req.body;
+
+  if (!gameData) {
+    return res.status(400).json({ error: "Données de jeu requises" });
+  }
+
+  // Store backup with timestamp
+  backups.set(roomId, {
+    gameData,
+    timestamp,
+    backupTime: Date.now(),
+  });
+
+  res.json({ status: "backed up" });
+};
+
+export const restoreRoom: RequestHandler = (req, res) => {
+  const { roomId } = req.params;
+
+  const backup = backups.get(roomId);
+  if (!backup) {
+    return res.status(404).json({ error: "Aucune sauvegarde trouvée" });
+  }
+
+  // Only restore if backup is less than 1 hour old
+  if (Date.now() - backup.backupTime > 3600000) {
+    backups.delete(roomId);
+    return res.status(404).json({ error: "Sauvegarde expirée" });
+  }
+
+  res.json({
+    gameData: backup.gameData,
+    timestamp: backup.timestamp,
+  });
+};
+
+// Enhanced room creation with backup check
+export const createRoomWithRestore: RequestHandler = (req, res) => {
+  const { playerName, maxPlayers = 4, gameType = "uno", roomId } = req.body;
+
+  if (!playerName || typeof playerName !== "string") {
+    return res.status(400).json({ error: "Nom de joueur requis" });
+  }
+
+  // If roomId provided, try to restore
+  if (roomId) {
+    const backup = backups.get(roomId);
+    if (backup && Date.now() - backup.backupTime < 3600000) {
+      // Restore from backup
+      rooms.set(roomId, backup.gameData);
+
+      // Find or add player
+      const room = backup.gameData;
+      let player = room.players.find((p: any) => p.name === playerName);
+      if (!player) {
+        const playerId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        player = {
+          id: playerId,
+          name: playerName.trim(),
+          cards: [],
+          isConnected: true,
+        };
+        room.players.push(player);
+      } else {
+        player.isConnected = true;
+      }
+
+      rooms.set(roomId, room);
+      return res.json({
+        roomId,
+        playerId: player.id,
+        playerName: player.name,
+        room,
+        restored: true,
+      });
+    }
+  }
+
+  // Normal room creation
+  const newRoomId = roomId || generateRoomCode();
+  const playerId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  const player: Player = {
+    id: playerId,
+    name: playerName.trim(),
+    cards: [],
+    isConnected: true,
+  };
+
+  const room: GameRoom = {
+    id: newRoomId,
+    name: `Salon ${newRoomId}`,
+    gameType: gameType as any,
+    players: [player],
+    maxPlayers,
+    isStarted: false,
+    direction: 1,
+    deck: [],
+    discardPile: [],
+  };
+
+  rooms.set(newRoomId, room);
+
+  res.json({
+    roomId: newRoomId,
+    playerId,
+    playerName: playerName.trim(),
+    room,
+    restored: false,
+  });
+};
