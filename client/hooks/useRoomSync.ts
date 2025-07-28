@@ -43,16 +43,16 @@ export function useRoomSync(roomId: string | undefined) {
 
   // Initial fetch
   useEffect(() => {
-    fetchRoom();
+    fetchRoom(true);
   }, [fetchRoom]);
 
-  // Auto-refresh every 2 seconds for real-time sync
+  // Auto-refresh every 3 seconds for real-time sync (reduced frequency to be less aggressive)
   useEffect(() => {
     if (!roomId) return;
 
     const interval = setInterval(() => {
-      fetchRoom();
-    }, 2000);
+      fetchRoom(false);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [fetchRoom, roomId]);
