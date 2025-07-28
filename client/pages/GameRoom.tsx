@@ -323,6 +323,7 @@ export default function GameRoom() {
         currentPlayerId={currentPlayer.id}
         onStartGame={handleStartGame}
         onLeaveRoom={handleLeaveRoom}
+        onGameSelect={handleGameSelect}
         isHost={isHost}
       />
     );
