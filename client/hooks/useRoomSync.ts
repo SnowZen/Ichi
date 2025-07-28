@@ -61,22 +61,20 @@ export function useRoomSync(roomId: string | undefined) {
         const errorMessage =
           err instanceof Error ? err.message : "Erreur de connexion";
 
-        // Try local restoration first
-        if (isInitialLoad && !room) {
+        // Only set error on initial load
+        if (isInitialLoad) {
+          // Try local restoration only on first load
           const localData = loadGameState(roomId);
           if (localData) {
             setRoom(localData.gameData);
-            setError("Mode hors ligne - Utilisation des données locales");
+            setError("Salon restauré depuis la sauvegarde locale");
             return;
           }
-        }
-
-        // Only set error on initial load or if we had a successful connection before
-        if (isInitialLoad || !room) {
           setError(errorMessage);
         } else {
-          // For subsequent polls, just log the error but don't break the UI
+          // For subsequent polls, just log the error but keep existing room data
           console.warn("Erreur de synchronisation:", errorMessage);
+          // Don't change the error state during polling to avoid UI flickering
         }
       } finally {
         if (isInitialLoad) {
