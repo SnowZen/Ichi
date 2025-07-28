@@ -358,6 +358,11 @@ export default function GameRoom() {
 
   return (
     <>
+      <ConnectionStatus
+        isConnected={!error}
+        lastError={error}
+      />
+
       <GameRouter
         room={room}
         currentPlayer={currentPlayer}
