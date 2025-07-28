@@ -22,7 +22,8 @@ interface GameRouterProps {
 }
 
 export function GameRouter(props: GameRouterProps) {
-  const { room, currentPlayer, onLeaveRoom, updateRoom, hasConnectionIssues } = props;
+  const { room, currentPlayer, onLeaveRoom, updateRoom, hasConnectionIssues } =
+    props;
 
   if (room.gameType === "uno") {
     return <GameBoard {...props} />;

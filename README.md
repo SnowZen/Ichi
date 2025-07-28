@@ -42,6 +42,7 @@ Render offre un serveur persistant, idéal pour les jeux multijoueurs.
 2. **Manuel** : Suivre le guide dans [RENDER_DEPLOY.md](./RENDER_DEPLOY.md)
 
 **Avantages de Render** :
+
 - ✅ Serveur persistant (pas de déconnexions)
 - ✅ État de jeu maintenu
 - ✅ Reconnexion automatique
@@ -69,12 +70,14 @@ Render offre un serveur persistant, idéal pour les jeux multijoueurs.
 ## 🎯 Fonctionnalités
 
 ### UNO
+
 - ✅ Règles complètes (cartes +2, +4, wild, etc.)
 - ✅ Bouton UNO et contre-UNO
 - ✅ Gestion des couleurs wild
 - ✅ Conditions de victoire
 
 ### Skyjo
+
 - ✅ Phase d'initialisation (choix de 2 cartes)
 - ✅ Échange avec pile de défausse
 - ✅ Suppression de colonnes identiques
@@ -82,6 +85,7 @@ Render offre un serveur persistant, idéal pour les jeux multijoueurs.
 - ✅ Mode offline comme fallback
 
 ### Multijoueur
+
 - ✅ Création/join de salons avec codes
 - ✅ Synchronisation temps réel
 - ✅ Reconnexion automatique
@@ -108,18 +112,21 @@ npm run format.fix   # Formatage du code
 ## 🌐 API Endpoints
 
 ### Salons
+
 - `POST /api/rooms` - Créer un salon
 - `POST /api/rooms/:id/join` - Rejoindre un salon
 - `GET /api/rooms/:id` - Récupérer info salon
 - `POST /api/rooms/:id/leave` - Quitter un salon
 
 ### UNO
+
 - `POST /api/rooms/:id/start` - Démarrer partie
 - `POST /api/rooms/:id/play` - Jouer une carte
 - `POST /api/rooms/:id/draw` - Piocher
 - `POST /api/rooms/:id/uno` - Appeler UNO
 
 ### Skyjo
+
 - `POST /api/rooms/:id/skyjo/reveal` - Révéler carte
 - `POST /api/rooms/:id/skyjo/draw` - Piocher
 - `POST /api/rooms/:id/skyjo/take-discard` - Prendre défausse

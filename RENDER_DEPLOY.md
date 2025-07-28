@@ -21,11 +21,13 @@ Ce guide vous explique comment déployer Board Games Hub sur Render.
 ## Méthode 2: Déploiement manuel
 
 1. **Créer un Web Service** :
+
    - Aller sur https://dashboard.render.com
    - Cliquer "New +" puis "Web Service"
    - Connecter votre repository GitHub
 
 2. **Configuration** :
+
    - **Name**: board-games-hub
    - **Region**: Frankfurt (ou votre région préférée)
    - **Branch**: main
@@ -34,6 +36,7 @@ Ce guide vous explique comment déployer Board Games Hub sur Render.
    - **Start Command**: `npm start`
 
 3. **Variables d'environnement** :
+
    - `NODE_ENV` = `production`
    - `PORT` = (laissez vide, Render le définira automatiquement)
 
@@ -56,7 +59,7 @@ Une fois déployé, votre application sera disponible à l'URL fournie par Rende
 ### Fonctionnalités disponibles
 
 - ✅ **UNO multijoueur** avec serveur persistant
-- ✅ **Skyjo multijoueur** avec serveur persistant  
+- ✅ **Skyjo multijoueur** avec serveur persistant
 - ✅ **Skyjo offline** comme fallback
 - ✅ **Connexions stables** (pas de fonctions serverless)
 - ✅ **Reconnexion automatique**
@@ -78,6 +81,7 @@ Une fois déployé, votre application sera disponible à l'URL fournie par Rende
 ## Mise à jour
 
 Pour mettre à jour l'application :
+
 1. Pousser les changements sur GitHub
 2. Render redéploiera automatiquement
 

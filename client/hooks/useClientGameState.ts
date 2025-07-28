@@ -35,29 +35,32 @@ export function useClientGameState(roomId: string | undefined) {
   }, [roomId]);
 
   // Save state to localStorage whenever it changes
-  const updateGameState = useCallback((newData: any) => {
-    if (!roomId) return;
+  const updateGameState = useCallback(
+    (newData: any) => {
+      if (!roomId) return;
 
-    const newState: ClientGameState = {
-      roomId,
-      gameData: newData,
-      lastUpdated: Date.now(),
-      version: (gameState?.version || 0) + 1,
-    };
+      const newState: ClientGameState = {
+        roomId,
+        gameData: newData,
+        lastUpdated: Date.now(),
+        version: (gameState?.version || 0) + 1,
+      };
 
-    setGameState(newState);
-    
-    try {
-      localStorage.setItem(`game_state_${roomId}`, JSON.stringify(newState));
-    } catch (err) {
-      console.warn("Failed to save game state:", err);
-    }
-  }, [roomId, gameState?.version]);
+      setGameState(newState);
+
+      try {
+        localStorage.setItem(`game_state_${roomId}`, JSON.stringify(newState));
+      } catch (err) {
+        console.warn("Failed to save game state:", err);
+      }
+    },
+    [roomId, gameState?.version],
+  );
 
   // Clear state
   const clearGameState = useCallback(() => {
     if (!roomId) return;
-    
+
     setGameState(null);
     try {
       localStorage.removeItem(`game_state_${roomId}`);

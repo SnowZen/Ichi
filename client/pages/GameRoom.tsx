@@ -98,7 +98,7 @@ export default function GameRoom() {
   // Track connection failures
   useEffect(() => {
     if (error) {
-      setConnectionFailures(prev => prev + 1);
+      setConnectionFailures((prev) => prev + 1);
     } else if (room) {
       setConnectionFailures(0);
     }
