@@ -121,19 +121,17 @@ export function useRoomSync(roomId: string | undefined) {
     (updatedRoom: GameRoom) => {
       setRoom(updatedRoom);
 
-      // Auto-save when room updates
-      if (session && roomId) {
+      // Auto-save when room updates (debounced to avoid excessive saves)
+      if (session && roomId && updatedRoom) {
         saveGameState(
           roomId,
           session.playerId,
           session.playerName,
           updatedRoom,
         );
-        // Non-blocking server sync
-        syncWithServer(roomId, updatedRoom);
       }
     },
-    [session, roomId, saveGameState, syncWithServer],
+    [session, roomId, saveGameState],
   );
 
   return {
