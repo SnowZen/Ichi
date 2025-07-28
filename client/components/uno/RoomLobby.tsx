@@ -23,6 +23,7 @@ export function RoomLobby({
   currentPlayerId,
   onStartGame,
   onLeaveRoom,
+  onGameSelect,
   isHost,
 }: RoomLobbyProps) {
   const [copied, setCopied] = useState(false);
