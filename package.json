@@ -17,6 +17,8 @@
     "build:server": "vite build --config vite.config.server.ts",
     "start": "node dist/server/node-build.mjs",
     "start:prod": "NODE_ENV=production node dist/server/node-build.mjs",
+    "netlify:dev": "npm run build && npx netlify dev",
+    "netlify:build": "npm run build",
     "render:build": "npm ci && npm run build",
     "render:start": "npm run start:prod",
     "test": "vitest --run",
