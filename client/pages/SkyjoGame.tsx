@@ -68,6 +68,24 @@ export function SkyjoGame({
           setDrawnCard(null);
           setIsWaitingForAction(false);
         }
+      } else if (isWaitingForRevealAfterDiscard) {
+        // Player is revealing a card after discarding drawn card
+        const response = await fetch(`/api/rooms/${room.id}/skyjo/reveal`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            playerId: currentPlayer.id,
+            row,
+            col,
+          }),
+        });
+
+        if (response.ok) {
+          const updatedRoom = await response.json();
+          updateRoom(updatedRoom);
+          setIsWaitingForRevealAfterDiscard(false);
+          setIsWaitingForAction(false);
+        }
       } else {
         // Regular card reveal - only during initialization phase
         if ((room as any).isInitialization) {
