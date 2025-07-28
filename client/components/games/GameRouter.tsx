@@ -17,7 +17,7 @@ interface GameRouterProps {
 }
 
 export function GameRouter(props: GameRouterProps) {
-  const { room } = props;
+  const { room, onLeaveRoom } = props;
 
   if (room.gameType === "uno") {
     return <GameBoard {...props} />;
@@ -26,6 +26,20 @@ export function GameRouter(props: GameRouterProps) {
   if (room.gameType === "skyjo") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-card to-background flex items-center justify-center p-4">
+        {/* Quit Game Button - Fixed position top left */}
+        {onLeaveRoom && (
+          <div className="fixed top-4 left-4 z-50">
+            <Button
+              onClick={onLeaveRoom}
+              variant="outline"
+              size="sm"
+              className="bg-background/90 backdrop-blur-sm border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            >
+              🚪 Quitter
+            </Button>
+          </div>
+        )}
+
         <Card className="p-8 bg-card/90 backdrop-blur-sm border-2 border-primary/20 shadow-2xl max-w-md w-full text-center">
           <div className="mb-6">
             <div className="text-6xl mb-4">⭐</div>
