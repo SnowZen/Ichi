@@ -14,7 +14,10 @@ export default function GameRoom() {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
   const { session, clearSession } = usePlayerSession();
-  const { room, isLoading, error, updateRoom, refetch } = useRoomSync(roomId, manualMode);
+  const { room, isLoading, error, updateRoom, refetch } = useRoomSync(
+    roomId,
+    manualMode,
+  );
   const { restoreGame, clearBackup } = useGameBackup(roomId, room);
   const [selectedCard, setSelectedCard] = useState<string | undefined>();
   const [playableCards, setPlayableCards] = useState<string[]>([]);
@@ -104,7 +107,9 @@ export default function GameRoom() {
         // Activate manual mode after 5 failures
         if (newCount >= 5 && !manualMode) {
           setManualMode(true);
-          console.log("Mode manuel activé automatiquement après échecs répétés");
+          console.log(
+            "Mode manuel activé automatiquement après échecs répétés",
+          );
         }
         return newCount;
       });

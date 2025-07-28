@@ -15,7 +15,8 @@ export function ConnectionStatus({
   const [lastShownError, setLastShownError] = useState<string | null>(null);
 
   // Only show real connection errors, not restoration messages
-  const isRealError = lastError &&
+  const isRealError =
+    lastError &&
     !lastError.includes("restauré") &&
     !lastError.includes("sauvegarde") &&
     !lastError.includes("données locales");

@@ -3,7 +3,10 @@ import { GameRoom } from "@shared/uno";
 import { usePlayerSession } from "./usePlayerSession";
 import { useRobustStorage } from "./useRobustStorage";
 
-export function useRoomSync(roomId: string | undefined, disablePolling = false) {
+export function useRoomSync(
+  roomId: string | undefined,
+  disablePolling = false,
+) {
   const [room, setRoom] = useState<GameRoom | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
