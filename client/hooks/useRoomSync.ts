@@ -53,11 +53,9 @@ export function useRoomSync(roomId: string | undefined) {
         setRoom(roomData);
         setError(null);
 
-        // Save to local storage
-        if (session) {
+        // Save to local storage only on successful fetch
+        if (session && roomData) {
           saveGameState(roomId, session.playerId, session.playerName, roomData);
-          // Sync with server backup (non-blocking)
-          syncWithServer(roomId, roomData);
         }
       } catch (err) {
         const errorMessage =
