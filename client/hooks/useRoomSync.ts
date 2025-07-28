@@ -6,23 +6,40 @@ export function useRoomSync(roomId: string | undefined) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchRoom = useCallback(async () => {
+  const fetchRoom = useCallback(async (isInitialLoad = false) => {
     if (!roomId) return;
 
     try {
-      const response = await fetch(`/api/rooms/${roomId}`);
+      const response = await fetch(`/api/rooms/${roomId}`, {
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      });
       if (!response.ok) {
-        throw new Error("Salon non trouvé");
+        if (response.status === 404) {
+          throw new Error("Salon non trouvé");
+        }
+        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
       }
       const roomData = await response.json();
       setRoom(roomData);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur de connexion");
+      const errorMessage = err instanceof Error ? err.message : "Erreur de connexion";
+
+      // Only set error on initial load or if we had a successful connection before
+      if (isInitialLoad || !room) {
+        setError(errorMessage);
+      } else {
+        // For subsequent polls, just log the error but don't break the UI
+        console.warn("Erreur de synchronisation:", errorMessage);
+      }
     } finally {
-      setIsLoading(false);
+      if (isInitialLoad) {
+        setIsLoading(false);
+      }
     }
-  }, [roomId]);
+  }, [roomId, room]);
 
   // Initial fetch
   useEffect(() => {
