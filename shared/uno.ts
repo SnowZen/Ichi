@@ -24,6 +24,7 @@ export interface Player {
 export interface GameRoom {
   id: string;
   name: string;
+  gameType: 'uno' | 'skyjo';
   players: Player[];
   maxPlayers: number;
   isStarted: boolean;
