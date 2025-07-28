@@ -11,9 +11,10 @@ export function SkyjoOfflineGame() {
   const navigate = useNavigate();
   const { session, clearSession } = usePlayerSession();
   const skyjoGame = useSkyjoGame();
-  
+
   const [drawnCard, setDrawnCard] = useState<number | null>(null);
-  const [isWaitingForDiscardExchange, setIsWaitingForDiscardExchange] = useState(false);
+  const [isWaitingForDiscardExchange, setIsWaitingForDiscardExchange] =
+    useState(false);
 
   // Try to join/restore room on mount
   useEffect(() => {
@@ -38,15 +39,15 @@ export function SkyjoOfflineGame() {
           <p className="text-muted-foreground mb-6">
             Ce salon n'existe pas ou a expiré.
           </p>
-          <Button onClick={() => navigate("/")}>
-            Retour à l'accueil
-          </Button>
+          <Button onClick={() => navigate("/")}>Retour à l'accueil</Button>
         </Card>
       </div>
     );
   }
 
-  const currentPlayer = skyjoGame.room.players.find(p => p.id === session.playerId);
+  const currentPlayer = skyjoGame.room.players.find(
+    (p) => p.id === session.playerId,
+  );
   if (!currentPlayer) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-card to-background flex items-center justify-center p-4">
@@ -55,7 +56,9 @@ export function SkyjoOfflineGame() {
           <p className="text-muted-foreground mb-6">
             Tentative de reconnexion au jeu...
           </p>
-          <Button onClick={() => skyjoGame.joinRoom(roomId, session.playerName)}>
+          <Button
+            onClick={() => skyjoGame.joinRoom(roomId, session.playerName)}
+          >
             Rejoindre
           </Button>
         </Card>
@@ -68,7 +71,7 @@ export function SkyjoOfflineGame() {
   // Show lobby if game hasn't started
   if (!skyjoGame.room.isStarted) {
     const isHost = skyjoGame.room.players[0].id === currentPlayer.id;
-    
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-card to-background flex items-center justify-center p-4">
         <Card className="p-8 bg-card/90 backdrop-blur-sm border-2 border-primary/20 shadow-2xl max-w-md w-full text-center">
@@ -76,15 +79,25 @@ export function SkyjoOfflineGame() {
           <p className="text-muted-foreground mb-4">
             Code: <span className="font-mono font-bold">{roomId}</span>
           </p>
-          
+
           <div className="mb-6">
-            <h3 className="font-semibold mb-2">Joueurs ({skyjoGame.room.players.length}/{skyjoGame.room.maxPlayers})</h3>
+            <h3 className="font-semibold mb-2">
+              Joueurs ({skyjoGame.room.players.length}/
+              {skyjoGame.room.maxPlayers})
+            </h3>
             <div className="space-y-1">
               {skyjoGame.room.players.map((player, index) => (
-                <div key={player.id} className="flex items-center justify-center gap-2">
+                <div
+                  key={player.id}
+                  className="flex items-center justify-center gap-2"
+                >
                   {index === 0 && <span className="text-yellow-500">👑</span>}
                   <span>{player.name}</span>
-                  {player.id === currentPlayer.id && <span className="text-sm text-muted-foreground">(vous)</span>}
+                  {player.id === currentPlayer.id && (
+                    <span className="text-sm text-muted-foreground">
+                      (vous)
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
@@ -96,15 +109,15 @@ export function SkyjoOfflineGame() {
                 Commencer la partie
               </Button>
             )}
-            
+
             {!isHost && (
               <p className="text-sm text-muted-foreground">
                 En attente que l'hôte démarre la partie...
               </p>
             )}
 
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 skyjoGame.leaveRoom(currentPlayer.id);
                 clearSession();
