@@ -30,7 +30,7 @@ export default function Index() {
         body: JSON.stringify({
           playerName: playerName.trim(),
           maxPlayers: 4,
-          gameType: 'uno'
+          gameType: "uno",
         }),
       });
 
@@ -40,10 +40,10 @@ export default function Index() {
         navigate(`/room/${roomId}`);
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Erreur lors de la création du salon');
+        setError(errorData.error || "Erreur lors de la création du salon");
       }
     } catch (error) {
-      setError('Erreur de connexion. Veuillez réessayer.');
+      setError("Erreur de connexion. Veuillez réessayer.");
     } finally {
       setIsCreating(false);
     }
@@ -70,11 +70,11 @@ export default function Index() {
         if (response.status === 404) {
           setError(`Le salon "${roomCode}" n'existe pas. Vérifiez le code.`);
         } else {
-          setError(errorData.error || 'Impossible de rejoindre le salon');
+          setError(errorData.error || "Impossible de rejoindre le salon");
         }
       }
     } catch (error) {
-      setError('Erreur de connexion. Veuillez réessayer.');
+      setError("Erreur de connexion. Veuillez réessayer.");
     } finally {
       setIsJoining(false);
     }

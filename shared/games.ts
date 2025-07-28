@@ -1,4 +1,4 @@
-export type GameType = 'uno' | 'skyjo';
+export type GameType = "uno" | "skyjo";
 
 export interface GameOption {
   id: GameType;
@@ -11,19 +11,21 @@ export interface GameOption {
 
 export const AVAILABLE_GAMES: GameOption[] = [
   {
-    id: 'uno',
-    name: 'UNO',
-    description: 'Jeu de cartes classique - débarrassez-vous de toutes vos cartes !',
+    id: "uno",
+    name: "UNO",
+    description:
+      "Jeu de cartes classique - débarrassez-vous de toutes vos cartes !",
     minPlayers: 2,
     maxPlayers: 4,
-    icon: '🎯'
+    icon: "🎯",
   },
   {
-    id: 'skyjo',
-    name: 'Skyjo',
-    description: 'Minimisez vos points avec ce jeu de stratégie et de mémoire !',
+    id: "skyjo",
+    name: "Skyjo",
+    description:
+      "Minimisez vos points avec ce jeu de stratégie et de mémoire !",
     minPlayers: 2,
     maxPlayers: 8,
-    icon: '⭐'
-  }
+    icon: "⭐",
+  },
 ];

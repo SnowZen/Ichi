@@ -117,7 +117,7 @@ function shuffleDeck(deck: UnoCard[]): UnoCard[] {
 }
 
 export const createRoom: RequestHandler = (req, res) => {
-  const { playerName, maxPlayers = 4, gameType = 'uno' } = req.body;
+  const { playerName, maxPlayers = 4, gameType = "uno" } = req.body;
 
   if (!playerName || typeof playerName !== "string") {
     return res.status(400).json({ error: "Nom de joueur requis" });
@@ -302,11 +302,9 @@ export const playCard: RequestHandler = (req, res) => {
     // Strict rules: +2 only on +2, +4 only on +2 and +4
     if (room.topCard?.type === "draw2") {
       if (card.type !== "draw2" && card.type !== "wild_draw4") {
-        return res
-          .status(400)
-          .json({
-            error: "Vous devez jouer une carte +2 ou +4 pour contrer un +2",
-          });
+        return res.status(400).json({
+          error: "Vous devez jouer une carte +2 ou +4 pour contrer un +2",
+        });
       }
     } else if (room.topCard?.type === "wild_draw4") {
       if (card.type !== "wild_draw4") {
@@ -535,11 +533,9 @@ export const challengeUno: RequestHandler = (req, res) => {
       room,
     });
   } else {
-    res
-      .status(400)
-      .json({
-        error: "Défi invalide - le joueur a déjà appelé UNO ou n'a pas 1 carte",
-      });
+    res.status(400).json({
+      error: "Défi invalide - le joueur a déjà appelé UNO ou n'a pas 1 carte",
+    });
   }
 };
 
@@ -549,25 +545,31 @@ export const changeGame: RequestHandler = (req, res) => {
 
   const room = rooms.get(roomId);
   if (!room) {
-    return res.status(404).json({ error: 'Salon non trouvé' });
+    return res.status(404).json({ error: "Salon non trouvé" });
   }
 
   if (room.isStarted) {
-    return res.status(400).json({ error: 'Impossible de changer de jeu pendant une partie' });
+    return res
+      .status(400)
+      .json({ error: "Impossible de changer de jeu pendant une partie" });
   }
 
   if (room.players.length > 1) {
-    return res.status(400).json({ error: 'Impossible de changer de jeu avec des joueurs connectés' });
+    return res
+      .status(400)
+      .json({
+        error: "Impossible de changer de jeu avec des joueurs connectés",
+      });
   }
 
-  if (!['uno', 'skyjo'].includes(gameType)) {
-    return res.status(400).json({ error: 'Type de jeu invalide' });
+  if (!["uno", "skyjo"].includes(gameType)) {
+    return res.status(400).json({ error: "Type de jeu invalide" });
   }
 
   room.gameType = gameType;
 
   // Adjust max players based on game
-  if (gameType === 'skyjo') {
+  if (gameType === "skyjo") {
     room.maxPlayers = Math.min(room.maxPlayers, 8);
   } else {
     room.maxPlayers = Math.min(room.maxPlayers, 4);

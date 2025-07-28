@@ -16,7 +16,7 @@ export interface SkyjoPlayer {
 export interface SkyjoGameRoom {
   id: string;
   name: string;
-  gameType: 'skyjo';
+  gameType: "skyjo";
   players: SkyjoPlayer[];
   maxPlayers: number;
   isStarted: boolean;
@@ -29,7 +29,7 @@ export interface SkyjoGameRoom {
 }
 
 export interface SkyjoAction {
-  type: 'reveal_card' | 'draw_card' | 'exchange_card' | 'discard_and_reveal';
+  type: "reveal_card" | "draw_card" | "exchange_card" | "discard_and_reveal";
   playerId: string;
   cardPosition?: { row: number; col: number };
   drawnCard?: number;

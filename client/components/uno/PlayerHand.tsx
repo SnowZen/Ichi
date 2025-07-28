@@ -48,7 +48,7 @@ export function PlayerHand({
           key={card.id}
           className={cn(
             "relative",
-            index > 0 && index < 10 && "-ml-1 sm:-ml-2"
+            index > 0 && index < 10 && "-ml-1 sm:-ml-2",
           )}
           style={{
             zIndex: cards.length - index,
