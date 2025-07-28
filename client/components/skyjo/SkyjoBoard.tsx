@@ -1,7 +1,11 @@
 import { SkyjoCard } from "./SkyjoCard";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { SkyjoPlayer, SkyjoGameRoom, SkyjoCard as SkyjoCardType } from "@shared/skyjo";
+import {
+  SkyjoPlayer,
+  SkyjoGameRoom,
+  SkyjoCard as SkyjoCardType,
+} from "@shared/skyjo";
 import { cn } from "@/lib/utils";
 
 interface SkyjoBoardProps {
@@ -40,7 +44,7 @@ export function SkyjoBoard({
           <div>Total: {player.totalScore}</div>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-4 gap-1">
         {player.cards.map((row, rowIndex) =>
           row.map((card, colIndex) => (
@@ -84,9 +88,7 @@ export function SkyjoBoard({
             <h2 className="text-lg font-semibold mb-4">Autres joueurs</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {otherPlayers.map((player) => (
-                <div key={player.id}>
-                  {renderPlayerGrid(player)}
-                </div>
+                <div key={player.id}>{renderPlayerGrid(player)}</div>
               ))}
             </div>
           </Card>
@@ -119,7 +121,9 @@ export function SkyjoBoard({
             <div className="text-2xl font-bold text-primary mb-2">
               Manche {room.round}
             </div>
-            <p className="text-sm text-muted-foreground">Objectif: moins de points</p>
+            <p className="text-sm text-muted-foreground">
+              Objectif: moins de points
+            </p>
           </div>
 
           {/* Discard Pile */}
@@ -132,7 +136,9 @@ export function SkyjoBoard({
                     "hover:scale-105": isMyTurn && onTakeFromDiscard,
                     "opacity-50 cursor-not-allowed": !isMyTurn,
                   },
-                  getDiscardCardColor(room.discardPile[room.discardPile.length - 1]),
+                  getDiscardCardColor(
+                    room.discardPile[room.discardPile.length - 1],
+                  ),
                 )}
                 onClick={
                   isMyTurn && onTakeFromDiscard ? onTakeFromDiscard : undefined

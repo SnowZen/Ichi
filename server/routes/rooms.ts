@@ -37,7 +37,11 @@ function createSkyjoDeck(): number[] {
   return deck;
 }
 
-function initializeSkyjoPlayer(playerId: string, playerName: string, deck: number[]): SkyjoPlayer {
+function initializeSkyjoPlayer(
+  playerId: string,
+  playerName: string,
+  deck: number[],
+): SkyjoPlayer {
   const player: SkyjoPlayer = {
     id: playerId,
     name: playerName,
@@ -52,7 +56,10 @@ function initializeSkyjoPlayer(playerId: string, playerName: string, deck: numbe
     player.cards[row] = [];
     for (let col = 0; col < 4; col++) {
       const value = deck.pop()!;
-      player.cards[row][col] = createSkyjoCard(value, `${playerId}-${row}-${col}`);
+      player.cards[row][col] = createSkyjoCard(
+        value,
+        `${playerId}-${row}-${col}`,
+      );
     }
   }
 
@@ -102,7 +109,10 @@ function checkAndRemoveColumn(player: SkyjoPlayer, col: number): boolean {
 function allCardsRevealed(player: SkyjoPlayer): boolean {
   for (let row = 0; row < 3; row++) {
     for (let col = 0; col < 4; col++) {
-      if (!player.cards[row][col].isRevealed && player.cards[row][col].value !== 999) {
+      if (
+        !player.cards[row][col].isRevealed &&
+        player.cards[row][col].value !== 999
+      ) {
         return false;
       }
     }
@@ -110,7 +120,10 @@ function allCardsRevealed(player: SkyjoPlayer): boolean {
   return true;
 }
 
-function finalizeRoundScoring(room: SkyjoGameRoom, finishingPlayerId: string): void {
+function finalizeRoundScoring(
+  room: SkyjoGameRoom,
+  finishingPlayerId: string,
+): void {
   // Reveal all cards for all players
   room.players.forEach((player: any) => {
     for (let row = 0; row < 3; row++) {
@@ -135,7 +148,7 @@ function finalizeRoundScoring(room: SkyjoGameRoom, finishingPlayerId: string): v
   });
 
   // Find the player who finished and check if they have the lowest score
-  const finishingPlayer = room.players.find(p => p.id === finishingPlayerId);
+  const finishingPlayer = room.players.find((p) => p.id === finishingPlayerId);
   if (finishingPlayer) {
     const lowestScore = Math.min(...room.players.map((p: any) => p.score));
 
@@ -847,14 +860,20 @@ export const skyjoRevealCard: RequestHandler = (req, res) => {
   }
 
   // Reveal the card
-  if (player.cards[row] && player.cards[row][col] && !player.cards[row][col].isRevealed) {
+  if (
+    player.cards[row] &&
+    player.cards[row][col] &&
+    !player.cards[row][col].isRevealed
+  ) {
     player.cards[row][col].isRevealed = true;
 
     // Check for column removal
     checkAndRemoveColumn(player as any, col);
 
     // Move to next player
-    const nextPlayerIndex = (room.players.findIndex(p => p.id === playerId) + 1) % room.players.length;
+    const nextPlayerIndex =
+      (room.players.findIndex((p) => p.id === playerId) + 1) %
+      room.players.length;
     room.currentPlayer = room.players[nextPlayerIndex].id;
 
     rooms.set(roomId, room);
@@ -910,7 +929,9 @@ export const skyjoExchangeCard: RequestHandler = (req, res) => {
   const tempDrawnBy = (room as any).tempDrawnBy;
 
   if (!tempDrawnCard || tempDrawnBy !== playerId) {
-    return res.status(400).json({ error: "Aucune carte piochée ou joueur incorrect" });
+    return res
+      .status(400)
+      .json({ error: "Aucune carte piochée ou joueur incorrect" });
   }
 
   const player = room.players.find((p) => p.id === playerId);
@@ -944,18 +965,24 @@ export const skyjoExchangeCard: RequestHandler = (req, res) => {
     finalizeRoundScoring(room as any, playerId);
 
     // Check if game should end
-    const maxScore = Math.max(...room.players.map(p => p.totalScore || 0));
+    const maxScore = Math.max(...room.players.map((p) => p.totalScore || 0));
     if (maxScore >= 100) {
       room.isFinished = true;
-      const winnerScore = Math.min(...room.players.map(p => p.totalScore || 0));
-      room.winner = room.players.find(p => p.totalScore === winnerScore)?.id;
+      const winnerScore = Math.min(
+        ...room.players.map((p) => p.totalScore || 0),
+      );
+      room.winner = room.players.find((p) => p.totalScore === winnerScore)?.id;
     } else {
       // Start new round
       room.round = (room.round || 1) + 1;
       // Reset for new round (reinitialize cards)
       const newDeck = createSkyjoDeck();
       room.players.forEach((player) => {
-        const skyjoPlayer = initializeSkyjoPlayer(player.id, player.name, newDeck);
+        const skyjoPlayer = initializeSkyjoPlayer(
+          player.id,
+          player.name,
+          newDeck,
+        );
         player.cards = skyjoPlayer.cards;
         player.score = 0;
       });
@@ -969,7 +996,9 @@ export const skyjoExchangeCard: RequestHandler = (req, res) => {
   }
 
   // Move to next player
-  const nextPlayerIndex = (room.players.findIndex(p => p.id === playerId) + 1) % room.players.length;
+  const nextPlayerIndex =
+    (room.players.findIndex((p) => p.id === playerId) + 1) %
+    room.players.length;
   room.currentPlayer = room.players[nextPlayerIndex].id;
 
   rooms.set(roomId, room);
@@ -989,7 +1018,9 @@ export const skyjoDiscardDrawn: RequestHandler = (req, res) => {
   const tempDrawnBy = (room as any).tempDrawnBy;
 
   if (!tempDrawnCard || tempDrawnBy !== playerId) {
-    return res.status(400).json({ error: "Aucune carte piochée ou joueur incorrect" });
+    return res
+      .status(400)
+      .json({ error: "Aucune carte piochée ou joueur incorrect" });
   }
 
   const player = room.players.find((p) => p.id === playerId);
@@ -1002,7 +1033,11 @@ export const skyjoDiscardDrawn: RequestHandler = (req, res) => {
   discardPile.push(tempDrawnCard);
 
   // Reveal one of player's cards
-  if (player.cards[row] && player.cards[row][col] && !player.cards[row][col].isRevealed) {
+  if (
+    player.cards[row] &&
+    player.cards[row][col] &&
+    !player.cards[row][col].isRevealed
+  ) {
     player.cards[row][col].isRevealed = true;
 
     // Check for column removal
@@ -1014,7 +1049,9 @@ export const skyjoDiscardDrawn: RequestHandler = (req, res) => {
   delete (room as any).tempDrawnBy;
 
   // Move to next player
-  const nextPlayerIndex = (room.players.findIndex(p => p.id === playerId) + 1) % room.players.length;
+  const nextPlayerIndex =
+    (room.players.findIndex((p) => p.id === playerId) + 1) %
+    room.players.length;
   room.currentPlayer = room.players[nextPlayerIndex].id;
 
   rooms.set(roomId, room);
@@ -1068,7 +1105,9 @@ export const skyjoTakeFromDiscard: RequestHandler = (req, res) => {
   checkAndRemoveColumn(player as any, col);
 
   // Move to next player
-  const nextPlayerIndex = (room.players.findIndex(p => p.id === playerId) + 1) % room.players.length;
+  const nextPlayerIndex =
+    (room.players.findIndex((p) => p.id === playerId) + 1) %
+    room.players.length;
   room.currentPlayer = room.players[nextPlayerIndex].id;
 
   rooms.set(roomId, room);

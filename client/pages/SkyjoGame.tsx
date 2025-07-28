@@ -95,8 +95,10 @@ export function SkyjoGame({
 
     // For now, this requires the player to click on a card position to exchange
     // We could show a modal or make it more interactive
-    alert("Cliquez sur une de vos cartes pour échanger avec la carte de la défausse");
-    
+    alert(
+      "Cliquez sur une de vos cartes pour échanger avec la carte de la défausse",
+    );
+
     // Set a flag so the next card click will trigger the exchange
     setIsWaitingForAction(true);
   };
