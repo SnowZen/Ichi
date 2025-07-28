@@ -32,42 +32,69 @@ export function SkyjoBoard({
   const otherPlayers = room.players.filter((p) => p.id !== currentPlayer.id);
   const isMyTurn = room.currentPlayer === currentPlayer.id;
 
-  const renderPlayerGrid = (player: SkyjoPlayer, isCurrentPlayer = false) => (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="font-semibold text-sm">
-          {player.name}
-          {isCurrentPlayer && isMyTurn && (
-            <span className="ml-2 text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
-              Votre tour
-            </span>
+  const renderPlayerGrid = (player: SkyjoPlayer, isCurrentPlayer = false) => {
+    const isInitialization = (room as any).isInitialization;
+    const cardsRevealed = (player as any).cardsRevealed || 0;
+    const needsToRevealMore = isInitialization && cardsRevealed < 2;
+
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-semibold text-sm">
+            {player.name}
+            {isCurrentPlayer && isMyTurn && (
+              <span className="ml-2 text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
+                {isInitialization
+                  ? `Choisissez ${2 - cardsRevealed} carte${2 - cardsRevealed > 1 ? 's' : ''}`
+                  : isWaitingForDiscardExchange
+                    ? "Choisissez une carte à échanger"
+                    : drawnCard !== null
+                      ? "Choisissez où placer la carte"
+                      : "Votre tour"
+                }
+              </span>
+            )}
+          </h3>
+          <div className="text-right text-xs">
+            <div>Score: {player.score}</div>
+            <div>Total: {player.totalScore}</div>
+            {isInitialization && (
+              <div className="text-primary">Cartes révélées: {cardsRevealed}/2</div>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-4 gap-2 max-w-xs">
+          {player.cards.map((row, rowIndex) =>
+            row.map((card, colIndex) => {
+              const canClick = isCurrentPlayer && isMyTurn && (
+                (isInitialization && needsToRevealMore && !card.isRevealed) ||
+                (!isInitialization && (isWaitingForDiscardExchange || drawnCard !== null || !card.isRevealed))
+              );
+
+              return (
+                <SkyjoCard
+                  key={`${player.id}-${rowIndex}-${colIndex}`}
+                  card={card}
+                  size={isCurrentPlayer ? "md" : "sm"}
+                  isClickable={canClick}
+                  onClick={() =>
+                    canClick && onCardClick
+                      ? onCardClick(rowIndex, colIndex)
+                      : undefined
+                  }
+                  className={cn({
+                    "ring-2 ring-primary ring-offset-1": isCurrentPlayer && isMyTurn && canClick,
+                    "ring-2 ring-destructive ring-offset-1": isCurrentPlayer && isWaitingForDiscardExchange && !card.isRevealed,
+                  })}
+                />
+              );
+            }),
           )}
-        </h3>
-        <div className="text-right text-xs">
-          <div>Score: {player.score}</div>
-          <div>Total: {player.totalScore}</div>
         </div>
       </div>
-
-      <div className="grid grid-cols-4 gap-1">
-        {player.cards.map((row, rowIndex) =>
-          row.map((card, colIndex) => (
-            <SkyjoCard
-              key={`${player.id}-${rowIndex}-${colIndex}`}
-              card={card}
-              size="sm"
-              isClickable={isCurrentPlayer && isMyTurn && !card.isRevealed}
-              onClick={() =>
-                isCurrentPlayer && onCardClick
-                  ? onCardClick(rowIndex, colIndex)
-                  : undefined
-              }
-            />
-          )),
-        )}
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-card to-background p-2 sm:p-4">
