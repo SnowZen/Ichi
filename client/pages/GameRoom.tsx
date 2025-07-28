@@ -341,7 +341,7 @@ export default function GameRoom() {
 
   return (
     <>
-      <GameBoard
+      <GameRouter
         room={room}
         currentPlayer={currentPlayer}
         onCardPlay={handleCardPlay}
