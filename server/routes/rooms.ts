@@ -566,7 +566,7 @@ export const challengeUno: RequestHandler = (req, res) => {
     });
   } else {
     res.status(400).json({
-      error: "Défi invalide - le joueur a déjà appelé UNO ou n'a pas 1 carte",
+      error: "Défi invalide - le joueur a déjà appel�� UNO ou n'a pas 1 carte",
     });
   }
 };
@@ -616,7 +616,7 @@ export const leaveGame: RequestHandler = (req, res) => {
 
   const playerIndex = room.players.findIndex((p) => p.id === playerId);
   if (playerIndex === -1) {
-    return res.status(404).json({ error: "Joueur non trouvé" });
+    return res.status(404).json({ error: "Joueur non trouv��" });
   }
 
   // Remove player from room
@@ -669,6 +669,258 @@ export const restartGame: RequestHandler = (req, res) => {
   room.players.forEach((player) => {
     player.cards = [];
   });
+
+  rooms.set(roomId, room);
+  res.json(room);
+};
+
+// Skyjo-specific endpoints
+export const skyjoRevealCard: RequestHandler = (req, res) => {
+  const { roomId } = req.params;
+  const { playerId, row, col } = req.body;
+
+  const room = rooms.get(roomId);
+  if (!room || room.gameType !== "skyjo") {
+    return res.status(404).json({ error: "Salon Skyjo non trouvé" });
+  }
+
+  if (!room.isStarted) {
+    return res.status(400).json({ error: "La partie n'a pas commencé" });
+  }
+
+  if (room.currentPlayer !== playerId) {
+    return res.status(400).json({ error: "Ce n'est pas votre tour" });
+  }
+
+  const player = room.players.find((p) => p.id === playerId);
+  if (!player) {
+    return res.status(404).json({ error: "Joueur non trouvé" });
+  }
+
+  // Reveal the card
+  if (player.cards[row] && player.cards[row][col] && !player.cards[row][col].isRevealed) {
+    player.cards[row][col].isRevealed = true;
+
+    // Check for column removal
+    checkAndRemoveColumn(player as any, col);
+
+    // Move to next player
+    const nextPlayerIndex = (room.players.findIndex(p => p.id === playerId) + 1) % room.players.length;
+    room.currentPlayer = room.players[nextPlayerIndex].id;
+
+    rooms.set(roomId, room);
+    res.json(room);
+  } else {
+    res.status(400).json({ error: "Carte déjà révélée ou position invalide" });
+  }
+};
+
+export const skyjoDrawCard: RequestHandler = (req, res) => {
+  const { roomId } = req.params;
+  const { playerId } = req.body;
+
+  const room = rooms.get(roomId);
+  if (!room || room.gameType !== "skyjo") {
+    return res.status(404).json({ error: "Salon Skyjo non trouvé" });
+  }
+
+  if (!room.isStarted) {
+    return res.status(400).json({ error: "La partie n'a pas commencé" });
+  }
+
+  if (room.currentPlayer !== playerId) {
+    return res.status(400).json({ error: "Ce n'est pas votre tour" });
+  }
+
+  const deck = room.deck as number[];
+  if (deck.length === 0) {
+    return res.status(400).json({ error: "Plus de cartes dans la pioche" });
+  }
+
+  const drawnCard = deck.pop()!;
+
+  // Player now needs to choose: exchange with one of their cards or discard
+  // For now, we'll store the drawn card in a temporary property
+  (room as any).tempDrawnCard = drawnCard;
+  (room as any).tempDrawnBy = playerId;
+
+  rooms.set(roomId, room);
+  res.json({ room, drawnCard });
+};
+
+export const skyjoExchangeCard: RequestHandler = (req, res) => {
+  const { roomId } = req.params;
+  const { playerId, row, col } = req.body;
+
+  const room = rooms.get(roomId);
+  if (!room || room.gameType !== "skyjo") {
+    return res.status(404).json({ error: "Salon Skyjo non trouvé" });
+  }
+
+  const tempDrawnCard = (room as any).tempDrawnCard;
+  const tempDrawnBy = (room as any).tempDrawnBy;
+
+  if (!tempDrawnCard || tempDrawnBy !== playerId) {
+    return res.status(400).json({ error: "Aucune carte piochée ou joueur incorrect" });
+  }
+
+  const player = room.players.find((p) => p.id === playerId);
+  if (!player) {
+    return res.status(404).json({ error: "Joueur non trouvé" });
+  }
+
+  // Exchange the card
+  const oldCard = player.cards[row][col];
+  player.cards[row][col] = {
+    id: `${playerId}-${row}-${col}`,
+    value: tempDrawnCard,
+    isRevealed: true,
+  };
+
+  // Add the old card to discard pile if it was revealed
+  const discardPile = room.discardPile as number[];
+  if (oldCard.isRevealed) {
+    discardPile.push(oldCard.value);
+  }
+
+  // Check for column removal
+  checkAndRemoveColumn(player as any, col);
+
+  // Clear temp card
+  delete (room as any).tempDrawnCard;
+  delete (room as any).tempDrawnBy;
+
+  // Check if player has all cards revealed (round end condition)
+  if (allCardsRevealed(player as any)) {
+    finalizeRoundScoring(room as any, playerId);
+
+    // Check if game should end
+    const maxScore = Math.max(...room.players.map(p => p.totalScore || 0));
+    if (maxScore >= 100) {
+      room.isFinished = true;
+      const winnerScore = Math.min(...room.players.map(p => p.totalScore || 0));
+      room.winner = room.players.find(p => p.totalScore === winnerScore)?.id;
+    } else {
+      // Start new round
+      room.round = (room.round || 1) + 1;
+      // Reset for new round (reinitialize cards)
+      const newDeck = createSkyjoDeck();
+      room.players.forEach((player) => {
+        const skyjoPlayer = initializeSkyjoPlayer(player.id, player.name, newDeck);
+        player.cards = skyjoPlayer.cards;
+        player.score = 0;
+      });
+      room.deck = newDeck;
+      room.discardPile = [];
+      if (newDeck.length > 0) {
+        const firstCard = newDeck.pop()!;
+        room.discardPile = [firstCard];
+      }
+    }
+  }
+
+  // Move to next player
+  const nextPlayerIndex = (room.players.findIndex(p => p.id === playerId) + 1) % room.players.length;
+  room.currentPlayer = room.players[nextPlayerIndex].id;
+
+  rooms.set(roomId, room);
+  res.json(room);
+};
+
+export const skyjoDiscardDrawn: RequestHandler = (req, res) => {
+  const { roomId } = req.params;
+  const { playerId, row, col } = req.body;
+
+  const room = rooms.get(roomId);
+  if (!room || room.gameType !== "skyjo") {
+    return res.status(404).json({ error: "Salon Skyjo non trouvé" });
+  }
+
+  const tempDrawnCard = (room as any).tempDrawnCard;
+  const tempDrawnBy = (room as any).tempDrawnBy;
+
+  if (!tempDrawnCard || tempDrawnBy !== playerId) {
+    return res.status(400).json({ error: "Aucune carte piochée ou joueur incorrect" });
+  }
+
+  const player = room.players.find((p) => p.id === playerId);
+  if (!player) {
+    return res.status(404).json({ error: "Joueur non trouvé" });
+  }
+
+  // Discard the drawn card
+  const discardPile = room.discardPile as number[];
+  discardPile.push(tempDrawnCard);
+
+  // Reveal one of player's cards
+  if (player.cards[row] && player.cards[row][col] && !player.cards[row][col].isRevealed) {
+    player.cards[row][col].isRevealed = true;
+
+    // Check for column removal
+    checkAndRemoveColumn(player as any, col);
+  }
+
+  // Clear temp card
+  delete (room as any).tempDrawnCard;
+  delete (room as any).tempDrawnBy;
+
+  // Move to next player
+  const nextPlayerIndex = (room.players.findIndex(p => p.id === playerId) + 1) % room.players.length;
+  room.currentPlayer = room.players[nextPlayerIndex].id;
+
+  rooms.set(roomId, room);
+  res.json(room);
+};
+
+export const skyjoTakeFromDiscard: RequestHandler = (req, res) => {
+  const { roomId } = req.params;
+  const { playerId, row, col } = req.body;
+
+  const room = rooms.get(roomId);
+  if (!room || room.gameType !== "skyjo") {
+    return res.status(404).json({ error: "Salon Skyjo non trouvé" });
+  }
+
+  if (!room.isStarted) {
+    return res.status(400).json({ error: "La partie n'a pas commencé" });
+  }
+
+  if (room.currentPlayer !== playerId) {
+    return res.status(400).json({ error: "Ce n'est pas votre tour" });
+  }
+
+  const discardPile = room.discardPile as number[];
+  if (discardPile.length === 0) {
+    return res.status(400).json({ error: "Pile de défausse vide" });
+  }
+
+  const player = room.players.find((p) => p.id === playerId);
+  if (!player) {
+    return res.status(404).json({ error: "Joueur non trouvé" });
+  }
+
+  // Take the top card from discard pile
+  const takenCard = discardPile.pop()!;
+
+  // Exchange with player's card
+  const oldCard = player.cards[row][col];
+  player.cards[row][col] = {
+    id: `${playerId}-${row}-${col}`,
+    value: takenCard,
+    isRevealed: true,
+  };
+
+  // Add the old card to discard pile if it was revealed
+  if (oldCard.isRevealed) {
+    discardPile.push(oldCard.value);
+  }
+
+  // Check for column removal
+  checkAndRemoveColumn(player as any, col);
+
+  // Move to next player
+  const nextPlayerIndex = (room.players.findIndex(p => p.id === playerId) + 1) % room.players.length;
+  room.currentPlayer = room.players[nextPlayerIndex].id;
 
   rooms.set(roomId, room);
   res.json(room);
