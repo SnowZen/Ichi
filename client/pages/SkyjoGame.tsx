@@ -113,9 +113,12 @@ export function SkyjoGame({
 
     // Enter discard exchange mode
     setIsWaitingForDiscardExchange(true);
-    alert(
-      "Cliquez sur une de vos cartes pour l'échanger avec la carte de la défausse",
-    );
+  };
+
+  const handleCancelAction = () => {
+    setIsWaitingForDiscardExchange(false);
+    setIsWaitingForAction(false);
+    setDrawnCard(null);
   };
 
   const handleDiscardDrawn = async (row: number, col: number) => {
