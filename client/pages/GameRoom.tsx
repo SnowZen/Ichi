@@ -95,6 +95,15 @@ export default function GameRoom() {
     }
   }, [session, isLoading, navigate]);
 
+  // Track connection failures
+  useEffect(() => {
+    if (error) {
+      setConnectionFailures(prev => prev + 1);
+    } else if (room) {
+      setConnectionFailures(0);
+    }
+  }, [error, room]);
+
   const handleStartGame = async () => {
     if (!roomId) return;
 
