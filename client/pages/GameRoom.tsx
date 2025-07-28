@@ -21,6 +21,7 @@ export default function GameRoom() {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [pendingWildCard, setPendingWildCard] = useState<UnoCard | null>(null);
   const [connectionFailures, setConnectionFailures] = useState(0);
+  const [manualMode, setManualMode] = useState(false);
 
   // Find current player based on session
   const currentPlayer =
