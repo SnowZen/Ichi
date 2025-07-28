@@ -32,28 +32,14 @@ export function useRoomSync(roomId: string | undefined) {
 
         if (!response.ok) {
           if (response.status === 404) {
-            // Try to restore from local storage or server backup
-            const localData = loadGameState(roomId);
-            if (localData) {
-              setRoom(localData.gameData);
-              setError(null);
-              // Try to restore on server
-              if (session) {
-                try {
-                  await fetch("/api/rooms/restore", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      roomId,
-                      playerName: session.playerName,
-                      gameData: localData.gameData,
-                    }),
-                  });
-                } catch (restoreErr) {
-                  console.warn("Failed to restore on server:", restoreErr);
-                }
+            // Only restore from local storage on initial load, not during polling
+            if (isInitialLoad) {
+              const localData = loadGameState(roomId);
+              if (localData) {
+                setRoom(localData.gameData);
+                setError("Salon restauré depuis la sauvegarde locale");
+                return;
               }
-              return;
             }
             throw new Error("Salon non trouvé");
           }
