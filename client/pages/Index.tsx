@@ -62,6 +62,16 @@ export default function Index() {
     }
   };
 
+  const createSkyjoOfflineRoom = () => {
+    if (!playerName.trim()) return;
+
+    const roomId = Math.random().toString(36).substr(2, 6).toUpperCase();
+    const playerId = `player_${Date.now()}`;
+
+    saveSession(playerId, roomId, playerName.trim());
+    navigate(`/room/${roomId}`);
+  };
+
   const joinRoom = async () => {
     if (!playerName.trim() || !roomCode.trim()) return;
 
