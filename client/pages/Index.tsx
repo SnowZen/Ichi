@@ -192,6 +192,19 @@ export default function Index() {
               >
                 {isCreating ? "Création..." : "Créer un salon"}
               </Button>
+
+              <div className="mt-3 text-center">
+                <p className="text-sm text-muted-foreground mb-2">ou</p>
+                <Button
+                  onClick={createSkyjoOfflineRoom}
+                  disabled={!playerName.trim()}
+                  variant="outline"
+                  className="w-full"
+                  size="sm"
+                >
+                  ⭐ Créer Skyjo Local (sans serveur)
+                </Button>
+              </div>
             </div>
           </Card>
 
