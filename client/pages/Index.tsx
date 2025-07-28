@@ -97,18 +97,28 @@ export default function Index() {
         </p>
         <div className="flex justify-center gap-2 flex-wrap">
           <Badge variant="secondary" className="gap-1">
+            🎯 UNO
+          </Badge>
+          <Badge variant="secondary" className="gap-1">
+            ⭐ Skyjo
+          </Badge>
+          <Badge variant="secondary" className="gap-1">
             <Users className="w-3 h-3" />
-            2-4 joueurs
+            2-8 joueurs
           </Badge>
           <Badge variant="secondary" className="gap-1">
             <Zap className="w-3 h-3" />
             Parties rapides
           </Badge>
-          <Badge variant="secondary" className="gap-1">
-            <Trophy className="w-3 h-3" />
-            Compétitif
-          </Badge>
         </div>
+
+        {error && (
+          <div className="mt-4 p-3 bg-destructive/20 border border-destructive rounded-lg max-w-md mx-auto">
+            <p className="text-destructive text-sm font-medium text-center">
+              ⚠️ {error}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Main Content */}
