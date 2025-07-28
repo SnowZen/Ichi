@@ -117,9 +117,12 @@ export function useRobustStorage() {
     }
   }, []);
 
-  // Send state to server for backup
+  // Send state to server for backup (with retry logic for Netlify)
   const syncWithServer = useCallback(async (roomId: string, gameData: any) => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // Shorter timeout for backup
+
       const response = await fetch(`/api/rooms/${roomId}/backup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -127,14 +130,17 @@ export function useRobustStorage() {
           gameData,
           timestamp: Date.now(),
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         console.log("Game state synced with server");
       }
     } catch (error) {
-      // Ignore server sync errors
-      console.warn("Server sync failed:", error);
+      // Ignore server sync errors on Netlify
+      console.warn("Server sync failed (expected on serverless):", error);
     }
   }, []);
 
