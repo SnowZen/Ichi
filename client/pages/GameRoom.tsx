@@ -95,11 +95,11 @@ export default function GameRoom() {
     }
   }, [session, isLoading, navigate]);
 
-  // Track connection failures
+  // Track connection failures (only count real connection errors, not local restoration messages)
   useEffect(() => {
-    if (error) {
+    if (error && !error.includes("restauré") && !error.includes("sauvegarde")) {
       setConnectionFailures((prev) => prev + 1);
-    } else if (room) {
+    } else if (room && !error) {
       setConnectionFailures(0);
     }
   }, [error, room]);
