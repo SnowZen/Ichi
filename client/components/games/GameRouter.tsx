@@ -1,5 +1,6 @@
 import { GameBoard } from "@/components/uno/GameBoard";
 import { SkyjoGame } from "@/pages/SkyjoGame";
+import { SkyjoOfflineGame } from "@/pages/SkyjoOfflineGame";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Player, UnoCard, GameRoom } from "@shared/uno";
