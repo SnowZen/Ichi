@@ -152,24 +152,26 @@ export function SkyjoBoard({
         {/* Game Center - Draw pile and discard pile */}
         <div className="flex justify-center items-center gap-8">
           {/* Draw Pile */}
-          <div className="text-center">
-            <div
-              className={cn(
-                "w-16 h-20 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg border-2 border-slate-500 relative flex items-center justify-center cursor-pointer transition-transform shadow-lg",
-                {
-                  "hover:scale-105": isMyTurn && onDrawCard,
-                  "opacity-50 cursor-not-allowed": !isMyTurn,
-                },
-              )}
-              onClick={isMyTurn && onDrawCard ? onDrawCard : undefined}
-            >
-              <div className="absolute inset-2 border border-slate-300 rounded opacity-30" />
-              <span className="text-slate-300 font-bold text-sm">SKYJO</span>
+          {!(room as any).isInitialization && (
+            <div className="text-center">
+              <div
+                className={cn(
+                  "w-16 h-20 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg border-2 border-slate-500 relative flex items-center justify-center cursor-pointer transition-transform shadow-lg",
+                  {
+                    "hover:scale-105": isMyTurn && onDrawCard,
+                    "opacity-50 cursor-not-allowed": !isMyTurn,
+                  },
+                )}
+                onClick={isMyTurn && onDrawCard ? onDrawCard : undefined}
+              >
+                <div className="absolute inset-2 border border-slate-300 rounded opacity-30" />
+                <span className="text-slate-300 font-bold text-sm">SKYJO</span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Pioche ({room.deck.length})
+              </p>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Pioche ({room.deck.length})
-            </p>
-          </div>
+          )}
 
           {/* Round indicator */}
           <div className="text-center">
