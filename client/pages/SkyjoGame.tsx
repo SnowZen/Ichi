@@ -195,6 +195,7 @@ export function SkyjoGame({
       onDrawCard={handleDrawCard}
       onTakeFromDiscard={handleTakeFromDiscard}
       onLeaveRoom={onLeaveRoom}
+      onCancelAction={handleCancelAction}
       isWaitingForDiscardExchange={isWaitingForDiscardExchange}
       drawnCard={drawnCard}
     />
