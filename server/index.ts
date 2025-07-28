@@ -50,6 +50,7 @@ export function createServer() {
   app.post("/api/rooms/:roomId/change-game", changeGame);
   app.post("/api/rooms/:roomId/restart", restartGame);
   app.post("/api/rooms/:roomId/leave", leaveGame);
+  app.post("/api/rooms/:roomId/heartbeat", heartbeat);
 
   // Skyjo game routes
   app.post("/api/rooms/:roomId/skyjo/reveal", skyjoRevealCard);
