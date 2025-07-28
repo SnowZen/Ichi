@@ -58,9 +58,9 @@ export function ConnectionStatus({
         </Alert>
       )}
 
-      {lastError && (
+      {isRealError && (
         <Alert variant="destructive">
-          <AlertDescription>{lastError}</AlertDescription>
+          <AlertDescription>{lastShownError || lastError}</AlertDescription>
         </Alert>
       )}
     </div>
