@@ -135,6 +135,7 @@ export const createRoom: RequestHandler = (req, res) => {
   const room: GameRoom = {
     id: roomId,
     name: `Salon ${roomId}`,
+    gameType: gameType as any,
     players: [player],
     maxPlayers,
     isStarted: false,
