@@ -21,6 +21,8 @@ export function SkyjoGame({
   const [isWaitingForAction, setIsWaitingForAction] = useState(false);
   const [isWaitingForDiscardExchange, setIsWaitingForDiscardExchange] =
     useState(false);
+  const [isWaitingForRevealAfterDiscard, setIsWaitingForRevealAfterDiscard] =
+    useState(false);
 
   const isMyTurn = room.currentPlayer === currentPlayer.id;
 
