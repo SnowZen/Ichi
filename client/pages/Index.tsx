@@ -24,6 +24,10 @@ export default function Index() {
     setIsCreating(true);
     setError(null);
     try {
+      // Add timeout for serverless functions
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
       const response = await fetch("/api/rooms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -32,7 +36,10 @@ export default function Index() {
           maxPlayers: 4,
           gameType: "uno",
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const { roomId, playerId, playerName: name } = await response.json();
@@ -43,7 +50,11 @@ export default function Index() {
         setError(errorData.error || "Erreur lors de la création du salon");
       }
     } catch (error) {
-      setError("Erreur de connexion. Veuillez réessayer.");
+      if (error instanceof Error && error.name === 'AbortError') {
+        setError("Timeout - Le serveur met trop de temps à répondre. Réessayez.");
+      } else {
+        setError("Erreur de connexion. Veuillez réessayer.");
+      }
     } finally {
       setIsCreating(false);
     }
