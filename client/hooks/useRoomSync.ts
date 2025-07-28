@@ -31,6 +31,29 @@ export function useRoomSync(roomId: string | undefined) {
 
         if (!response.ok) {
           if (response.status === 404) {
+            // Try to restore from local storage or server backup
+            const localData = loadGameState(roomId);
+            if (localData) {
+              setRoom(localData.gameData);
+              setError(null);
+              // Try to restore on server
+              if (session) {
+                try {
+                  await fetch("/api/rooms/restore", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      roomId,
+                      playerName: session.playerName,
+                      gameData: localData.gameData,
+                    }),
+                  });
+                } catch (restoreErr) {
+                  console.warn("Failed to restore on server:", restoreErr);
+                }
+              }
+              return;
+            }
             throw new Error("Salon non trouvé");
           }
           if (response.status >= 500) {
@@ -42,9 +65,26 @@ export function useRoomSync(roomId: string | undefined) {
         const roomData = await response.json();
         setRoom(roomData);
         setError(null);
+
+        // Save to local storage
+        if (session) {
+          saveGameState(roomId, session.playerId, session.playerName, roomData);
+          // Sync with server backup (non-blocking)
+          syncWithServer(roomId, roomData);
+        }
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Erreur de connexion";
+
+        // Try local restoration first
+        if (isInitialLoad && !room) {
+          const localData = loadGameState(roomId);
+          if (localData) {
+            setRoom(localData.gameData);
+            setError("Mode hors ligne - Utilisation des données locales");
+            return;
+          }
+        }
 
         // Only set error on initial load or if we had a successful connection before
         if (isInitialLoad || !room) {
