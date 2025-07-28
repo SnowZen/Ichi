@@ -49,8 +49,7 @@ export function SkyjoGame({
           setIsWaitingForDiscardExchange(false);
         }
       } else if (drawnCard !== null) {
-        // Player has drawn a card and needs to decide: exchange or discard+reveal
-        // For simplicity, let's assume they want to exchange
+        // Player has drawn a card - they can only click to exchange it
         const response = await fetch(`/api/rooms/${room.id}/skyjo/exchange`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -68,20 +67,22 @@ export function SkyjoGame({
           setIsWaitingForAction(false);
         }
       } else {
-        // Regular card reveal
-        const response = await fetch(`/api/rooms/${room.id}/skyjo/reveal`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            playerId: currentPlayer.id,
-            row,
-            col,
-          }),
-        });
+        // Regular card reveal - only during initialization phase
+        if ((room as any).isInitialization) {
+          const response = await fetch(`/api/rooms/${room.id}/skyjo/reveal`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              playerId: currentPlayer.id,
+              row,
+              col,
+            }),
+          });
 
-        if (response.ok) {
-          const updatedRoom = await response.json();
-          updateRoom(updatedRoom);
+          if (response.ok) {
+            const updatedRoom = await response.json();
+            updateRoom(updatedRoom);
+          }
         }
       }
     } catch (error) {
