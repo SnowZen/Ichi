@@ -864,7 +864,9 @@ export const skyjoRevealCard: RequestHandler = (req, res) => {
         room.currentPlayer = room.players[nextPlayerIndex].id;
 
         // Check if all players have revealed their 2 initial cards
-        const allPlayersReady = room.players.every(p => ((p as any).cardsRevealed || 0) >= 2);
+        const allPlayersReady = room.players.every(
+          (p) => ((p as any).cardsRevealed || 0) >= 2,
+        );
         if (allPlayersReady) {
           (room as any).isInitialization = false;
           room.currentPlayer = room.players[0].id; // Start with first player for main game
@@ -902,7 +904,9 @@ export const skyjoDrawCard: RequestHandler = (req, res) => {
   }
 
   if ((room as any).isInitialization) {
-    return res.status(400).json({ error: "Vous devez d'abord révéler vos 2 cartes initiales" });
+    return res
+      .status(400)
+      .json({ error: "Vous devez d'abord révéler vos 2 cartes initiales" });
   }
 
   if (room.currentPlayer !== playerId) {
@@ -1081,7 +1085,9 @@ export const skyjoTakeFromDiscard: RequestHandler = (req, res) => {
   }
 
   if ((room as any).isInitialization) {
-    return res.status(400).json({ error: "Vous devez d'abord révéler vos 2 cartes initiales" });
+    return res
+      .status(400)
+      .json({ error: "Vous devez d'abord révéler vos 2 cartes initiales" });
   }
 
   if (room.currentPlayer !== playerId) {

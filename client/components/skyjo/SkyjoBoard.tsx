@@ -47,13 +47,12 @@ export function SkyjoBoard({
             {isCurrentPlayer && isMyTurn && (
               <span className="ml-2 text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
                 {isInitialization
-                  ? `Choisissez ${2 - cardsRevealed} carte${2 - cardsRevealed > 1 ? 's' : ''}`
+                  ? `Choisissez ${2 - cardsRevealed} carte${2 - cardsRevealed > 1 ? "s" : ""}`
                   : isWaitingForDiscardExchange
                     ? "Choisissez une carte à échanger"
                     : drawnCard !== null
                       ? "Choisissez où placer la carte"
-                      : "Votre tour"
-                }
+                      : "Votre tour"}
               </span>
             )}
           </h3>
@@ -61,7 +60,9 @@ export function SkyjoBoard({
             <div>Score: {player.score}</div>
             <div>Total: {player.totalScore}</div>
             {isInitialization && (
-              <div className="text-primary">Cartes révélées: {cardsRevealed}/2</div>
+              <div className="text-primary">
+                Cartes révélées: {cardsRevealed}/2
+              </div>
             )}
           </div>
         </div>
@@ -69,10 +70,14 @@ export function SkyjoBoard({
         <div className="grid grid-cols-4 gap-2 max-w-xs">
           {player.cards.map((row, rowIndex) =>
             row.map((card, colIndex) => {
-              const canClick = isCurrentPlayer && isMyTurn && (
-                (isInitialization && needsToRevealMore && !card.isRevealed) ||
-                (!isInitialization && (isWaitingForDiscardExchange || drawnCard !== null || !card.isRevealed))
-              );
+              const canClick =
+                isCurrentPlayer &&
+                isMyTurn &&
+                ((isInitialization && needsToRevealMore && !card.isRevealed) ||
+                  (!isInitialization &&
+                    (isWaitingForDiscardExchange ||
+                      drawnCard !== null ||
+                      !card.isRevealed)));
 
               return (
                 <SkyjoCard
@@ -86,8 +91,12 @@ export function SkyjoBoard({
                       : undefined
                   }
                   className={cn({
-                    "ring-2 ring-primary ring-offset-1": isCurrentPlayer && isMyTurn && canClick,
-                    "ring-2 ring-destructive ring-offset-1": isCurrentPlayer && isWaitingForDiscardExchange && !card.isRevealed,
+                    "ring-2 ring-primary ring-offset-1":
+                      isCurrentPlayer && isMyTurn && canClick,
+                    "ring-2 ring-destructive ring-offset-1":
+                      isCurrentPlayer &&
+                      isWaitingForDiscardExchange &&
+                      !card.isRevealed,
                   })}
                 />
               );
@@ -135,7 +144,8 @@ export function SkyjoBoard({
                 🔄 Mode échange avec la défausse
               </p>
               <p className="text-sm text-yellow-700 mt-1">
-                Cliquez sur une de vos cartes pour l'échanger avec la carte de la défausse
+                Cliquez sur une de vos cartes pour l'échanger avec la carte de
+                la défausse
               </p>
               <Button
                 variant="outline"

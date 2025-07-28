@@ -19,7 +19,8 @@ export function SkyjoGame({
 }: SkyjoGameProps) {
   const [drawnCard, setDrawnCard] = useState<number | null>(null);
   const [isWaitingForAction, setIsWaitingForAction] = useState(false);
-  const [isWaitingForDiscardExchange, setIsWaitingForDiscardExchange] = useState(false);
+  const [isWaitingForDiscardExchange, setIsWaitingForDiscardExchange] =
+    useState(false);
 
   const isMyTurn = room.currentPlayer === currentPlayer.id;
 
@@ -29,15 +30,18 @@ export function SkyjoGame({
     try {
       if (isWaitingForDiscardExchange) {
         // Player is exchanging with discard pile
-        const response = await fetch(`/api/rooms/${room.id}/skyjo/take-discard`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            playerId: currentPlayer.id,
-            row,
-            col,
-          }),
-        });
+        const response = await fetch(
+          `/api/rooms/${room.id}/skyjo/take-discard`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              playerId: currentPlayer.id,
+              row,
+              col,
+            }),
+          },
+        );
 
         if (response.ok) {
           const updatedRoom = await response.json();
