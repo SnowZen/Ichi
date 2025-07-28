@@ -109,16 +109,13 @@ export function SkyjoGame({
   };
 
   const handleTakeFromDiscard = async () => {
-    if (!isMyTurn || drawnCard !== null) return;
+    if (!isMyTurn || drawnCard !== null || isWaitingForDiscardExchange) return;
 
-    // For now, this requires the player to click on a card position to exchange
-    // We could show a modal or make it more interactive
+    // Enter discard exchange mode
+    setIsWaitingForDiscardExchange(true);
     alert(
-      "Cliquez sur une de vos cartes pour échanger avec la carte de la défausse",
+      "Cliquez sur une de vos cartes pour l'échanger avec la carte de la défausse",
     );
-
-    // Set a flag so the next card click will trigger the exchange
-    setIsWaitingForAction(true);
   };
 
   const handleDiscardDrawn = async (row: number, col: number) => {
