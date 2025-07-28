@@ -15,6 +15,7 @@ export default function GameRoom() {
   const navigate = useNavigate();
   const { session, clearSession } = usePlayerSession();
   const { room, isLoading, error, updateRoom } = useRoomSync(roomId);
+  const { restoreGame, clearBackup } = useGameBackup(roomId, room);
   const [selectedCard, setSelectedCard] = useState<string | undefined>();
   const [playableCards, setPlayableCards] = useState<string[]>([]);
   const [showColorPicker, setShowColorPicker] = useState(false);
