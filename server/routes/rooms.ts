@@ -116,7 +116,7 @@ function shuffleDeck(deck: UnoCard[]): UnoCard[] {
 }
 
 export const createRoom: RequestHandler = (req, res) => {
-  const { playerName, maxPlayers = 4 } = req.body;
+  const { playerName, maxPlayers = 4, gameType = 'uno' } = req.body;
 
   if (!playerName || typeof playerName !== "string") {
     return res.status(400).json({ error: "Nom de joueur requis" });
