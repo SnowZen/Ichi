@@ -1,7 +1,9 @@
 import { GameBoard } from "@/components/uno/GameBoard";
+import { SkyjoGame } from "@/pages/SkyjoGame";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Player, UnoCard, GameRoom } from "@shared/uno";
+import { SkyjoPlayer, SkyjoGameRoom } from "@shared/skyjo";
 
 interface GameRouterProps {
   room: GameRoom;
