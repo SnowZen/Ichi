@@ -12,18 +12,29 @@ export function ConnectionStatus({
   lastError,
 }: ConnectionStatusProps) {
   const [showOffline, setShowOffline] = useState(false);
+  const [lastShownError, setLastShownError] = useState<string | null>(null);
+
+  // Only show real connection errors, not restoration messages
+  const isRealError = lastError &&
+    !lastError.includes("restauré") &&
+    !lastError.includes("sauvegarde") &&
+    !lastError.includes("données locales");
 
   useEffect(() => {
-    if (!isConnected) {
+    if (!isConnected && isRealError) {
       setShowOffline(true);
-    } else {
+      setLastShownError(lastError);
+    } else if (isConnected && !isRealError) {
       // Hide offline indicator after a short delay when back online
-      const timer = setTimeout(() => setShowOffline(false), 2000);
+      const timer = setTimeout(() => {
+        setShowOffline(false);
+        setLastShownError(null);
+      }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [isConnected]);
+  }, [isConnected, isRealError, lastError]);
 
-  if (!showOffline && !lastError) return null;
+  if (!showOffline && !isRealError) return null;
 
   return (
     <div className="fixed top-4 right-4 z-50 max-w-sm">
