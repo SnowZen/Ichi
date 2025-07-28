@@ -223,13 +223,11 @@ export function RoomLobby({
             <GameSelection
               onGameSelect={onGameSelect}
               selectedGame={room.gameType}
-              disabled={room.players.length > 1}
+              disabled={false}
             />
-            {room.players.length > 1 && (
-              <p className="text-sm text-muted-foreground text-center mt-4">
-                ⚠️ Impossible de changer de jeu avec des joueurs connectés
-              </p>
-            )}
+            <p className="text-sm text-muted-foreground text-center mt-4">
+              💡 L'hôte peut changer de jeu à tout moment avant le début
+            </p>
           </Card>
         )}
 
