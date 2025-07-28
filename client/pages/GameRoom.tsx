@@ -363,6 +363,7 @@ export default function GameRoom() {
         onCallUno={handleCallUno}
         onChallengeUno={handleChallengeUno}
         onLeaveRoom={handleLeaveRoom}
+        updateRoom={updateRoom}
         selectedCard={selectedCard}
         onCardSelect={setSelectedCard}
         playableCards={playableCards}
