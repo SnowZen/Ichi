@@ -24,16 +24,17 @@ interface GameRoom {
   maxPlayers: number;
   isStarted: boolean;
   currentPlayer?: string;
-  direction: 1 | -1;
-  topCard?: UnoCard;
-  deck: UnoCard[];
-  discardPile: UnoCard[];
+  direction?: 1 | -1; // UNO only
+  topCard?: UnoCard; // UNO only
+  deck: UnoCard[] | number[]; // UNO cards or Skyjo card values
+  discardPile: UnoCard[] | number[]; // UNO cards or Skyjo card values
   winner?: string;
-  drawPenalty?: number; // Number of cards next player must draw
-  wildColor?: "red" | "blue" | "green" | "yellow"; // Color chosen for wild cards
-  unoCalledBy?: string; // Player who called UNO
-  unoChallengeTime?: number; // Timestamp when UNO can be challenged
+  drawPenalty?: number; // UNO only - Number of cards next player must draw
+  wildColor?: "red" | "blue" | "green" | "yellow"; // UNO only - Color chosen for wild cards
+  unoCalledBy?: string; // UNO only - Player who called UNO
+  unoChallengeTime?: number; // UNO only - Timestamp when UNO can be challenged
   isFinished?: boolean; // Game has ended
+  round?: number; // Skyjo only - Current round number
 }
 
 // In-memory storage for demo purposes
