@@ -27,7 +27,24 @@ export function SkyjoGame({
     if (!isMyTurn) return;
 
     try {
-      if (drawnCard !== null) {
+      if (isWaitingForDiscardExchange) {
+        // Player is exchanging with discard pile
+        const response = await fetch(`/api/rooms/${room.id}/skyjo/take-discard`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            playerId: currentPlayer.id,
+            row,
+            col,
+          }),
+        });
+
+        if (response.ok) {
+          const updatedRoom = await response.json();
+          updateRoom(updatedRoom);
+          setIsWaitingForDiscardExchange(false);
+        }
+      } else if (drawnCard !== null) {
         // Player has drawn a card and needs to decide: exchange or discard+reveal
         // For simplicity, let's assume they want to exchange
         const response = await fetch(`/api/rooms/${room.id}/skyjo/exchange`, {
