@@ -222,35 +222,50 @@ export const startGame: RequestHandler = (req, res) => {
     return res.status(400).json({ error: "Au moins 2 joueurs requis" });
   }
 
-  // Initialize game
-  const deck = createDeck();
+  // Initialize game based on game type
+  if (room.gameType === "uno") {
+    // Initialize UNO game
+    const deck = createDeck();
 
-  // Deal 7 cards to each player
-  room.players.forEach((player) => {
-    player.cards = [];
-    for (let i = 0; i < 7; i++) {
-      const card = deck.pop();
-      if (card) {
-        player.cards.push(card);
+    // Deal 7 cards to each player
+    room.players.forEach((player) => {
+      player.cards = [];
+      for (let i = 0; i < 7; i++) {
+        const card = deck.pop();
+        if (card) {
+          player.cards.push(card);
+        }
+      }
+    });
+
+    // Find a starting card
+    let topCard: UnoCard | undefined;
+    for (let i = 0; i < deck.length; i++) {
+      if (deck[i].color !== "wild") {
+        topCard = deck.splice(i, 1)[0];
+        break;
       }
     }
-  });
 
-  // Find a starting card
-  let topCard: UnoCard | undefined;
-  for (let i = 0; i < deck.length; i++) {
-    if (deck[i].color !== "wild") {
-      topCard = deck.splice(i, 1)[0];
-      break;
-    }
+    room.deck = deck;
+    room.discardPile = topCard ? [topCard] : [];
+    room.topCard = topCard;
+    room.drawPenalty = 0;
+  } else if (room.gameType === "skyjo") {
+    // Initialize Skyjo game (placeholder for now)
+    room.deck = [];
+    room.discardPile = [];
+    room.topCard = undefined;
+    room.drawPenalty = 0;
+
+    // Clear player cards for Skyjo
+    room.players.forEach((player) => {
+      player.cards = [];
+    });
   }
 
-  room.deck = deck;
-  room.discardPile = topCard ? [topCard] : [];
-  room.topCard = topCard;
   room.currentPlayer = room.players[0].id;
   room.isStarted = true;
-  room.drawPenalty = 0;
 
   rooms.set(roomId, room);
   res.json(room);
