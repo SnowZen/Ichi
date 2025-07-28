@@ -216,6 +216,22 @@ export function RoomLobby({
           </Card>
         </div>
 
+        {/* Game Selection (Host only) */}
+        {isHost && onGameSelect && (
+          <Card className="p-6 bg-card/80 backdrop-blur-sm border-accent/20 mb-6">
+            <GameSelection
+              onGameSelect={onGameSelect}
+              selectedGame={room.gameType}
+              disabled={room.players.length > 1}
+            />
+            {room.players.length > 1 && (
+              <p className="text-sm text-muted-foreground text-center mt-4">
+                ⚠️ Impossible de changer de jeu avec des joueurs connectés
+              </p>
+            )}
+          </Card>
+        )}
+
         {/* Action Buttons */}
         <div className="flex flex-col items-center gap-4">
           <div className="flex gap-4">
