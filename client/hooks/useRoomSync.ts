@@ -8,7 +8,8 @@ export function useRoomSync(roomId: string | undefined) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { session } = usePlayerSession();
-  const { saveGameState, loadGameState, syncWithServer, restoreFromServer } = useRobustStorage();
+  const { saveGameState, loadGameState, syncWithServer, restoreFromServer } =
+    useRobustStorage();
 
   const fetchRoom = useCallback(
     async (isInitialLoad = false) => {
@@ -134,16 +135,24 @@ export function useRoomSync(roomId: string | undefined) {
     return () => clearInterval(interval);
   }, [fetchRoom, roomId, sendHeartbeat]);
 
-  const updateRoom = useCallback((updatedRoom: GameRoom) => {
-    setRoom(updatedRoom);
+  const updateRoom = useCallback(
+    (updatedRoom: GameRoom) => {
+      setRoom(updatedRoom);
 
-    // Auto-save when room updates
-    if (session && roomId) {
-      saveGameState(roomId, session.playerId, session.playerName, updatedRoom);
-      // Non-blocking server sync
-      syncWithServer(roomId, updatedRoom);
-    }
-  }, [session, roomId, saveGameState, syncWithServer]);
+      // Auto-save when room updates
+      if (session && roomId) {
+        saveGameState(
+          roomId,
+          session.playerId,
+          session.playerName,
+          updatedRoom,
+        );
+        // Non-blocking server sync
+        syncWithServer(roomId, updatedRoom);
+      }
+    },
+    [session, roomId, saveGameState, syncWithServer],
+  );
 
   return {
     room,

@@ -190,7 +190,9 @@ export function SkyjoGame({
             <Button
               onClick={() => {
                 setIsWaitingForAction(true);
-                alert("Cliquez sur une de vos cartes pour l'échanger avec cette carte");
+                alert(
+                  "Cliquez sur une de vos cartes pour l'échanger avec cette carte",
+                );
               }}
               className="w-full"
             >
@@ -206,7 +208,9 @@ export function SkyjoGame({
                 setDrawnCard(null);
                 setIsWaitingForRevealAfterDiscard(true);
                 setIsWaitingForAction(true);
-                alert("Carte défaussée ! Cliquez maintenant sur une carte cachée pour la révéler");
+                alert(
+                  "Carte défaussée ! Cliquez maintenant sur une carte cachée pour la révéler",
+                );
               }}
               variant="outline"
               className="w-full"
