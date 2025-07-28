@@ -192,6 +192,8 @@ export function SkyjoGame({
       onDrawCard={handleDrawCard}
       onTakeFromDiscard={handleTakeFromDiscard}
       onLeaveRoom={onLeaveRoom}
+      isWaitingForDiscardExchange={isWaitingForDiscardExchange}
+      drawnCard={drawnCard}
     />
   );
 }
