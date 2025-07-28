@@ -18,6 +18,7 @@ interface GameRouterProps {
   selectedCard?: string;
   onCardSelect?: (cardId: string) => void;
   playableCards?: string[];
+  hasConnectionIssues?: boolean;
 }
 
 export function GameRouter(props: GameRouterProps) {
