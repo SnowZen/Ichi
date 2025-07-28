@@ -50,5 +50,12 @@ export function createServer() {
   app.post("/api/rooms/:roomId/restart", restartGame);
   app.post("/api/rooms/:roomId/leave", leaveGame);
 
+  // Skyjo game routes
+  app.post("/api/rooms/:roomId/skyjo/reveal", skyjoRevealCard);
+  app.post("/api/rooms/:roomId/skyjo/draw", skyjoDrawCard);
+  app.post("/api/rooms/:roomId/skyjo/exchange", skyjoExchangeCard);
+  app.post("/api/rooms/:roomId/skyjo/discard", skyjoDiscardDrawn);
+  app.post("/api/rooms/:roomId/skyjo/take-discard", skyjoTakeFromDiscard);
+
   return app;
 }
