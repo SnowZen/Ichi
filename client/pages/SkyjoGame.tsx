@@ -168,23 +168,48 @@ export function SkyjoGame({
           <div className="space-y-3">
             <Button
               onClick={() => {
-                // Let user click on their cards to exchange
-                alert("Cliquez sur une de vos cartes pour l'échanger");
+                setIsWaitingForAction(true);
+                alert("Cliquez sur une de vos cartes pour l'échanger avec cette carte");
               }}
               className="w-full"
             >
               Échanger avec une de mes cartes
             </Button>
             <Button
-              onClick={() => {
-                // Let user click on their cards to reveal after discarding
-                alert("Cliquez sur une de vos cartes cachées pour la révéler");
-                setIsWaitingForAction(true);
+              onClick={async () => {
+                // Discard the drawn card and allow revealing a hidden card
+                try {
+                  const response = await fetch(`/api/rooms/${room.id}/skyjo/discard-drawn`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      playerId: currentPlayer.id,
+                      drawnCard,
+                    }),
+                  });
+
+                  if (response.ok) {
+                    const updatedRoom = await response.json();
+                    updateRoom(updatedRoom);
+                    setDrawnCard(null);
+                    alert("Carte défaussée ! Cliquez maintenant sur une carte cachée pour la révéler");
+                    setIsWaitingForAction(true);
+                  }
+                } catch (error) {
+                  console.error("Erreur lors de la défausse:", error);
+                }
               }}
               variant="outline"
               className="w-full"
             >
-              Défausser et révéler une carte
+              Défausser et révéler une carte cachée
+            </Button>
+            <Button
+              onClick={handleCancelAction}
+              variant="ghost"
+              className="w-full"
+            >
+              Annuler
             </Button>
           </div>
         </Card>
