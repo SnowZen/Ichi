@@ -1,4 +1,6 @@
 import { RequestHandler } from "express";
+import { SkyjoPlayer, SkyjoGameRoom } from "@shared/skyjo";
+import { createSkyjoDeck, initializeSkyjoPlayer, checkAndRemoveColumn, finalizeRoundScoring, allCardsRevealed } from "@shared/skyjoLogic";
 
 interface UnoCard {
   id: string;
