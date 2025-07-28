@@ -1144,3 +1144,26 @@ export const skyjoTakeFromDiscard: RequestHandler = (req, res) => {
   rooms.set(roomId, room);
   res.json(room);
 };
+
+// Heartbeat endpoint to keep players connected in serverless environment
+export const heartbeat: RequestHandler = (req, res) => {
+  const { roomId } = req.params;
+  const { playerId } = req.body;
+
+  const room = rooms.get(roomId);
+  if (!room) {
+    return res.status(404).json({ error: "Salon non trouvé" });
+  }
+
+  const player = room.players.find((p) => p.id === playerId);
+  if (!player) {
+    return res.status(404).json({ error: "Joueur non trouvé" });
+  }
+
+  // Mark player as connected
+  player.isConnected = true;
+  (player as any).lastSeen = Date.now();
+
+  rooms.set(roomId, room);
+  res.json({ status: "ok" });
+};
