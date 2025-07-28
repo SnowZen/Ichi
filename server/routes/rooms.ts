@@ -319,7 +319,7 @@ export const joinRoom: RequestHandler = (req, res) => {
   }
 
   // Check if player is reconnecting (same name)
-  const existingPlayer = room.players.find(p => p.name === playerName.trim());
+  const existingPlayer = room.players.find((p) => p.name === playerName.trim());
   if (existingPlayer) {
     // Reconnect existing player
     existingPlayer.isConnected = true;

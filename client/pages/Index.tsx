@@ -50,8 +50,10 @@ export default function Index() {
         setError(errorData.error || "Erreur lors de la création du salon");
       }
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        setError("Timeout - Le serveur met trop de temps à répondre. Réessayez.");
+      if (error instanceof Error && error.name === "AbortError") {
+        setError(
+          "Timeout - Le serveur met trop de temps à répondre. Réessayez.",
+        );
       } else {
         setError("Erreur de connexion. Veuillez réessayer.");
       }
@@ -92,8 +94,10 @@ export default function Index() {
         }
       }
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        setError("Timeout - Le serveur met trop de temps à répondre. Réessayez.");
+      if (error instanceof Error && error.name === "AbortError") {
+        setError(
+          "Timeout - Le serveur met trop de temps à répondre. Réessayez.",
+        );
       } else {
         setError("Erreur de connexion. Veuillez réessayer.");
       }
