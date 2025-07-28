@@ -12,8 +12,10 @@ interface UnoCard {
 interface Player {
   id: string;
   name: string;
-  cards: UnoCard[];
+  cards: UnoCard[] | any[][]; // UNO cards or Skyjo grid (SkyjoCard[][])
   isConnected: boolean;
+  score?: number; // Skyjo only
+  totalScore?: number; // Skyjo only
 }
 
 interface GameRoom {
