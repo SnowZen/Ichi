@@ -126,7 +126,7 @@ export function GameBoard({
         </div>
 
         {/* Draw Penalty Warning */}
-        {room.drawPenalty && room.drawPenalty > 0 && (
+        {room.gameType === 'uno' && room.drawPenalty && room.drawPenalty > 0 && (
           <div className="text-center mb-4">
             <div className="bg-destructive/20 border border-destructive rounded-lg p-3 max-w-md mx-auto">
               <p className="text-destructive font-semibold">
