@@ -53,6 +53,7 @@ export default function Index() {
     if (!playerName.trim() || !roomCode.trim()) return;
 
     setIsJoining(true);
+    setError(null);
     try {
       const response = await fetch(`/api/rooms/${roomCode}/join`, {
         method: "POST",
@@ -64,9 +65,16 @@ export default function Index() {
         const { roomId, playerId, playerName: name } = await response.json();
         saveSession(playerId, roomId, name);
         navigate(`/room/${roomCode}`);
+      } else {
+        const errorData = await response.json();
+        if (response.status === 404) {
+          setError(`Le salon "${roomCode}" n'existe pas. Vérifiez le code.`);
+        } else {
+          setError(errorData.error || 'Impossible de rejoindre le salon');
+        }
       }
     } catch (error) {
-      console.error("Erreur lors de la connexion au salon:", error);
+      setError('Erreur de connexion. Veuillez réessayer.');
     } finally {
       setIsJoining(false);
     }
