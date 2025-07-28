@@ -318,6 +318,20 @@ export const joinRoom: RequestHandler = (req, res) => {
     return res.status(404).json({ error: "Salon non trouvé" });
   }
 
+  // Check if player is reconnecting (same name)
+  const existingPlayer = room.players.find(p => p.name === playerName.trim());
+  if (existingPlayer) {
+    // Reconnect existing player
+    existingPlayer.isConnected = true;
+    res.json({
+      roomId,
+      playerId: existingPlayer.id,
+      playerName: playerName.trim(),
+      room,
+    });
+    return;
+  }
+
   if (room.isStarted) {
     return res.status(400).json({ error: "La partie a déjà commencé" });
   }
