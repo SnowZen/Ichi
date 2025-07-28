@@ -42,6 +42,19 @@ export function GameBoard({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-card to-background p-2 sm:p-4 relative">
+      {/* Quit Game Button - Fixed position top right */}
+      {onLeaveRoom && (
+        <div className="fixed top-4 left-4 z-50">
+          <Button
+            onClick={onLeaveRoom}
+            variant="outline"
+            size="sm"
+            className="bg-background/90 backdrop-blur-sm border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+          >
+            🚪 Quitter
+          </Button>
+        </div>
+      )}
       {/* Floating UNO Challenge Notification */}
       {playersWithOneCard.length > 0 && (
         <div className="fixed top-4 right-4 z-50 space-y-2">
