@@ -141,13 +141,7 @@ export function SkyjoBoard({
                 variant="outline"
                 size="sm"
                 className="mt-2"
-                onClick={() => {
-                  // This would need to be passed as a prop
-                  if (onLeaveRoom) {
-                    // Temporary - we need a proper cancel function
-                    window.location.reload();
-                  }
-                }}
+                onClick={onCancelAction}
               >
                 Annuler
               </Button>
