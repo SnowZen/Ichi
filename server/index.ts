@@ -20,6 +20,9 @@ import {
   skyjoDiscardDrawn,
   skyjoTakeFromDiscard,
   heartbeat,
+  backupRoom,
+  restoreRoom,
+  createRoomWithRestore,
 } from "./routes/rooms";
 
 export function createServer() {
