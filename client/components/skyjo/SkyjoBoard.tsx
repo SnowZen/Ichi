@@ -26,6 +26,8 @@ export function SkyjoBoard({
   onDrawCard,
   onTakeFromDiscard,
   onLeaveRoom,
+  isWaitingForDiscardExchange = false,
+  drawnCard = null,
 }: SkyjoBoardProps) {
   const otherPlayers = room.players.filter((p) => p.id !== currentPlayer.id);
   const isMyTurn = room.currentPlayer === currentPlayer.id;
