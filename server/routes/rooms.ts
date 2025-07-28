@@ -852,14 +852,34 @@ export const skyjoRevealCard: RequestHandler = (req, res) => {
   ) {
     player.cards[row][col].isRevealed = true;
 
-    // Check for column removal
-    checkAndRemoveColumn(player as any, col);
+    // Handle initialization phase (choosing initial 2 cards)
+    if ((room as any).isInitialization) {
+      (player as any).cardsRevealed = ((player as any).cardsRevealed || 0) + 1;
 
-    // Move to next player
-    const nextPlayerIndex =
-      (room.players.findIndex((p) => p.id === playerId) + 1) %
-      room.players.length;
-    room.currentPlayer = room.players[nextPlayerIndex].id;
+      // If player has revealed 2 cards, move to next player
+      if ((player as any).cardsRevealed >= 2) {
+        const nextPlayerIndex =
+          (room.players.findIndex((p) => p.id === playerId) + 1) %
+          room.players.length;
+        room.currentPlayer = room.players[nextPlayerIndex].id;
+
+        // Check if all players have revealed their 2 initial cards
+        const allPlayersReady = room.players.every(p => ((p as any).cardsRevealed || 0) >= 2);
+        if (allPlayersReady) {
+          (room as any).isInitialization = false;
+          room.currentPlayer = room.players[0].id; // Start with first player for main game
+        }
+      }
+    } else {
+      // Normal game play - check for column removal
+      checkAndRemoveColumn(player as any, col);
+
+      // Move to next player
+      const nextPlayerIndex =
+        (room.players.findIndex((p) => p.id === playerId) + 1) %
+        room.players.length;
+      room.currentPlayer = room.players[nextPlayerIndex].id;
+    }
 
     rooms.set(roomId, room);
     res.json(room);
