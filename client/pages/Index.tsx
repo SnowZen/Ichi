@@ -149,10 +149,11 @@ export default function Index() {
         </div>
 
         {/* Netlify info banner */}
-        {window.location.hostname.includes('netlify') && (
+        {window.location.hostname.includes("netlify") && (
           <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg max-w-md mx-auto">
             <p className="text-blue-800 text-sm font-medium text-center">
-              ℹ️ Sur Netlify, utilisez "Skyjo Local" pour une expérience optimale
+              ℹ️ Sur Netlify, utilisez "Skyjo Local" pour une expérience
+              optimale
             </p>
           </div>
         )}

@@ -19,11 +19,13 @@ Aucune variable d'environnement n'est requise pour le fonctionnement de base.
 ## Fonctionnalités
 
 ### ✅ UNO
+
 - Fonctionne entièrement avec les fonctions serverless
 - Multiplayer en temps réel
 - Synchronisation automatique
 
 ### ✅ Skyjo (Mode optimisé)
+
 - **Mode offline automatique** sur Netlify pour contourner les limitations serverless
 - Sauvegarde locale avec localStorage
 - Multiplayer local (même appareil/partage d'écran)
@@ -40,10 +42,12 @@ Aucune variable d'environnement n'est requise pour le fonctionnement de base.
 ## Utilisation recommandée sur Netlify
 
 ### Pour UNO
+
 - Utiliser la création de salon normale
 - Fonctionnement en mode serveur
 
-### Pour Skyjo  
+### Pour Skyjo
+
 - Cliquer sur "⭐ Créer Skyjo Local (sans serveur)"
 - Mode offline garanti sans déconnexions
 - Partage du code de salon pour multijoueur
