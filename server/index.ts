@@ -14,6 +14,11 @@ import {
   changeGame,
   restartGame,
   leaveGame,
+  skyjoRevealCard,
+  skyjoDrawCard,
+  skyjoExchangeCard,
+  skyjoDiscardDrawn,
+  skyjoTakeFromDiscard,
 } from "./routes/rooms";
 
 export function createServer() {
