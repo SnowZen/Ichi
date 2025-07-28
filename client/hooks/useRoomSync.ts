@@ -60,6 +60,21 @@ export function useRoomSync(roomId: string | undefined) {
     [roomId, room],
   );
 
+  const sendHeartbeat = useCallback(async () => {
+    if (!roomId || !session?.playerId) return;
+
+    try {
+      await fetch(`/api/rooms/${roomId}/heartbeat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ playerId: session.playerId }),
+      });
+    } catch (err) {
+      // Ignore heartbeat errors
+      console.warn("Heartbeat failed:", err);
+    }
+  }, [roomId, session?.playerId]);
+
   // Initial fetch
   useEffect(() => {
     fetchRoom(true);
