@@ -678,7 +678,7 @@ export const challengeUno: RequestHandler = (req, res) => {
 
   const room = rooms.get(roomId);
   if (!room) {
-    return res.status(404).json({ error: "Salon non trouvé" });
+    return res.status(404).json({ error: "Salon non trouv��" });
   }
 
   const challenger = room.players.find((p) => p.id === challengerId);
@@ -1078,6 +1078,10 @@ export const skyjoTakeFromDiscard: RequestHandler = (req, res) => {
 
   if (!room.isStarted) {
     return res.status(400).json({ error: "La partie n'a pas commencé" });
+  }
+
+  if ((room as any).isInitialization) {
+    return res.status(400).json({ error: "Vous devez d'abord révéler vos 2 cartes initiales" });
   }
 
   if (room.currentPlayer !== playerId) {
