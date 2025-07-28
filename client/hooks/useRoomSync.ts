@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { GameRoom } from "@shared/uno";
+import { usePlayerSession } from "./usePlayerSession";
 
 export function useRoomSync(roomId: string | undefined) {
   const [room, setRoom] = useState<GameRoom | null>(null);
