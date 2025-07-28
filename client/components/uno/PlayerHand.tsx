@@ -46,8 +46,10 @@ export function PlayerHand({
       {cards.map((card, index) => (
         <div
           key={card.id}
-          className="relative"
-          className={cn(index > 0 && "-ml-2 sm:-ml-3")}
+          className={cn(
+            "relative",
+            index > 0 && index < 10 && "-ml-1 sm:-ml-2"
+          )}
           style={{
             zIndex: cards.length - index,
           }}
