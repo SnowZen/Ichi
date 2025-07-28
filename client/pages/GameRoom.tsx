@@ -4,9 +4,11 @@ import { GameRouter } from "@/components/games/GameRouter";
 import { RoomLobby } from "@/components/uno/RoomLobby";
 import { ColorPicker } from "@/components/uno/ColorPicker";
 import { GameOver } from "@/components/uno/GameOver";
+import { ConnectionStatus } from "@/components/common/ConnectionStatus";
 import { Player, UnoCard, UnoColor } from "@shared/uno";
 import { useRoomSync } from "@/hooks/useRoomSync";
 import { usePlayerSession } from "@/hooks/usePlayerSession";
+import { useGameBackup } from "@/hooks/useGameBackup";
 
 export default function GameRoom() {
   const { roomId } = useParams<{ roomId: string }>();
