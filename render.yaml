@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: board-games-hub
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/ping
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        fromService:
+          type: web
+          name: board-games-hub
+          property: port
+    domains:
+      - board-games-hub.onrender.com
