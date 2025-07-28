@@ -14,6 +14,7 @@ interface RoomLobbyProps {
   currentPlayerId: string;
   onStartGame: () => void;
   onLeaveRoom: () => void;
+  onGameSelect?: (gameType: GameType) => void;
   isHost: boolean;
 }
 
