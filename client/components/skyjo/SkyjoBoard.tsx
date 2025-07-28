@@ -27,6 +27,7 @@ export function SkyjoBoard({
   onDrawCard,
   onTakeFromDiscard,
   onLeaveRoom,
+  onCancelAction,
   isWaitingForDiscardExchange = false,
   drawnCard = null,
 }: SkyjoBoardProps) {
