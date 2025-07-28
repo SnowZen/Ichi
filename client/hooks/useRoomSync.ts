@@ -6,6 +6,7 @@ export function useRoomSync(roomId: string | undefined) {
   const [room, setRoom] = useState<GameRoom | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { session } = usePlayerSession();
 
   const fetchRoom = useCallback(
     async (isInitialLoad = false) => {
