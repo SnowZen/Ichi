@@ -19,6 +19,7 @@ export function SkyjoGame({
 }: SkyjoGameProps) {
   const [drawnCard, setDrawnCard] = useState<number | null>(null);
   const [isWaitingForAction, setIsWaitingForAction] = useState(false);
+  const [isWaitingForDiscardExchange, setIsWaitingForDiscardExchange] = useState(false);
 
   const isMyTurn = room.currentPlayer === currentPlayer.id;
 
