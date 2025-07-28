@@ -15,6 +15,8 @@ interface SkyjoBoardProps {
   onDrawCard?: () => void;
   onTakeFromDiscard?: () => void;
   onLeaveRoom?: () => void;
+  isWaitingForDiscardExchange?: boolean;
+  drawnCard?: number | null;
 }
 
 export function SkyjoBoard({
