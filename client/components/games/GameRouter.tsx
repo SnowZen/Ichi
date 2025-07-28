@@ -13,6 +13,7 @@ interface GameRouterProps {
   onCallUno: () => void;
   onChallengeUno?: (playerId: string) => void;
   onLeaveRoom?: () => void;
+  updateRoom?: (room: any) => void;
   selectedCard?: string;
   onCardSelect?: (cardId: string) => void;
   playableCards?: string[];
