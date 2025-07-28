@@ -1101,10 +1101,8 @@ export const skyjoTakeFromDiscard: RequestHandler = (req, res) => {
     isRevealed: true,
   };
 
-  // Add the old card to discard pile if it was revealed
-  if (oldCard.isRevealed) {
-    discardPile.push(oldCard.value);
-  }
+  // Add the old card to discard pile (revealed or not, it becomes visible when discarded)
+  discardPile.push(oldCard.value);
 
   // Check for column removal
   checkAndRemoveColumn(player as any, col);
