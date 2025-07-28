@@ -19,6 +19,7 @@ import {
   skyjoExchangeCard,
   skyjoDiscardDrawn,
   skyjoTakeFromDiscard,
+  heartbeat,
 } from "./routes/rooms";
 
 export function createServer() {
