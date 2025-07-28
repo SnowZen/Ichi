@@ -4,6 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { GameRoom } from "@shared/uno";
+import { GameSelection } from "@/components/common/GameSelection";
+import { GameType, AVAILABLE_GAMES } from "@shared/games";
 import { cn } from "@/lib/utils";
 import { Users, Play, Copy, Check } from "lucide-react";
 
