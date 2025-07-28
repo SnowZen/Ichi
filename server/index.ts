@@ -40,6 +40,7 @@ export function createServer() {
   app.post("/api/rooms/:roomId/draw", drawCard);
   app.post("/api/rooms/:roomId/uno", callUno);
   app.post("/api/rooms/:roomId/challenge", challengeUno);
+  app.post("/api/rooms/:roomId/change-game", changeGame);
   app.post("/api/rooms/:roomId/restart", restartGame);
 
   return app;
