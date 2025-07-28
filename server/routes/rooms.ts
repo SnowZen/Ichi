@@ -63,24 +63,7 @@ function initializeSkyjoPlayer(
     }
   }
 
-  // Reveal 2 random cards for each player
-  const positions = [];
-  for (let row = 0; row < 3; row++) {
-    for (let col = 0; col < 4; col++) {
-      positions.push({ row, col });
-    }
-  }
-
-  // Shuffle positions and reveal first 2
-  for (let i = positions.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [positions[i], positions[j]] = [positions[j], positions[i]];
-  }
-
-  for (let i = 0; i < 2; i++) {
-    const { row, col } = positions[i];
-    player.cards[row][col].isRevealed = true;
-  }
+  // Don't automatically reveal cards - let players choose their 2 initial cards
 
   return player;
 }
