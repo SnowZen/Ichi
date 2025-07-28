@@ -27,6 +27,7 @@ export interface SkyjoGameRoom {
   winner?: string;
   isFinished?: boolean;
   round: number;
+  isInitialization?: boolean; // True when players are choosing their initial 2 cards
 }
 
 export interface SkyjoAction {
