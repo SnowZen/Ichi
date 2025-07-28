@@ -85,15 +85,15 @@ export default function Index() {
       {/* Header */}
       <div className="text-center py-8 sm:py-12">
         <div className="flex justify-center items-center gap-3 sm:gap-4 mb-4">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-uno-red via-uno-blue to-uno-green rounded-xl flex items-center justify-center text-white text-xl sm:text-2xl font-bold shadow-lg">
-            U
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-500 via-blue-500 to-green-500 rounded-xl flex items-center justify-center text-white text-xl sm:text-2xl font-bold shadow-lg">
+            🎲
           </div>
-          <h1 className="text-4xl sm:text-6xl font-bold bg-gradient-to-r from-uno-red via-uno-blue to-uno-green bg-clip-text text-transparent">
-            UNO
+          <h1 className="text-4xl sm:text-6xl font-bold bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 bg-clip-text text-transparent">
+            Board Games Hub
           </h1>
         </div>
         <p className="text-xl text-muted-foreground mb-2">
-          Jeu de cartes multijoueur en ligne
+          Jeux de société multijoueur en ligne
         </p>
         <div className="flex justify-center gap-2 flex-wrap">
           <Badge variant="secondary" className="gap-1">
