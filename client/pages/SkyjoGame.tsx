@@ -143,6 +143,7 @@ export function SkyjoGame({
   const handleCancelAction = () => {
     setIsWaitingForDiscardExchange(false);
     setIsWaitingForAction(false);
+    setIsWaitingForRevealAfterDiscard(false);
     setDrawnCard(null);
   };
 
