@@ -13,6 +13,7 @@ import {
   challengeUno,
   changeGame,
   restartGame,
+  leaveGame,
 } from "./routes/rooms";
 
 export function createServer() {
