@@ -22,33 +22,21 @@ interface GameRouterProps {
 }
 
 export function GameRouter(props: GameRouterProps) {
-  const { room, currentPlayer, onLeaveRoom, updateRoom } = props;
+  const { room, currentPlayer, onLeaveRoom, updateRoom, hasConnectionIssues } = props;
 
   if (room.gameType === "uno") {
     return <GameBoard {...props} />;
   }
 
   if (room.gameType === "skyjo") {
+    // Use offline version if connection issues or no updateRoom
+    if (hasConnectionIssues || !updateRoom) {
+      return <SkyjoOfflineGame />;
+    }
+
     // Type assertion for Skyjo
     const skyjoRoom = room as any as SkyjoGameRoom;
     const skyjoPlayer = currentPlayer as any as SkyjoPlayer;
-
-    if (!updateRoom) {
-      // Fallback if updateRoom is not provided
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-background via-card to-background flex items-center justify-center p-4">
-          <Card className="p-8 bg-card/90 backdrop-blur-sm border-2 border-primary/20 shadow-2xl max-w-md w-full text-center">
-            <div className="mb-6">
-              <div className="text-6xl mb-4">⚠️</div>
-              <h1 className="text-3xl font-bold mb-4">Erreur</h1>
-              <p className="text-muted-foreground mb-6">
-                Impossible de charger le jeu Skyjo.
-              </p>
-            </div>
-          </Card>
-        </div>
-      );
-    }
 
     return (
       <SkyjoGame
