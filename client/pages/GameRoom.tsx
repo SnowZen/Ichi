@@ -379,6 +379,31 @@ export default function GameRoom() {
     <>
       <ConnectionStatus isConnected={!error} lastError={error} />
 
+      {/* Manual mode controls */}
+      {(manualMode || connectionFailures >= 3) && (
+        <div className="fixed top-4 right-4 z-40 space-y-2">
+          <div className="bg-background/90 backdrop-blur-sm border rounded-lg p-3 shadow-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-sm font-medium">Mode manuel</span>
+              <input
+                type="checkbox"
+                checked={manualMode}
+                onChange={(e) => setManualMode(e.target.checked)}
+                className="rounded"
+              />
+            </div>
+            {manualMode && (
+              <button
+                onClick={refetch}
+                className="w-full px-3 py-1 bg-primary text-primary-foreground rounded text-sm hover:bg-primary/90"
+              >
+                Rafraîchir
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       <GameRouter
         room={room}
         currentPlayer={currentPlayer}
