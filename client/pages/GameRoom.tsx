@@ -108,9 +108,23 @@ export default function GameRoom() {
     }
   };
 
-  const handleLeaveRoom = () => {
-    clearSession();
-    navigate("/");
+  const handleLeaveRoom = async () => {
+    if (!roomId || !currentPlayer) return;
+
+    try {
+      await fetch(`/api/rooms/${roomId}/leave`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          playerId: currentPlayer.id,
+        }),
+      });
+    } catch (error) {
+      console.error("Erreur lors de la sortie de la partie:", error);
+    } finally {
+      clearSession();
+      navigate("/");
+    }
   };
 
   const handleCardPlay = async (card: UnoCard, wildColor?: UnoColor) => {
