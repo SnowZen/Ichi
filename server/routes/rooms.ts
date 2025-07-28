@@ -901,6 +901,10 @@ export const skyjoDrawCard: RequestHandler = (req, res) => {
     return res.status(400).json({ error: "La partie n'a pas commencé" });
   }
 
+  if ((room as any).isInitialization) {
+    return res.status(400).json({ error: "Vous devez d'abord révéler vos 2 cartes initiales" });
+  }
+
   if (room.currentPlayer !== playerId) {
     return res.status(400).json({ error: "Ce n'est pas votre tour" });
   }
