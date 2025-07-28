@@ -43,6 +43,7 @@ export function createServer() {
 
   // Uno game routes
   app.post("/api/rooms", createRoom);
+  app.post("/api/rooms/restore", createRoomWithRestore);
   app.post("/api/rooms/:roomId/join", joinRoom);
   app.get("/api/rooms/:roomId", getRoom);
   app.post("/api/rooms/:roomId/start", startGame);
@@ -54,6 +55,8 @@ export function createServer() {
   app.post("/api/rooms/:roomId/restart", restartGame);
   app.post("/api/rooms/:roomId/leave", leaveGame);
   app.post("/api/rooms/:roomId/heartbeat", heartbeat);
+  app.post("/api/rooms/:roomId/backup", backupRoom);
+  app.get("/api/rooms/:roomId/restore", restoreRoom);
 
   // Skyjo game routes
   app.post("/api/rooms/:roomId/skyjo/reveal", skyjoRevealCard);
