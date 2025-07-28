@@ -29,7 +29,19 @@ app.use(express.static(distPath, {
 
 // Health check endpoint for Render
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+  const uptime = process.uptime();
+  const memUsage = process.memoryUsage();
+
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: `${Math.floor(uptime / 60)}m ${Math.floor(uptime % 60)}s`,
+    memory: {
+      used: Math.round(memUsage.heapUsed / 1024 / 1024) + ' MB',
+      total: Math.round(memUsage.heapTotal / 1024 / 1024) + ' MB'
+    },
+    env: process.env.NODE_ENV
+  });
 });
 
 // Handle React Router - serve index.html for all non-API routes
