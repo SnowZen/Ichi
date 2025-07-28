@@ -30,8 +30,12 @@ export function GameRouter(props: GameRouterProps) {
   }
 
   if (room.gameType === "skyjo") {
-    // Use offline version if connection issues or no updateRoom
-    if (hasConnectionIssues || !updateRoom) {
+    // Detect Netlify environment and force offline mode for Skyjo
+    const isNetlify = window.location.hostname.includes('netlify.app') ||
+                     window.location.hostname.includes('netlify.com');
+
+    // Use offline version if connection issues, no updateRoom, or on Netlify
+    if (hasConnectionIssues || !updateRoom || isNetlify) {
       return <SkyjoOfflineGame />;
     }
 
