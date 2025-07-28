@@ -148,16 +148,6 @@ export default function Index() {
           </Badge>
         </div>
 
-        {/* Netlify info banner */}
-        {window.location.hostname.includes("netlify") && (
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg max-w-md mx-auto">
-            <p className="text-blue-800 text-sm font-medium text-center">
-              ℹ️ Sur Netlify, utilisez "Skyjo Local" pour une expérience
-              optimale
-            </p>
-          </div>
-        )}
-
         {error && (
           <div className="mt-4 p-3 bg-destructive/20 border border-destructive rounded-lg max-w-md mx-auto">
             <p className="text-destructive text-sm font-medium text-center">
