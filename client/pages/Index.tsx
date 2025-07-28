@@ -132,7 +132,7 @@ export default function Index() {
               </div>
               <h2 className="text-2xl font-semibold mb-2">Créer un salon</h2>
               <p className="text-muted-foreground">
-                Créez une nouvelle partie et invitez vos amis
+                Créez une nouvelle partie UNO et invitez vos amis
               </p>
             </div>
 
