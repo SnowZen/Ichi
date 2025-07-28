@@ -105,9 +105,9 @@ export function useRoomSync(roomId: string | undefined, disablePolling = false) 
     fetchRoom(true);
   }, [fetchRoom]);
 
-  // Auto-refresh every 5 seconds for real-time sync (reduced frequency for serverless stability)
+  // Auto-refresh every 5 seconds for real-time sync (can be disabled)
   useEffect(() => {
-    if (!roomId) return;
+    if (!roomId || disablePolling) return;
 
     const interval = setInterval(() => {
       fetchRoom(false);
@@ -115,7 +115,7 @@ export function useRoomSync(roomId: string | undefined, disablePolling = false) 
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [fetchRoom, roomId, sendHeartbeat]);
+  }, [fetchRoom, roomId, sendHeartbeat, disablePolling]);
 
   const updateRoom = useCallback(
     (updatedRoom: GameRoom) => {
