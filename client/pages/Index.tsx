@@ -22,6 +22,7 @@ export default function Index() {
     if (!playerName.trim()) return;
 
     setIsCreating(true);
+    setError(null);
     try {
       const response = await fetch("/api/rooms", {
         method: "POST",
@@ -29,6 +30,7 @@ export default function Index() {
         body: JSON.stringify({
           playerName: playerName.trim(),
           maxPlayers: 4,
+          gameType: 'uno'
         }),
       });
 
@@ -36,9 +38,12 @@ export default function Index() {
         const { roomId, playerId, playerName: name } = await response.json();
         saveSession(playerId, roomId, name);
         navigate(`/room/${roomId}`);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || 'Erreur lors de la création du salon');
       }
     } catch (error) {
-      console.error("Erreur lors de la création du salon:", error);
+      setError('Erreur de connexion. Veuillez réessayer.');
     } finally {
       setIsCreating(false);
     }
