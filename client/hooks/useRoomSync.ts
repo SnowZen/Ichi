@@ -136,7 +136,14 @@ export function useRoomSync(roomId: string | undefined) {
 
   const updateRoom = useCallback((updatedRoom: GameRoom) => {
     setRoom(updatedRoom);
-  }, []);
+
+    // Auto-save when room updates
+    if (session && roomId) {
+      saveGameState(roomId, session.playerId, session.playerName, updatedRoom);
+      // Non-blocking server sync
+      syncWithServer(roomId, updatedRoom);
+    }
+  }, [session, roomId, saveGameState, syncWithServer]);
 
   return {
     room,
