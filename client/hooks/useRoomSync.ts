@@ -43,6 +43,7 @@ export function useRoomSync(
               if (localData) {
                 setRoom(localData.gameData);
                 setError("Salon restauré depuis la sauvegarde locale");
+                setConsecutiveErrors(0);
                 return;
               }
             }
@@ -57,6 +58,7 @@ export function useRoomSync(
         const roomData = await response.json();
         setRoom(roomData);
         setError(null);
+        setConsecutiveErrors(0); // Reset error count on success
 
         // Save to local storage only on successful fetch
         if (session && roomData) {
