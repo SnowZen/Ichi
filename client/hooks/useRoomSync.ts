@@ -152,11 +152,19 @@ export function useRoomSync(
     [session, roomId, saveGameState],
   );
 
+  const refetch = useCallback(() => {
+    setAutoDisablePolling(false); // Re-enable polling on manual refetch
+    setConsecutiveErrors(0); // Reset error count
+    fetchRoom(true);
+  }, [fetchRoom]);
+
   return {
     room,
     isLoading,
     error,
-    refetch: () => fetchRoom(true),
+    refetch,
     updateRoom,
+    isPollingDisabled: autoDisablePolling,
+    consecutiveErrors,
   };
 }
