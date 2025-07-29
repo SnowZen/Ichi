@@ -11,11 +11,13 @@ Ce guide vous explique comment déployer l'application Board Games Hub sur Cloud
 ## Configuration locale
 
 1. **Installer les dépendances :**
+
    ```bash
    npm install
    ```
 
 2. **Se connecter à Cloudflare :**
+
    ```bash
    npx wrangler login
    ```
@@ -42,6 +44,7 @@ Ce guide vous explique comment déployer l'application Board Games Hub sur Cloud
 ### Variables d'environnement
 
 Si nécessaire, ajoutez les variables d'environnement dans l'onglet **Settings** > **Environment variables** :
+
 - `NODE_VERSION`: `18`
 
 ## Déploiement manuel
@@ -55,6 +58,7 @@ npm run pages:deploy
 ## Fonctionnalités
 
 ✅ **Incluses dans cette configuration :**
+
 - API serverless avec Cloudflare Functions
 - Routing SPA automatique
 - Headers de sécurité
@@ -62,6 +66,7 @@ npm run pages:deploy
 - Cache optimisé
 
 ✅ **Avantages de Cloudflare Pages :**
+
 - Edge computing global
 - CDN ultra-rapide
 - SSL automatique
@@ -92,6 +97,7 @@ npm run pages:deploy
 ## Dépannage
 
 ### Problème de build
+
 ```bash
 # Nettoyer et reconstruire
 rm -rf dist/ node_modules/
@@ -100,16 +106,19 @@ npm run build
 ```
 
 ### Problème de Functions
+
 - Vérifiez que le fichier `functions/api/[[path]].ts` existe
 - Les logs sont disponibles dans le dashboard Cloudflare
 
 ### Problème de CORS
+
 - Les headers CORS sont configurés dans `_headers`
 - Vérifiez que les domaines sont autorisés
 
 ## URL de l'application
 
 Une fois déployée, votre application sera disponible sur :
+
 - `https://your-project-name.pages.dev`
 - Votre domaine custom si configuré
 
