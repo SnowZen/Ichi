@@ -39,3 +39,19 @@ function expressPlugin(): Plugin {
     },
   };
 }
+
+function copyCloudflareFilesPlugin(): Plugin {
+  return {
+    name: "copy-cloudflare-files",
+    apply: "build", // Only apply during build
+    writeBundle() {
+      // Copy Cloudflare Pages files
+      const files = ["_headers", "_redirects"];
+      files.forEach((file) => {
+        if (existsSync(file)) {
+          copyFileSync(file, `dist/spa/${file}`);
+        }
+      });
+    },
+  };
+}
