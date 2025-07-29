@@ -14,17 +14,18 @@ export default function GameRoom() {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
   const { session, clearSession } = usePlayerSession();
-  const { room, isLoading, error, updateRoom, refetch } = useRoomSync(
-    roomId,
-    manualMode,
-  );
-  const { restoreGame, clearBackup } = useGameBackup(roomId, room);
   const [selectedCard, setSelectedCard] = useState<string | undefined>();
   const [playableCards, setPlayableCards] = useState<string[]>([]);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [pendingWildCard, setPendingWildCard] = useState<UnoCard | null>(null);
   const [connectionFailures, setConnectionFailures] = useState(0);
   const [manualMode, setManualMode] = useState(false);
+
+  const { room, isLoading, error, updateRoom, refetch } = useRoomSync(
+    roomId,
+    manualMode,
+  );
+  const { restoreGame, clearBackup } = useGameBackup(roomId, room);
 
   // Find current player based on session
   const currentPlayer =
