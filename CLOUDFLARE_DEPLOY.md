@@ -36,7 +36,7 @@ Ce guide vous explique comment déployer l'application Board Games Hub sur Cloud
 3. Cliquez sur **Create a project**
 4. Connectez votre repository GitHub/GitLab
 5. Configurez les paramètres de build :
-   - **Build command**: `npm run pages:build`
+   - **Build command**: `npm run build`
    - **Build output directory**: `dist/spa`
    - **Root directory**: `/` (racine du projet)
    - **Node.js version**: `18` ou `20`
