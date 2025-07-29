@@ -47,6 +47,17 @@ Si nécessaire, ajoutez les variables d'environnement dans l'onglet **Settings**
 
 - `NODE_VERSION`: `18`
 
+### ⚠️ Configuration importante
+
+**Dans les paramètres de build Cloudflare Pages, assurez-vous que :**
+
+1. **Build command**: `npm run build` (PAS `npx wrangler deploy`)
+2. **Build output directory**: `dist/spa`
+3. **Functions compatibility date**: `2024-01-01`
+4. **Compatibility flags**: Activez `nodejs_compat`
+
+**Si vous voyez l'erreur "Executing user deploy command: npx wrangler deploy"**, c'est que Cloudflare Pages utilise la mauvaise commande. Vérifiez que votre `wrangler.toml` ne contient pas de section `[build]`.
+
 ## Déploiement manuel
 
 Pour déployer manuellement depuis votre machine locale :
