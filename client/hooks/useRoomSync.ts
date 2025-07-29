@@ -69,12 +69,14 @@ export function useRoomSync(
           err instanceof Error ? err.message : "Erreur de connexion";
 
         // Increment consecutive errors counter
-        setConsecutiveErrors(prev => {
+        setConsecutiveErrors((prev) => {
           const newCount = prev + 1;
           // Disable polling after 3 consecutive errors
           if (newCount >= 3) {
             setAutoDisablePolling(true);
-            console.log("Auto-désactivation du polling après 3 échecs consécutifs");
+            console.log(
+              "Auto-désactivation du polling après 3 échecs consécutifs",
+            );
           }
           return newCount;
         });

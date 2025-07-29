@@ -21,10 +21,15 @@ export default function GameRoom() {
   const [connectionFailures, setConnectionFailures] = useState(0);
   const [manualMode, setManualMode] = useState(false);
 
-  const { room, isLoading, error, updateRoom, refetch, isPollingDisabled, consecutiveErrors } = useRoomSync(
-    roomId,
-    manualMode,
-  );
+  const {
+    room,
+    isLoading,
+    error,
+    updateRoom,
+    refetch,
+    isPollingDisabled,
+    consecutiveErrors,
+  } = useRoomSync(roomId, manualMode);
   const { restoreGame, clearBackup } = useGameBackup(roomId, room);
 
   // Find current player based on session
@@ -402,7 +407,8 @@ export default function GameRoom() {
             </div>
             {isPollingDisabled && (
               <p className="text-xs text-muted-foreground mb-2">
-                Connexion automatique désactivée après {consecutiveErrors} échecs
+                Connexion automatique désactivée après {consecutiveErrors}{" "}
+                échecs
               </p>
             )}
             {(manualMode || isPollingDisabled) && (
