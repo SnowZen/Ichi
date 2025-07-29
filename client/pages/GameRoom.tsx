@@ -386,11 +386,13 @@ export default function GameRoom() {
       <ConnectionStatus isConnected={!error} lastError={error} />
 
       {/* Manual mode controls */}
-      {(manualMode || connectionFailures >= 3) && (
+      {(manualMode || connectionFailures >= 3 || isPollingDisabled) && (
         <div className="fixed top-4 right-4 z-40 space-y-2">
           <div className="bg-background/90 backdrop-blur-sm border rounded-lg p-3 shadow-lg">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-sm font-medium">Mode manuel</span>
+              <span className="text-sm font-medium">
+                {isPollingDisabled ? "Mode hors ligne" : "Mode manuel"}
+              </span>
               <input
                 type="checkbox"
                 checked={manualMode}
@@ -398,7 +400,12 @@ export default function GameRoom() {
                 className="rounded"
               />
             </div>
-            {manualMode && (
+            {isPollingDisabled && (
+              <p className="text-xs text-muted-foreground mb-2">
+                Connexion automatique désactivée après {consecutiveErrors} échecs
+              </p>
+            )}
+            {(manualMode || isPollingDisabled) && (
               <button
                 onClick={refetch}
                 className="w-full px-3 py-1 bg-primary text-primary-foreground rounded text-sm hover:bg-primary/90"
