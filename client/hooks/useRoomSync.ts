@@ -10,6 +10,8 @@ export function useRoomSync(
   const [room, setRoom] = useState<GameRoom | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [consecutiveErrors, setConsecutiveErrors] = useState(0);
+  const [autoDisablePolling, setAutoDisablePolling] = useState(false);
   const { session } = usePlayerSession();
   const { saveGameState, loadGameState, syncWithServer, restoreFromServer } =
     useRobustStorage();
