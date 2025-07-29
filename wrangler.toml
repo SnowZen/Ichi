@@ -4,14 +4,5 @@ compatibility_date = "2024-01-01"
 [env.production]
 name = "board-games-hub"
 
-[[env.production.routes]]
-pattern = "board-games-hub.pages.dev"
-custom_domain = true
-
-[build]
-command = "npm run build"
-cwd = "."
-watch_dir = "."
-
 [compatibility_flags]
 nodejs_compat = true
