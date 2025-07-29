@@ -1,0 +1,5 @@
+# API routes to Cloudflare Functions
+/api/* /api/:splat 200
+
+# SPA routing - all other routes to index.html
+/* /index.html 200
