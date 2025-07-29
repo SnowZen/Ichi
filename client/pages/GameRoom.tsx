@@ -21,7 +21,7 @@ export default function GameRoom() {
   const [connectionFailures, setConnectionFailures] = useState(0);
   const [manualMode, setManualMode] = useState(false);
 
-  const { room, isLoading, error, updateRoom, refetch } = useRoomSync(
+  const { room, isLoading, error, updateRoom, refetch, isPollingDisabled, consecutiveErrors } = useRoomSync(
     roomId,
     manualMode,
   );
