@@ -10,42 +10,53 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     fs: {
       allow: ["./client", "./shared"],
-      deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
+      deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "functions/**"],
     },
   },
   build: {
     outDir: "dist/spa",
+    rollupOptions: {
+      external: [
+        // Externaliser Hono pour le build client
+        "hono",
+      ],
+    },
   },
-  plugins: [react(), expressPlugin(), copyCloudflareFilesPlugin()],
+  plugins: [react(), copyCloudflareFilesPlugin()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),
       "@shared": path.resolve(__dirname, "./shared"),
     },
   },
+  // Configuration pour les Functions (serveur)
+  ssr: {
+    format: "esm", // Forcer les modules ES pour Cloudflare Workers
+    external: [
+      "hono",
+      // Externaliser les modules Node.js non supportés si utilisés dans ./routes
+      "fs",
+      "path",
+      "crypto",
+      "zlib",
+      "querystring",
+      "events",
+      "stream",
+      "os",
+      "http",
+      "net",
+      "string_decoder",
+      "util",
+      "url",
+    ],
+  },
 }));
-
-function expressPlugin(): Plugin {
-  return {
-    name: "express-plugin",
-    apply: "serve", // Only apply during development (serve mode)
-    async configureServer(server) {
-      // Dynamically import server only when needed
-      const { createServer } = await import("./server");
-      const app = createServer();
-
-      // Add Express app as middleware to Vite dev server
-      server.middlewares.use(app);
-    },
-  };
-}
 
 function copyCloudflareFilesPlugin(): Plugin {
   return {
     name: "copy-cloudflare-files",
-    apply: "build", // Only apply during build
+    apply: "build",
     writeBundle() {
-      // Copy Cloudflare Pages files
       const files = ["_headers", "_redirects"];
       files.forEach((file) => {
         if (existsSync(file)) {

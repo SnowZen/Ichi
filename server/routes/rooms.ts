@@ -1,39 +1,25 @@
-import { RequestHandler } from "express";
+import { Context } from "hono";
 import { SkyjoPlayer, SkyjoGameRoom, SkyjoCard } from "@shared/skyjo";
 
-// Skyjo logic functions (moved directly here to avoid import issues)
+// La logique interne du jeu, les interfaces, et le stockage en mémoire ne changent pas.
+// ... (Toutes vos fonctions internes comme createSkyjoDeck, initializeSkyjoPlayer, etc. restent ici)
+
 function createSkyjoCard(value: number, id: string): SkyjoCard {
-  return {
-    id,
-    value,
-    isRevealed: false,
-  };
+  return { id, value, isRevealed: false };
 }
 
 function createSkyjoDeck(): number[] {
   const deck: number[] = [];
-
-  // Card distribution for Skyjo
-  // -2: 5 cards
   for (let i = 0; i < 5; i++) deck.push(-2);
-
-  // -1: 10 cards
   for (let i = 0; i < 10; i++) deck.push(-1);
-
-  // 0: 15 cards
   for (let i = 0; i < 15; i++) deck.push(0);
-
-  // 1-12: 10 cards each
   for (let value = 1; value <= 12; value++) {
     for (let i = 0; i < 10; i++) deck.push(value);
   }
-
-  // Shuffle deck
   for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [deck[i], deck[j]] = [deck[j], deck[i]];
   }
-
   return deck;
 }
 
@@ -50,8 +36,6 @@ function initializeSkyjoPlayer(
     totalScore: 0,
     isConnected: true,
   };
-
-  // Deal 12 cards in 4x3 grid
   for (let row = 0; row < 3; row++) {
     player.cards[row] = [];
     for (let col = 0; col < 4; col++) {
@@ -62,21 +46,15 @@ function initializeSkyjoPlayer(
       );
     }
   }
-
-  // Don't automatically reveal cards - let players choose their 2 initial cards
-
   return player;
 }
 
 function checkAndRemoveColumn(player: SkyjoPlayer, col: number): boolean {
-  // Check if all 3 cards in column are revealed and have same value
   const card1 = player.cards[0][col];
   const card2 = player.cards[1][col];
   const card3 = player.cards[2][col];
-
   if (card1.isRevealed && card2.isRevealed && card3.isRevealed) {
     if (card1.value === card2.value && card2.value === card3.value) {
-      // Remove the column by setting cards as "removed" (we'll use value 999 to mark removed)
       player.cards[0][col] = createSkyjoCard(999, `removed-${col}-0`);
       player.cards[1][col] = createSkyjoCard(999, `removed-${col}-1`);
       player.cards[2][col] = createSkyjoCard(999, `removed-${col}-2`);
@@ -92,10 +70,7 @@ function checkAndRemoveColumn(player: SkyjoPlayer, col: number): boolean {
 function allCardsRevealed(player: SkyjoPlayer): boolean {
   for (let row = 0; row < 3; row++) {
     for (let col = 0; col < 4; col++) {
-      if (
-        !player.cards[row][col].isRevealed &&
-        player.cards[row][col].value !== 999
-      ) {
+      if (!player.cards[row][col].isRevealed && player.cards[row][col].value !== 999) {
         return false;
       }
     }
@@ -103,11 +78,7 @@ function allCardsRevealed(player: SkyjoPlayer): boolean {
   return true;
 }
 
-function finalizeRoundScoring(
-  room: SkyjoGameRoom,
-  finishingPlayerId: string,
-): void {
-  // Reveal all cards for all players
+function finalizeRoundScoring(room: SkyjoGameRoom, finishingPlayerId: string): void {
   room.players.forEach((player: any) => {
     for (let row = 0; row < 3; row++) {
       for (let col = 0; col < 4; col++) {
@@ -117,8 +88,6 @@ function finalizeRoundScoring(
       }
     }
   });
-
-  // Calculate scores
   room.players.forEach((player: any) => {
     player.score = 0;
     for (let row = 0; row < 3; row++) {
@@ -129,19 +98,13 @@ function finalizeRoundScoring(
       }
     }
   });
-
-  // Find the player who finished and check if they have the lowest score
   const finishingPlayer = room.players.find((p) => p.id === finishingPlayerId);
   if (finishingPlayer) {
     const lowestScore = Math.min(...room.players.map((p: any) => p.score));
-
-    // If the finishing player doesn't have the lowest score, double their points
     if ((finishingPlayer as any).score > lowestScore) {
       (finishingPlayer as any).score *= 2;
     }
   }
-
-  // Add to total scores
   room.players.forEach((player: any) => {
     player.totalScore += player.score;
   });
@@ -150,14 +113,14 @@ function finalizeRoundScoring(
 interface UnoCard {
   id: string;
   color: "red" | "blue" | "green" | "yellow" | "wild";
-  type: "number" | "skip" | "reverse" | "draw2" | "wild" | "wild_draw4";
+  type: "number" | "skip" | "reverse" | "draw2" | "wild" | "wild_draw4"; //type can be number, skip, reverse, draw2, wild, or wild_draw4
   value?: number;
 }
 
 interface Player {
   id: string;
   name: string;
-  cards: UnoCard[] | any[][]; // UNO cards or Skyjo grid (SkyjoCard[][])
+  cards: UnoCard[] | any[][]; 
   isConnected: boolean;
   score?: number; // Skyjo only
   totalScore?: number; // Skyjo only
@@ -171,7 +134,7 @@ interface GameRoom {
   maxPlayers: number;
   isStarted: boolean;
   currentPlayer?: string;
-  direction?: 1 | -1; // UNO only
+  direction?: 1 | -1; 
   topCard?: UnoCard; // UNO only
   deck: UnoCard[] | number[]; // UNO cards or Skyjo card values
   discardPile: UnoCard[] | number[]; // UNO cards or Skyjo card values
@@ -183,8 +146,6 @@ interface GameRoom {
   isFinished?: boolean; // Game has ended
   round?: number; // Skyjo only - Current round number
 }
-
-// In-memory storage for demo purposes
 const rooms = new Map<string, GameRoom>();
 
 function generateRoomCode(): string {
@@ -266,127 +227,82 @@ function shuffleDeck(deck: UnoCard[]): UnoCard[] {
   return shuffled;
 }
 
-export const createRoom: RequestHandler = (req, res) => {
-  const { playerName, maxPlayers = 4, gameType = "uno" } = req.body;
+export const createRoom = async (c: Context) => {
+  const { playerName, maxPlayers = 4, gameType = "uno" } = await c.req.json();
 
   if (!playerName || typeof playerName !== "string") {
-    return res.status(400).json({ error: "Nom de joueur requis" });
+    return c.json({ error: "Nom de joueur requis" }, 400);
   }
 
   const roomId = generateRoomCode();
   const playerId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-  const player: Player = {
-    id: playerId,
-    name: playerName.trim(),
-    cards: [],
-    isConnected: true,
-  };
-
-  const room: GameRoom = {
-    id: roomId,
-    name: `Salon ${roomId}`,
-    gameType: gameType as any,
-    players: [player],
-    maxPlayers,
-    isStarted: false,
-    direction: 1,
-    deck: [],
-    discardPile: [],
-  };
+  const player: Player = { id: playerId, name: playerName.trim(), cards: [], isConnected: true };
+  const room: GameRoom = { id: roomId, name: `Salon ${roomId}`, gameType: gameType as any, players: [player], maxPlayers, isStarted: false, direction: 1, deck: [], discardPile: [] };
 
   rooms.set(roomId, room);
 
-  res.json({
-    roomId,
-    playerId,
-    playerName: playerName.trim(),
-    room,
-  });
+  return c.json({ roomId, playerId, playerName: playerName.trim(), room });
 };
 
-export const joinRoom: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-  const { playerName } = req.body;
+export const joinRoom = async (c: Context) => {
+  const roomId = c.req.param('roomId');
+  const { playerName } = await c.req.json();
 
   if (!playerName || typeof playerName !== "string") {
-    return res.status(400).json({ error: "Nom de joueur requis" });
+    return c.json({ error: "Nom de joueur requis" }, 400);
   }
 
   const room = rooms.get(roomId);
   if (!room) {
-    return res.status(404).json({ error: "Salon non trouvé" });
+    return c.json({ error: "Salon non trouvé" }, 404);
   }
 
-  // Check if player is reconnecting (same name)
   const existingPlayer = room.players.find((p) => p.name === playerName.trim());
   if (existingPlayer) {
-    // Reconnect existing player
     existingPlayer.isConnected = true;
-    res.json({
-      roomId,
-      playerId: existingPlayer.id,
-      playerName: playerName.trim(),
-      room,
-    });
-    return;
+    return c.json({ roomId, playerId: existingPlayer.id, playerName: playerName.trim(), room });
   }
 
   if (room.isStarted) {
-    return res.status(400).json({ error: "La partie a déjà commencé" });
+    return c.json({ error: "La partie a déjà commencé" }, 400);
   }
-
   if (room.players.length >= room.maxPlayers) {
-    return res.status(400).json({ error: "Salon complet" });
+    return c.json({ error: "Salon complet" }, 400);
   }
 
   const playerId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-  const player: Player = {
-    id: playerId,
-    name: playerName.trim(),
-    cards: [],
-    isConnected: true,
-  };
-
+  const player: Player = { id: playerId, name: playerName.trim(), cards: [], isConnected: true };
   room.players.push(player);
 
-  res.json({
-    roomId,
-    playerId,
-    playerName: playerName.trim(),
-    room,
-  });
+  return c.json({ roomId, playerId, playerName: playerName.trim(), room });
 };
 
-export const getRoom: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
+export const getRoom = (c: Context) => {
+  const roomId = c.req.param('roomId');
   const room = rooms.get(roomId);
 
   if (!room) {
-    return res.status(404).json({ error: "Salon non trouvé" });
+    return c.json({ error: "Salon non trouvé" }, 404);
   }
 
-  res.json(room);
+  return c.json(room);
 };
 
-export const startGame: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
+export const startGame = (c: Context) => {
+  const roomId = c.req.param('roomId');
   const room = rooms.get(roomId);
 
   if (!room) {
-    return res.status(404).json({ error: "Salon non trouvé" });
+    return c.json({ error: "Salon non trouvé" }, 404);
   }
-
   if (room.isStarted) {
-    return res.status(400).json({ error: "La partie a déjà commencé" });
+    return c.json({ error: "La partie a déjà commencé" }, 400);
   }
-
   if (room.players.length < 2) {
-    return res.status(400).json({ error: "Au moins 2 joueurs requis" });
+    return c.json({ error: "Au moins 2 joueurs requis" }, 400);
   }
 
-  // Initialize game based on game type
   if (room.gameType === "uno") {
     // Initialize UNO game
     const deck = createDeck();
@@ -444,66 +360,43 @@ export const startGame: RequestHandler = (req, res) => {
 
   room.currentPlayer = room.players[0].id;
   room.isStarted = true;
-
+  
   rooms.set(roomId, room);
-  res.json(room);
+  return c.json(room);
 };
 
-export const playCard: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-  const { playerId, cardId, wildColor } = req.body;
+export const playCard = async (c: Context) => {
+  const roomId = c.req.param('roomId');
+  const { playerId, cardId, wildColor } = await c.req.json();
 
   const room = rooms.get(roomId);
-  if (!room) {
-    return res.status(404).json({ error: "Salon non trouvé" });
-  }
-
-  if (!room.isStarted) {
-    return res.status(400).json({ error: "La partie n'a pas commencé" });
-  }
-
-  if (room.currentPlayer !== playerId) {
-    return res.status(400).json({ error: "Ce n'est pas votre tour" });
-  }
+  if (!room) return c.json({ error: "Salon non trouvé" }, 404);
+  if (!room.isStarted) return c.json({ error: "La partie n'a pas commencé" }, 400);
+  if (room.currentPlayer !== playerId) return c.json({ error: "Ce n'est pas votre tour" }, 400);
 
   const player = room.players.find((p) => p.id === playerId);
-  if (!player) {
-    return res.status(404).json({ error: "Joueur non trouvé" });
-  }
+  if (!player) return c.json({ error: "Joueur non trouvé" }, 404);
 
-  const cardIndex = player.cards.findIndex((c) => c.id === cardId);
-  if (cardIndex === -1) {
-    return res.status(400).json({ error: "Carte non trouvée" });
-  }
+  const cardIndex = player.cards.findIndex((c: any) => c.id === cardId);
+  if (cardIndex === -1) return c.json({ error: "Carte non trouvée" }, 400);
 
-  const card = player.cards[cardIndex];
+  const card = player.cards[cardIndex] as UnoCard;
 
-  // Check if wild card requires color selection
   if ((card.type === "wild" || card.type === "wild_draw4") && !wildColor) {
-    return res
-      .status(400)
-      .json({ error: "Vous devez choisir une couleur pour cette carte" });
+    return c.json({ error: "Vous devez choisir une couleur pour cette carte" }, 400);
   }
-
-  // Validate wild color if provided
   if (wildColor && !["red", "blue", "green", "yellow"].includes(wildColor)) {
-    return res.status(400).json({ error: "Couleur invalide" });
+    return c.json({ error: "Couleur invalide" }, 400);
   }
 
-  // Check if player can play this card when there's a draw penalty
   if (room.drawPenalty && room.drawPenalty > 0) {
-    // Strict rules: +2 only on +2, +4 only on +2 and +4
     if (room.topCard?.type === "draw2") {
       if (card.type !== "draw2" && card.type !== "wild_draw4") {
-        return res.status(400).json({
-          error: "Vous devez jouer une carte +2 ou +4 pour contrer un +2",
-        });
+        return c.json({ error: "Vous devez jouer une carte +2 ou +4 pour contrer un +2" }, 400);
       }
     } else if (room.topCard?.type === "wild_draw4") {
       if (card.type !== "wild_draw4") {
-        return res
-          .status(400)
-          .json({ error: "Vous devez jouer une carte +4 pour contrer un +4" });
+        return c.json({ error: "Vous devez jouer une carte +4 pour contrer un +4" }, 400);
       }
     }
   }
@@ -585,33 +478,25 @@ export const playCard: RequestHandler = (req, res) => {
   }
 
   rooms.set(roomId, room);
-  res.json(room);
+  return c.json(room);
 };
 
-export const drawCard: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-  const { playerId } = req.body;
+export const drawCard = async (c: Context) => {
+  const roomId = c.req.param('roomId');
+  const { playerId } = await c.req.json();
 
   const room = rooms.get(roomId);
-  if (!room) {
-    return res.status(404).json({ error: "Salon non trouvé" });
-  }
-
-  if (!room.isStarted) {
-    return res.status(400).json({ error: "La partie n'a pas commencé" });
-  }
-
-  if (room.currentPlayer !== playerId) {
-    return res.status(400).json({ error: "Ce n'est pas votre tour" });
-  }
+  if (!room) return c.json({ error: "Salon non trouvé" }, 404);
+  if (!room.isStarted) return c.json({ error: "La partie n'a pas commencé" }, 400);
+  if (room.currentPlayer !== playerId) return c.json({ error: "Ce n'est pas votre tour" }, 400);
 
   const player = room.players.find((p) => p.id === playerId);
   if (!player) {
-    return res.status(404).json({ error: "Joueur non trouvé" });
+    return c.json({ error: "Joueur non trouvé" },404);
   }
 
   if (room.deck.length === 0) {
-    return res.status(400).json({ error: "Plus de cartes à piocher" });
+    return c.json({ error: "Plus de cartes à piocher" },400);
   }
 
   // Check if there's a draw penalty to apply
@@ -654,52 +539,43 @@ export const drawCard: RequestHandler = (req, res) => {
   room.currentPlayer = room.players[nextPlayerIndex].id;
 
   rooms.set(roomId, room);
-  res.json(room);
+  return c.json(room);
 };
 
-export const callUno: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-  const { playerId } = req.body;
+export const callUno = async (c: Context) => {
+    const roomId = c.req.param('roomId');
+    const { playerId } = await c.req.json();
 
-  const room = rooms.get(roomId);
-  if (!room) {
-    return res.status(404).json({ error: "Salon non trouvé" });
-  }
+    const room = rooms.get(roomId);
+    if (!room) return c.json({ error: "Salon non trouvé" }, 404);
+    
+    const player = room.players.find((p) => p.id === playerId);
+    if (!player) return c.json({ error: "Joueur non trouvé" }, 404);
 
-  const player = room.players.find((p) => p.id === playerId);
-  if (!player) {
-    return res.status(404).json({ error: "Joueur non trouvé" });
-  }
-
-  // Player must have exactly 1 card to call UNO
-  if (player.cards.length !== 1) {
-    return res
-      .status(400)
-      .json({ error: "Vous devez avoir exactement 1 carte pour appeler UNO" });
-  }
-
-  // Set UNO status
-  room.unoCalledBy = playerId;
-  room.unoChallengeTime = Date.now() + 10000; // 10 seconds to challenge
-
-  rooms.set(roomId, room);
-  res.json({ success: true, message: `${player.name} a appelé UNO!`, room });
+    if (player.cards.length !== 1) {
+        return c.json({ error: "Vous devez avoir exactement 1 carte pour appeler UNO" }, 400);
+    }
+    
+    room.unoCalledBy = playerId;
+    room.unoChallengeTime = Date.now() + 10000;
+    
+    rooms.set(roomId, room);
+    return c.json({ success: true, message: `${player.name} a appelé UNO!`, room });
 };
 
-export const challengeUno: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-  const { challengerId, challengedPlayerId } = req.body;
+export const challengeUno = async (c: Context) => {
+    const roomId = c.req.param('roomId');
+    const { challengerId, challengedPlayerId } = await c.req.json();
 
-  const room = rooms.get(roomId);
-  if (!room) {
-    return res.status(404).json({ error: "Salon non trouv��" });
-  }
-
-  const challenger = room.players.find((p) => p.id === challengerId);
+    const room = rooms.get(roomId);
+    if (!room) return c.json({ error: "Salon non trouvé" }, 404);
+    
+    // ... Logique interne de challengeUno identique ...
+const challenger = room.players.find((p) => p.id === challengerId);
   const challenged = room.players.find((p) => p.id === challengedPlayerId);
 
   if (!challenger || !challenged) {
-    return res.status(404).json({ error: "Joueur non trouvé" });
+    return c.json({ error: "Joueur non trouvé" },404);
   }
 
   // Challenge is valid if player has exactly 1 card and hasn't called UNO
@@ -720,64 +596,47 @@ export const challengeUno: RequestHandler = (req, res) => {
     room.unoChallengeTime = undefined;
 
     rooms.set(roomId, room);
-    res.json({
+    c.json({
       success: true,
       message: `${challenger.name} a défié ${challenged.name} avec succès! ${challenged.name} pioche 2 cartes automatiquement.`,
       room,
     });
   } else {
-    res.status(400).json({
-      error: "Défi invalide - le joueur a déjà appel�� UNO ou n'a pas 1 carte",
-    });
-  }
+    return c.json({ error: "Défi invalide - le joueur a déjà appelé UNO ou n'a pas 1 carte" }, 400);
+}};
+
+export const changeGame = async (c: Context) => {
+    const roomId = c.req.param('roomId');
+    const { gameType } = await c.req.json();
+
+    const room = rooms.get(roomId);
+    if (!room) return c.json({ error: "Salon non trouvé" }, 404);
+
+    if (room.isStarted) {
+        return c.json({ error: "Impossible de changer de jeu pendant une partie" }, 400);
+    }
+    if (!["uno", "skyjo"].includes(gameType)) {
+        return c.json({ error: "Type de jeu invalide" }, 400);
+    }
+
+    room.gameType = gameType;
+    if (gameType === "skyjo") room.maxPlayers = Math.min(room.maxPlayers, 8);
+    else room.maxPlayers = Math.min(room.maxPlayers, 4);
+    
+    rooms.set(roomId, room);
+    return c.json(room);
 };
 
-export const changeGame: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-  const { gameType } = req.body;
+export const leaveGame = async (c: Context) => {
+    const roomId = c.req.param('roomId');
+    const { playerId } = await c.req.json();
 
-  const room = rooms.get(roomId);
-  if (!room) {
-    return res.status(404).json({ error: "Salon non trouvé" });
-  }
+    const room = rooms.get(roomId);
+    if (!room) return c.json({ error: "Salon non trouvé" }, 404);
 
-  if (room.isStarted) {
-    return res
-      .status(400)
-      .json({ error: "Impossible de changer de jeu pendant une partie" });
-  }
-
-  // Allow game change even with players connected (host decision)
-
-  if (!["uno", "skyjo"].includes(gameType)) {
-    return res.status(400).json({ error: "Type de jeu invalide" });
-  }
-
-  room.gameType = gameType;
-
-  // Adjust max players based on game
-  if (gameType === "skyjo") {
-    room.maxPlayers = Math.min(room.maxPlayers, 8);
-  } else {
-    room.maxPlayers = Math.min(room.maxPlayers, 4);
-  }
-
-  rooms.set(roomId, room);
-  res.json(room);
-};
-
-export const leaveGame: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-  const { playerId } = req.body;
-
-  const room = rooms.get(roomId);
-  if (!room) {
-    return res.status(404).json({ error: "Salon non trouvé" });
-  }
-
-  const playerIndex = room.players.findIndex((p) => p.id === playerId);
+    const playerIndex = room.players.findIndex((p) => p.id === playerId);
   if (playerIndex === -1) {
-    return res.status(404).json({ error: "Joueur non trouv��" });
+    return c.json({ error: "Joueur non trouv��" },404);
   }
 
   // Remove player from room
@@ -786,34 +645,16 @@ export const leaveGame: RequestHandler = (req, res) => {
   // If no players left, delete the room
   if (room.players.length === 0) {
     rooms.delete(roomId);
-    return res.json({ message: "Salon fermé - aucun joueur restant" });
+    
+    return c.json({ message: "Salon fermé - aucun joueur restant" });
   }
-
-  // If the game was started and the leaving player was the current player, advance to next
-  if (room.isStarted && room.currentPlayer === playerId) {
-    const nextPlayerIndex = playerIndex % room.players.length;
-    room.currentPlayer = room.players[nextPlayerIndex].id;
-  }
-
-  // If only one player left in a started game, end the game
-  if (room.isStarted && room.players.length === 1) {
-    room.isFinished = true;
-    room.winner = room.players[0].id;
-  }
-
-  rooms.set(roomId, room);
-  res.json(room);
 };
+export const restartGame = (c: Context) => {
+    const roomId = c.req.param('roomId');
+    const room = rooms.get(roomId);
+    if (!room) return c.json({ error: "Salon non trouvé" }, 404);
 
-export const restartGame: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-
-  const room = rooms.get(roomId);
-  if (!room) {
-    return res.status(404).json({ error: "Salon non trouvé" });
-  }
-
-  // Reset room to lobby state
+     // Reset room to lobby state
   room.isStarted = false;
   room.isFinished = false;
   room.winner = undefined;
@@ -831,31 +672,29 @@ export const restartGame: RequestHandler = (req, res) => {
     player.cards = [];
   });
 
-  rooms.set(roomId, room);
-  res.json(room);
+
+    rooms.set(roomId, room);
+    return c.json(room);
 };
 
 // Skyjo-specific endpoints
-export const skyjoRevealCard: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-  const { playerId, row, col } = req.body;
-
-  const room = rooms.get(roomId);
-  if (!room || room.gameType !== "skyjo") {
-    return res.status(404).json({ error: "Salon Skyjo non trouvé" });
-  }
-
-  if (!room.isStarted) {
-    return res.status(400).json({ error: "La partie n'a pas commencé" });
+export const skyjoRevealCard = async (c: Context) => {
+    const roomId = c.req.param('roomId');
+    const { playerId, row, col } = await c.req.json();
+    const room = rooms.get(roomId);
+    if (!room || room.gameType !== "skyjo") return c.json({ error: "Salon Skyjo non trouvé" }, 404);
+    
+    if (!room.isStarted) {
+    return c.json({ error: "La partie n'a pas commencé" },400);
   }
 
   if (room.currentPlayer !== playerId) {
-    return res.status(400).json({ error: "Ce n'est pas votre tour" });
+    return c.json({ error: "Ce n'est pas votre tour" },400);
   }
 
   const player = room.players.find((p) => p.id === playerId);
   if (!player) {
-    return res.status(404).json({ error: "Joueur non trouvé" });
+    return c.json({ error: "Joueur non trouvé" },404);
   }
 
   // Reveal the card
@@ -896,74 +735,61 @@ export const skyjoRevealCard: RequestHandler = (req, res) => {
         room.players.length;
       room.currentPlayer = room.players[nextPlayerIndex].id;
     }
+    
+    return c.json(room);
+}};
+
+// ---- CODE CORRECT ----
+export const skyjoDrawCard = async (c: Context) => {
+    const roomId = c.req.param('roomId');
+    const { playerId } = await c.req.json();
+    const room = rooms.get(roomId);
+    if (!room || room.gameType !== "skyjo") return c.json({ error: "Salon Skyjo non trouvé" }, 404);
+    
+    if (!room.isStarted) {
+      return c.json({ error: "La partie n'a pas commencé" },400);
+    }
+
+    if ((room as any).isInitialization) {
+      return c.json({ error: "Vous devez d'abord révéler vos 2 cartes initiales" },400);
+    }
+
+    if (room.currentPlayer !== playerId) {
+      return c.json({ error: "Ce n'est pas votre tour" },400);
+    }
+
+    const deck = room.deck as number[];
+    if (deck.length === 0) {
+      return c.json({ error: "Plus de cartes dans la pioche" },400);
+    }
+
+    // On déclare la carte piochée une seule fois
+    const drawnCard = deck.pop()!;
+
+    // On assigne la carte piochée à des propriétés temporaires de la room
+    (room as any).tempDrawnCard = drawnCard;
+    (room as any).tempDrawnBy = playerId;
 
     rooms.set(roomId, room);
-    res.json(room);
-  } else {
-    res.status(400).json({ error: "Carte déjà révélée ou position invalide" });
-  }
+    return c.json({ room, drawnCard });
 };
 
-export const skyjoDrawCard: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-  const { playerId } = req.body;
+export const skyjoExchangeCard = async (c: Context) => {
+    const roomId = c.req.param('roomId');
+    const { playerId, row, col } = await c.req.json();
+    const room = rooms.get(roomId);
+    if (!room || room.gameType !== "skyjo") return c.json({ error: "Salon Skyjo non trouvé" }, 404);
 
-  const room = rooms.get(roomId);
-  if (!room || room.gameType !== "skyjo") {
-    return res.status(404).json({ error: "Salon Skyjo non trouvé" });
-  }
-
-  if (!room.isStarted) {
-    return res.status(400).json({ error: "La partie n'a pas commencé" });
-  }
-
-  if ((room as any).isInitialization) {
-    return res
-      .status(400)
-      .json({ error: "Vous devez d'abord révéler vos 2 cartes initiales" });
-  }
-
-  if (room.currentPlayer !== playerId) {
-    return res.status(400).json({ error: "Ce n'est pas votre tour" });
-  }
-
-  const deck = room.deck as number[];
-  if (deck.length === 0) {
-    return res.status(400).json({ error: "Plus de cartes dans la pioche" });
-  }
-
-  const drawnCard = deck.pop()!;
-
-  // Player now needs to choose: exchange with one of their cards or discard
-  // For now, we'll store the drawn card in a temporary property
-  (room as any).tempDrawnCard = drawnCard;
-  (room as any).tempDrawnBy = playerId;
-
-  rooms.set(roomId, room);
-  res.json({ room, drawnCard });
-};
-
-export const skyjoExchangeCard: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-  const { playerId, row, col } = req.body;
-
-  const room = rooms.get(roomId);
-  if (!room || room.gameType !== "skyjo") {
-    return res.status(404).json({ error: "Salon Skyjo non trouvé" });
-  }
-
-  const tempDrawnCard = (room as any).tempDrawnCard;
+    const tempDrawnCard = (room as any).tempDrawnCard;
   const tempDrawnBy = (room as any).tempDrawnBy;
 
   if (!tempDrawnCard || tempDrawnBy !== playerId) {
-    return res
-      .status(400)
-      .json({ error: "Aucune carte piochée ou joueur incorrect" });
+    return c.json({ error: "Aucune carte piochée ou joueur incorrect" },400);
   }
 
   const player = room.players.find((p) => p.id === playerId);
   if (!player) {
-    return res.status(404).json({ error: "Joueur non trouvé" });
+    return c.json({ error: "Joueur non trouvé" },404);
   }
 
   // Exchange the card
@@ -1027,32 +853,27 @@ export const skyjoExchangeCard: RequestHandler = (req, res) => {
     (room.players.findIndex((p) => p.id === playerId) + 1) %
     room.players.length;
   room.currentPlayer = room.players[nextPlayerIndex].id;
-
-  rooms.set(roomId, room);
-  res.json(room);
+    
+    rooms.set(roomId, room);
+    return c.json(room);
 };
 
-export const skyjoDiscardDrawn: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-  const { playerId, row, col } = req.body;
+export const skyjoDiscardDrawn = async (c: Context) => {
+    const roomId = c.req.param('roomId');
+    const { playerId, row, col } = await c.req.json();
+    const room = rooms.get(roomId);
+    if (!room || room.gameType !== "skyjo") return c.json({ error: "Salon Skyjo non trouvé" }, 404);
 
-  const room = rooms.get(roomId);
-  if (!room || room.gameType !== "skyjo") {
-    return res.status(404).json({ error: "Salon Skyjo non trouvé" });
-  }
-
-  const tempDrawnCard = (room as any).tempDrawnCard;
+    const tempDrawnCard = (room as any).tempDrawnCard;
   const tempDrawnBy = (room as any).tempDrawnBy;
 
   if (!tempDrawnCard || tempDrawnBy !== playerId) {
-    return res
-      .status(400)
-      .json({ error: "Aucune carte piochée ou joueur incorrect" });
+    return c.json({ error: "Aucune carte piochée ou joueur incorrect" },400);
   }
 
   const player = room.players.find((p) => p.id === playerId);
   if (!player) {
-    return res.status(404).json({ error: "Joueur non trouvé" });
+    return c.json({ error: "Joueur non trouvé" },404);
   }
 
   // Discard the drawn card
@@ -1081,41 +902,37 @@ export const skyjoDiscardDrawn: RequestHandler = (req, res) => {
     room.players.length;
   room.currentPlayer = room.players[nextPlayerIndex].id;
 
-  rooms.set(roomId, room);
-  res.json(room);
+    
+    rooms.set(roomId, room);
+    return c.json(room);
 };
 
-export const skyjoTakeFromDiscard: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-  const { playerId, row, col } = req.body;
+export const skyjoTakeFromDiscard = async (c: Context) => {
+    const roomId = c.req.param('roomId');
+    const { playerId, row, col } = await c.req.json();
+    const room = rooms.get(roomId);
+    if (!room || room.gameType !== "skyjo") return c.json({ error: "Salon Skyjo non trouvé" }, 404);
 
-  const room = rooms.get(roomId);
-  if (!room || room.gameType !== "skyjo") {
-    return res.status(404).json({ error: "Salon Skyjo non trouvé" });
-  }
-
-  if (!room.isStarted) {
-    return res.status(400).json({ error: "La partie n'a pas commencé" });
+     if (!room.isStarted) {
+    return c.json({ error: "La partie n'a pas commencé" },400);
   }
 
   if ((room as any).isInitialization) {
-    return res
-      .status(400)
-      .json({ error: "Vous devez d'abord révéler vos 2 cartes initiales" });
+    return c.json({ error: "Vous devez d'abord révéler vos 2 cartes initiales" },400);
   }
 
   if (room.currentPlayer !== playerId) {
-    return res.status(400).json({ error: "Ce n'est pas votre tour" });
+    return c.json({ error: "Ce n'est pas votre tour" },400);
   }
 
   const discardPile = room.discardPile as number[];
   if (discardPile.length === 0) {
-    return res.status(400).json({ error: "Pile de défausse vide" });
+    return c.json({ error: "Pile de défausse vide" },400);
   }
 
   const player = room.players.find((p) => p.id === playerId);
   if (!player) {
-    return res.status(404).json({ error: "Joueur non trouvé" });
+    return c.json({ error: "Joueur non trouvé" },404);
   }
 
   // Take the top card from discard pile
@@ -1141,88 +958,61 @@ export const skyjoTakeFromDiscard: RequestHandler = (req, res) => {
     room.players.length;
   room.currentPlayer = room.players[nextPlayerIndex].id;
 
-  rooms.set(roomId, room);
-  res.json(room);
+    
+    rooms.set(roomId, room);
+    return c.json(room);
 };
 
-// Heartbeat endpoint to keep players connected in serverless environment
-export const heartbeat: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-  const { playerId } = req.body;
+// Heartbeat & Backup/Restore
+export const heartbeat = async (c: Context) => {
+    const roomId = c.req.param('roomId');
+    const { playerId } = await c.req.json();
+    const room = rooms.get(roomId);
+    if (!room) return c.json({ error: "Salon non trouvé" }, 404);
 
-  const room = rooms.get(roomId);
-  if (!room) {
-    return res.status(404).json({ error: "Salon non trouvé" });
-  }
-
-  const player = room.players.find((p) => p.id === playerId);
-  if (!player) {
-    return res.status(404).json({ error: "Joueur non trouvé" });
-  }
-
-  // Mark player as connected
-  player.isConnected = true;
-  (player as any).lastSeen = Date.now();
-
-  rooms.set(roomId, room);
-  res.json({ status: "ok" });
+    const player = room.players.find((p) => p.id === playerId);
+    if (!player) return c.json({ error: "Joueur non trouvé" }, 404);
+    
+    player.isConnected = true;
+    (player as any).lastSeen = Date.now();
+    
+    rooms.set(roomId, room);
+    return c.json({ status: "ok" });
 };
 
-// Backup room data
 const backups = new Map<string, any>();
 
-export const backupRoom: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-  const { gameData, timestamp } = req.body;
+export const backupRoom = async (c: Context) => {
+    const roomId = c.req.param('roomId');
+    const { gameData, timestamp } = await c.req.json();
+    if (!gameData) return c.json({ error: "Données de jeu requises" }, 400);
 
-  if (!gameData) {
-    return res.status(400).json({ error: "Données de jeu requises" });
-  }
-
-  // Store backup with timestamp
-  backups.set(roomId, {
-    gameData,
-    timestamp,
-    backupTime: Date.now(),
-  });
-
-  res.json({ status: "backed up" });
+    backups.set(roomId, { gameData, timestamp, backupTime: Date.now() });
+    return c.json({ status: "backed up" });
 };
 
-export const restoreRoom: RequestHandler = (req, res) => {
-  const { roomId } = req.params;
-
-  const backup = backups.get(roomId);
-  if (!backup) {
-    return res.status(404).json({ error: "Aucune sauvegarde trouvée" });
-  }
-
-  // Only restore if backup is less than 1 hour old
-  if (Date.now() - backup.backupTime > 3600000) {
-    backups.delete(roomId);
-    return res.status(404).json({ error: "Sauvegarde expirée" });
-  }
-
-  res.json({
-    gameData: backup.gameData,
-    timestamp: backup.timestamp,
-  });
-};
-
-// Enhanced room creation with backup check
-export const createRoomWithRestore: RequestHandler = (req, res) => {
-  const { playerName, maxPlayers = 4, gameType = "uno", roomId } = req.body;
-
-  if (!playerName || typeof playerName !== "string") {
-    return res.status(400).json({ error: "Nom de joueur requis" });
-  }
-
-  // If roomId provided, try to restore
-  if (roomId) {
+export const restoreRoom = (c: Context) => {
+    const roomId = c.req.param('roomId');
     const backup = backups.get(roomId);
-    if (backup && Date.now() - backup.backupTime < 3600000) {
-      // Restore from backup
-      rooms.set(roomId, backup.gameData);
+    if (!backup) return c.json({ error: "Aucune sauvegarde trouvée" }, 404);
+    if (Date.now() - backup.backupTime > 3600000) {
+        backups.delete(roomId);
+        return c.json({ error: "Sauvegarde expirée" }, 404);
+    }
+    return c.json({ gameData: backup.gameData, timestamp: backup.timestamp });
+};
+
+export const createRoomWithRestore = async (c: Context) => {
+    const { playerName, maxPlayers = 4, gameType = "uno", roomId } = await c.req.json();
+
+    if (!playerName || typeof playerName !== "string") {
+        return c.json({ error: "Nom de joueur requis" }, 400);
+    }
+
+    if (roomId) {
+        const backup = backups.get(roomId);
+        if (backup && Date.now() - backup.backupTime < 3600000) {
+            rooms.set(roomId, backup.gameData);
 
       // Find or add player
       const room = backup.gameData;
@@ -1241,7 +1031,7 @@ export const createRoomWithRestore: RequestHandler = (req, res) => {
       }
 
       rooms.set(roomId, room);
-      return res.json({
+      return c.json({
         roomId,
         playerId: player.id,
         playerName: player.name,
@@ -1251,7 +1041,6 @@ export const createRoomWithRestore: RequestHandler = (req, res) => {
     }
   }
 
-  // Normal room creation
   const newRoomId = roomId || generateRoomCode();
   const playerId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
@@ -1275,12 +1064,10 @@ export const createRoomWithRestore: RequestHandler = (req, res) => {
   };
 
   rooms.set(newRoomId, room);
-
-  res.json({
-    roomId: newRoomId,
+    return c.json({ 
+      roomId: newRoomId,
     playerId,
     playerName: playerName.trim(),
     room,
-    restored: false,
-  });
+    restored: false, });
 };

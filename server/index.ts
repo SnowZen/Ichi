@@ -1,69 +1,53 @@
-import "dotenv/config";
-import express from "express";
-import cors from "cors";
-import { handleDemo } from "./routes/demo";
-import {
-  createRoom,
-  joinRoom,
-  getRoom,
-  startGame,
-  playCard,
-  drawCard,
-  callUno,
-  challengeUno,
-  changeGame,
-  restartGame,
-  leaveGame,
-  skyjoRevealCard,
-  skyjoDrawCard,
-  skyjoExchangeCard,
-  skyjoDiscardDrawn,
-  skyjoTakeFromDiscard,
-  heartbeat,
-  backupRoom,
-  restoreRoom,
-  createRoomWithRestore,
-} from "./routes/rooms";
+// server/index.ts
 
-export function createServer() {
-  const app = express();
+import { Hono } from "hono";
+import { cors } from 'hono/cors';
+// On importe les fonctions de création de room pour la route HTTP
+import { createRoom as createRoomLogic } from './routes/rooms'; 
+// ET on importe la classe du Durable Object pour l'exporter
+import { GameRoomDurableObject } from './room-do'; 
 
-  // Middleware
-  app.use(cors());
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
 
-  // Example API routes
-  app.get("/api/ping", (_req, res) => {
-    const ping = process.env.PING_MESSAGE ?? "ping";
-    res.json({ message: ping });
-  });
+export { GameRoomDurableObject };
 
-  app.get("/api/demo", handleDemo);
-
-  // Uno game routes
-  app.post("/api/rooms", createRoom);
-  app.post("/api/rooms/restore", createRoomWithRestore);
-  app.post("/api/rooms/:roomId/join", joinRoom);
-  app.get("/api/rooms/:roomId", getRoom);
-  app.post("/api/rooms/:roomId/start", startGame);
-  app.post("/api/rooms/:roomId/play", playCard);
-  app.post("/api/rooms/:roomId/draw", drawCard);
-  app.post("/api/rooms/:roomId/uno", callUno);
-  app.post("/api/rooms/:roomId/challenge", challengeUno);
-  app.post("/api/rooms/:roomId/change-game", changeGame);
-  app.post("/api/rooms/:roomId/restart", restartGame);
-  app.post("/api/rooms/:roomId/leave", leaveGame);
-  app.post("/api/rooms/:roomId/heartbeat", heartbeat);
-  app.post("/api/rooms/:roomId/backup", backupRoom);
-  app.get("/api/rooms/:roomId/restore", restoreRoom);
-
-  // Skyjo game routes
-  app.post("/api/rooms/:roomId/skyjo/reveal", skyjoRevealCard);
-  app.post("/api/rooms/:roomId/skyjo/draw", skyjoDrawCard);
-  app.post("/api/rooms/:roomId/skyjo/exchange", skyjoExchangeCard);
-  app.post("/api/rooms/:roomId/skyjo/discard", skyjoDiscardDrawn);
-  app.post("/api/rooms/:roomId/skyjo/take-discard", skyjoTakeFromDiscard);
-
-  return app;
+type Bindings = {
+  GAME_ROOM_DO: DurableObjectNamespace<GameRoomDurableObject>
 }
+
+const app = new Hono<{ Bindings: Bindings }>();
+
+app.use('*', cors());
+
+// Créer un salon (reste une requête HTTP normale)
+app.post('/api/rooms', async (c) => {
+  const { playerName } = await c.req.json();
+  // Exemple simplifié. Assurez-vous que votre createRoomLogic retourne un objet room valide.
+  const newRoom = { id: Math.random().toString(36).substring(2, 8).toUpperCase(), players: [{ id: `player_${Date.now()}`, name: playerName, cards: [] }], isStarted: false, gameType: 'uno', maxPlayers: 4 };
+
+  const id = c.env.GAME_ROOM_DO.idFromName(newRoom.id);
+  const stub = c.env.GAME_ROOM_DO.get(id);
+
+  // Initialiser l'état du DO
+  await stub.setRoom(newRoom as any);
+
+  return c.json(newRoom);
+});
+
+// Route WebSocket
+app.get('/api/rooms/:roomId/connect', async (c) => {
+  const { roomId } = c.req.param();
+  const playerId = c.req.query('playerId');
+
+  if (!playerId) {
+    return c.text('playerId est requis', 400);
+  }
+
+  const id = c.env.GAME_ROOM_DO.idFromName(roomId);
+  const stub = c.env.GAME_ROOM_DO.get(id);
+
+  // Transférer la requête au Durable Object
+  return stub.fetch(c.req.raw);
+});
+
+// L'export par défaut reste l'application Hono pour la fonction de Pages
+export default app;
