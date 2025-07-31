@@ -1,12 +1,11 @@
-// functions/api/api.ts
+// functions/api/[[path]].ts
 
-// 1. On importe l'application Hono ("le cerveau") depuis son fichier de définition.
-// Le chemin remonte de deux niveaux pour atteindre la racine, puis entre dans /server.
-// L'extension .js est importante pour la résolution des modules modernes.
+// On importe l'application Hono (le "cerveau" HTTP)
 import app from '../../server/index.js';
 
-// 2. On exporte la fonction que Cloudflare Pages va exécuter.
-// Elle prend simplement la requête entrante et la passe à notre application Hono.
+// On exporte le handler onRequest. C'est tout.
+// Le binding GAME_ROOM_DO sera automatiquement disponible dans context.env
+// grâce à la configuration dans wrangler.toml.
 export const onRequest: PagesFunction = (context) => {
   return app.fetch(
     context.request,

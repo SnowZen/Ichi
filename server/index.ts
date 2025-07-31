@@ -7,7 +7,8 @@ import { createRoom as createRoomLogic } from './routes/rooms';
 // ET on importe la classe du Durable Object pour l'exporter
 import { GameRoomDurableObject } from './room-do'; 
 
-
+// --- ON EXPORTE LA CLASSE DU DURABLE OBJECT ICI ---
+// C'est la ligne qui corrige l'erreur. Wrangler va maintenant la trouver.
 export { GameRoomDurableObject };
 
 type Bindings = {

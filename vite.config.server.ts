@@ -1,62 +1,16 @@
-import { defineConfig } from "vite";
-import path from "path";
+// vite.config.server.ts
+import { defineConfig } from 'vite';
 
-// Server build configuration
 export default defineConfig({
   build: {
-    lib: {
-      entry: path.resolve(__dirname, "server/node-build.ts"),
-      name: "server",
-      fileName: "production",
-      formats: ["es"],
-    },
-    outDir: "dist/server",
-    target: "node22",
-    ssr: true,
+    outDir: 'dist',
+    emptyOutDir: false, // Ne pas vider le dossier 'dist'
+    ssr: 'functions/api/[[path]].ts', // Le point d'entrée de notre fonction API
     rollupOptions: {
-      external: [
-        // Node.js built-ins
-        'zlib',
-        'querystring',
-        'path',
-        'crypto',
-        'events',
-        'fs',
-        'stream',
-        'os',
-        'http',
-        'net',
-        'string_decoder',
-        'util',
-        'url',
-        'serverless-http',
-        'express',
-        'body-parser',
-        'dotenv',
-        'etag',
-        'mime',
-        'parseurl',
-        'send',
-        'serve-static',
-        'content-disposition',
-        'cookie-signature',
-        'mime-types',
-      ],
       output: {
-        format: "es",
-        entryFileNames: "[name].mjs",
+        entryFileNames: '_worker.js', // Le nom conventionnel pour les fonctions Pages
+        format: 'es',
       },
     },
-    minify: false, // Keep readable for debugging
-    sourcemap: true,
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./client"),
-      "@shared": path.resolve(__dirname, "./shared"),
-    },
-  },
-  define: {
-    "process.env.NODE_ENV": '"production"',
   },
 });
