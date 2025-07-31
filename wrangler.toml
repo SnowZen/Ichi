@@ -1,17 +1,14 @@
-name = "board-games-hub" 
+name = "board-game-hub" 
 main = "functions/api/[[path]].js" 
 compatibility_date = "2024-04-05" 
 
 
 [build]
-command = "npm run build" # Assurez-vous que ce script build bien votre client et serveur
+command = "npm run build"
 
 
-[pages_build_output]
+pages_build_output_dir = "dist/spa"
 
-dir = "dist" 
-
-[[durable_objects.bindings]]
-name = "GAME_ROOM_DO"
+durable_objects.bindings_name = "GAME_ROOM_DO"
 class_name = "GameRoomDurableObject"
 script_name = "room-do-worker" 
